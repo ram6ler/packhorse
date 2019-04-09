@@ -459,43 +459,6 @@ class Numeric extends Column<num> {
     return zScores.dot(thoseZScores) / length;
   }
 
-  /// Gives a least-squares linear predictor of [that].
-  ///
-  /// Returns a map containing the *gradient*, *intercept* and callable *model* of
-  /// a linear least squares regression function.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final rand = math.Random(0),
-  ///   points = 20,
-  ///   trueGradient = 2,
-  ///   trueIntercept = 1,
-  ///   trueModel = (num x) => trueGradient * x + trueIntercept,
-  ///   noise = () => rand.nextDouble() * 2 - 1,
-  ///   xs = Numeric(List<num>.generate(points, (_) => rand.nextDouble() * 10)),
-  ///   ys = Numeric(xs.map((x) => trueModel(x) + noise())),
-  ///   f = xs.leastSquaresLinearPredictorOf(ys);
-  ///
-  /// print("True gradient: $trueGradient; model: ${f["gradient"]}");
-  /// // True gradient: 2; model: 2.049357033271854
-  /// print("True intercept: $trueIntercept; model: ${f["intercept"]}");
-  /// // True intercept: 1; model: 0.636168176423368
-  /// print(
-  ///   "Example x: ${xs.first}, y: ${ys.first}, predicted: ${f["model"](xs.first)}");
-  /// // Example x: 8.255140718871703, y: 16.975375781784862, predicted: 17.55389886929196
-  /// ```
-  ///
-  Map<String, dynamic> leastSquaresLinearPredictorOf(List<num> that) {
-    final thatVector = Numeric(that),
-        a = correlationWith(thatVector) *
-            thatVector.standardDeviation /
-            standardDeviation,
-        b = thatVector.mean - a * mean;
-
-    return {"model": (num x) => a * x + b, "gradient": a, "intercept": b};
-  }
-
   num bootStrapStandardError(String statistic, {int n: 1000, int seed}) {
     final f = <String, Function(Numeric)>{
       Statistic.sum: (x) => x.sum,
