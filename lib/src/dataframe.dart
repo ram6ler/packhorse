@@ -9,13 +9,101 @@ abstract class Alignment {
 }
 
 class Dataframe {
-  Dataframe(this.cats, this.nums) {
+  Dataframe(this.cats, this.nums, {bool ignoreLengths: false}) {
     final lengths = (cats.keys.map((key) => cats[key].length).toList()
           ..addAll(nums.keys.map((key) => nums[key].length)))
         .toSet();
-    if (lengths.length != 1) {
+    if (!ignoreLengths && lengths.length != 1) {
       throw Exception("Columns not all of the same length.");
     }
+  }
+
+  /// A data frame from a map of lists.
+  ///
+  /// The keya of the map are interpreted as the column names;
+  /// the values in the respective lists populate the rows.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// final data = Dataframe.fromMapOfLists({
+  ///   "image": ["🍑", "🍆", "🍊", "🍓", "🍍", "🍉", "🍇", "🍌", "🍒", "🍎"],
+  ///   "fruit": [
+  ///     "peach",
+  ///     "eggplant",
+  ///     "tangerine",
+  ///     "strawberry",
+  ///     "pineapple",
+  ///     "watermelon",
+  ///     "grapes",
+  ///     "banana",
+  ///     "cherries",
+  ///     "apple"
+  ///   ],
+  ///   "color": [
+  ///     "pink",
+  ///     "purple",
+  ///     "orange",
+  ///     "red",
+  ///     "yellow",
+  ///     "pink",
+  ///     "purple",
+  ///     "yellow",
+  ///     "red",
+  ///     "red"
+  ///   ],
+  ///   "rating": [7, 7, 8, 9, 6, 6, 7, 7, 10, 5]
+  /// });
+  /// ```
+  ///
+  Dataframe.fromMapOfLists(Map<String, List<Object>> data) {
+    cats = Map<String, Categoric>.fromIterable(
+        data.keys.where((key) => data[key].first is String),
+        value: (key) => Categoric(data[key].map((x) => x as String)));
+    nums = Map<String, Numeric>.fromIterable(
+        data.keys.where((key) => data[key].first is num),
+        value: (key) => Numeric(data[key].map((x) => x as num)));
+  }
+
+  /// A data frame form a list of maps.
+  ///
+  /// Each map populates a row; the keys in each map determine
+  /// the column each value should be put into.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// final data = Dataframe.fromListOfInstanceMaps([
+  ///   {"image": "🍑", "fruit": "peach", "color": "pink", "rating": 7},
+  ///   {"image": "🍆", "fruit": "eggplant", "color": "purple", "rating": 7},
+  ///   {"image": "🍊", "fruit": "tangerine", "color": "orange", "rating": 8},
+  ///   {"image": "🍓", "fruit": "strawberry", "color": "red", "rating": 9},
+  ///   {"image": "🍍", "fruit": "pineapple", "color": "yellow", "rating": 6},
+  ///   {"image": "🍉", "fruit": "watermelon", "color": "pink", "rating": 6},
+  ///   {"image": "🍇", "fruit": "grapes", "color": "purple", "rating": 7},
+  ///   {"image": "🍌", "fruit": "banana", "color": "yellow", "rating": 7},
+  ///   {"image": "🍒", "fruit": "cherries", "color": "red", "rating": 10},
+  ///   {"image": "🍎", "fruit": "apple", "color": "red", "rating": 5}
+  /// ]);
+  /// ```
+  ///
+  factory Dataframe.fromListOfInstanceMaps(
+      List<Map<String, Object>> instances) {
+    final data = Map<String, List<Object>>();
+    for (int index = 0; index < instances.length; index++) {
+      final instance = instances[index];
+      for (final key in instance.keys) {
+        if (!data.containsKey(key)) {
+          data[key] = List.filled(index, null, growable: true);
+        }
+        data[key].add(instance[key]);
+      }
+      for (final key in data.keys.where((key) => !instance.containsKey(key))) {
+        data[key].add(null);
+      }
+    }
+
+    return Dataframe.fromMapOfLists(data);
   }
 
   /// A data frame from a csv expression.
@@ -30,7 +118,7 @@ class Dataframe {
   /// Example:
   ///
   /// ```dart
-  /// final data = DataFrame.fromCsv("""
+  /// final data = Dataframe.fromCsv("""
   ///   image,fruit,color,rating
   ///   🍑,peach,pink,7
   ///   🍆,eggplant,purple,7
@@ -116,32 +204,6 @@ class Dataframe {
 
   /// The order of the columns in displays.
   List<String> columnsInOrder = [];
-
-  /// A shorthand way of accessing the columns. (For editor awareness, use [cats] and [nums] instead.)
-  Column operator [](String column) {
-    if (cats.containsKey(column)) {
-      return cats[column];
-    } else if (nums.containsKey(column)) {
-      return nums[column];
-    } else {
-      throw Exception("Unrecognized column: '$column'");
-    }
-  }
-
-  void operator []=(String key, Iterable value) {
-    if (value.length != numberOfRows) {
-      throw Exception("Expecting $numberOfRows rows.");
-    }
-    if (cats.containsKey(key) || nums.containsKey(key)) {
-      throw Exception("Data frame already contains column '$key'.");
-    }
-
-    if (value.first is num) {
-      nums[key] = Numeric(List<num>.from(value));
-    } else {
-      cats[key] = Categoric(List<String>.from(value));
-    }
-  }
 
   /// The number of rows in this data frame.
   num get numberOfRows {
@@ -270,6 +332,10 @@ class Dataframe {
         for (String key in cats.keys) {
           argument =
               argument.replaceAll("$startQuote$key$endQuote", cats[key][index]);
+        }
+        for (String key in nums.keys) {
+          argument = argument.replaceAll(
+              "$startQuote$key$endQuote", nums[key][index].toString());
         }
         return argument;
       }).toList();
@@ -710,27 +776,16 @@ class Dataframe {
   /// Gives a list of strings generated from the row values.
   List<String> stringsFromTemplate(String template,
           {String startQuote: "{", String endQuote: "}"}) =>
-      indices.map((index) {
-        String line = template;
-        for (final key in cats.keys) {
-          final pattern = "$startQuote$key$endQuote";
-          line = line.replaceAll(pattern, cats[key][index]);
-        }
-        for (final key in nums.keys) {
-          final pattern = "$startQuote$key$endQuote";
-          line = line.replaceAll(pattern, nums[key][index].toString());
-        }
-        return line;
-      }).toList();
+      _templateValues(template, startQuote, endQuote);
 
-  /*Map<String, Object> valuesInRow(int index) =>
+  /// Gives the values in a row as a map.
+  Map<String, Object> valuesInRow(int index) =>
       Map<String, Object>.fromIterable(cats.keys,
           value: (key) => cats[key][index])
         ..addAll(Map<String, Object>.fromIterable(nums.keys,
-            value: (key) => cats[key][index]));*/
+            value: (key) => nums[key][index]));
 
   /// Gives a markdown representation of this data frame.
-  /// // TODO: limit rows if too many.
   String toMarkdown(
       {Map<String, String> alignment, bool summary: false, int fixed}) {
     alignment = alignment ?? <String, String>{};

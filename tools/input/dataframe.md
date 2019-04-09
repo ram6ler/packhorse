@@ -97,7 +97,7 @@ The packhorse library provides the user a high level of control in data manipula
 
 #### Templates
 
-A *template* is a string such as `"{species}-{id}"` that is used to generate string values from the categoric values in each row of a data frame, which can then be used as a filter or to generate new columns.
+A *template* is a string such as `"{species}-{id}"` that is used to generate *strings* from the values in each row of a data frame, which can then be used as a filter or to generate new columns. Although numeric variable names can be included in a template (for example *id* might be a numeric column), templates are generally intended for generating strings from categories.
 
 For example, say we want to only see the rows in `petals` for which the species is *versicolor*:
 
@@ -120,7 +120,7 @@ print(petals.withCategoricFromTemplate("code", "{species}:{id}",
 
 #### Formulas
 
-A *formula* is a string such as `"(log(petal_width) + log(petal_length)) / 2"` that is used to generate numeric values from the numeric values in row of a data frame, which can then be used as a filter or to generate new columns, in much the same way as templates.
+A *formula* is a string such as `"(log(petal_width) + log(petal_length)) / 2"` that is used to generate numeric values from the numeric values in row of a data frame, which can then be used as a filter or to generate new columns, in much the same way as templates. Note that only numeric column names are recognized in a formula.
 
 For example, say we are just interested in the instances whose petal length-to-width ratio is greater than 3: 
 

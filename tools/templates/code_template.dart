@@ -1,5 +1,4 @@
 import "dart:io";
-import "dart:math" as math;
 import "package:packhorse/packhorse.dart";
 
 main() async {

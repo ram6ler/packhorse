@@ -1,9 +1,13 @@
 
-## Numeric
+## Columns
 
-The `Numeric` class is a convenience wrapper for `List<num>` that provides for properties and methods commonly associated with numeric data in statistics.
+The distinction between numeric and categoric columns is central to *packhorse*.
 
-### Operations
+### Numeric
+
+The `Numeric` class is a convenience wrapper for `List<num>` that represents a column of numeric data and provides properties and methods commonly associated with numeric data in statistics.
+
+#### Operations
 
 The operators `+`, `-`, `*`, `/` and `%` are defined for elementwise addition, subtraction, multiplication, division and modulus respectively. The dot product, treating numerics as a vectors, is available through `dot`. For example:
 
@@ -18,13 +22,17 @@ The operators `+`, `-`, `*`, `/` and `%` are defined for elementwise addition, s
   print("xs dot ys: ${xs.dot(ys)}");
 ```
 
-### Statistics
+#### Statistics
 
 Several statistics are presented as properties of a numeric instance, including `sum`, `sumOfSquares`, `mean`, `variance`, `standardDeviation`, `meanAbsoluteDeviation`, `lowerQuartile`, `median`, `upperQuartile`, `interquartileRange`, `greatest`, `least`, `outliers`, `residuals`, `squaredResiduals` and `zScores`.
 
+### Categoric
+
+The `Categoric` class is a convenience wrapper for `List<String>` that represents a column of categoric or qualitative data.
+
 ### List behavior
 
-Numeric instances generally behave in similarly to lists, except:
+Column instances generally behave in similarly to lists, except:
 
 * Indices wrap. (This is important to take into account when, for example, dealing with data frames containing columns of different lengths.) For example:
 
