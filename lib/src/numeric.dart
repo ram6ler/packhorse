@@ -8,6 +8,7 @@ abstract class Statistic {
       inferredVariance = "inferredVariance",
       standardDeviation = "standardDeviation",
       inferredStandardDeviation = "inferredStandardDeviation",
+      skewness = "skewness",
       meanAbsoluteDeviation = "meanAbsoluteDeviation",
       lowerQuartile = "lowerQuartile",
       median = "median",
@@ -269,7 +270,7 @@ class Numeric extends Column<num> {
           xs.length);
 
   /// The unbiased estimate of the variance of the population
-  /// these elements represents a sample of.
+  /// these elements represent a sample of.
   num get inferredVariance => _statistic(Statistic.inferredVariance,
       (xs) => variance * xs.length / (xs.length - 1));
 
@@ -279,9 +280,19 @@ class Numeric extends Column<num> {
       _statistic(Statistic.standardDeviation, (_) => math.sqrt(variance));
 
   /// The unbiased estimate of the standard deviation
-  /// of the population these elements represents a sample of.
+  /// of the population these elements represent a sample of.
   num get inferredStandardDeviation => _statistic(
       Statistic.inferredStandardDeviation, (_) => math.sqrt(inferredVariance));
+
+  /// The unbiased estimate of the skewness of the population
+  /// these elements represent a sample of.
+  num get skewness => _statistic(Statistic.skewness, (_) {
+        final cubedResiduals =
+                residuals.map((residual) => math.pow(residual, 3)),
+            cubedResidualsMean = cubedResiduals.fold(0, (a, b) => a + b) /
+                (cubedResiduals.length - 1);
+        return cubedResidualsMean / math.pow(inferredVariance, 1.5);
+      });
 
   /// The mean absolute deviation from the mean of these elements.
   num get meanAbsoluteDeviation => _statistic(
@@ -379,7 +390,8 @@ class Numeric extends Column<num> {
       map((x) => x == null || x == double.nan ? null : (x - mu) / sigma));
 
   /// The residuals.
-  Numeric get residuals => Numeric(map((x) => x - mean));
+  Numeric get residuals =>
+      Numeric(where((x) => x != null && x != double.nan).map((x) => x - mean));
 
   /// The squared residuals.
   Numeric get squaredResiduals => Numeric(map((x) => math.pow(x - mean, 2)));

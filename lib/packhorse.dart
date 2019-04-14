@@ -4,6 +4,8 @@ library packhorse;
 import 'dart:collection' show ListBase;
 import 'dart:math' as math;
 
+import 'package:meta/meta.dart';
+
 import 'package:function_tree/function_tree.dart';
 
 part 'src/helpers.dart';

@@ -134,7 +134,7 @@ class Dataframe {
   /// ```
   ///
   Dataframe.fromCsv(String csv,
-      {String seperator: ",", Map<String, String> types}) {
+      {String seperator = ",", Map<String, String> types}) {
     final lines = csv
         .split("\n")
         .map((line) => line.trim())
@@ -223,7 +223,7 @@ class Dataframe {
   List<int> get indices => sequence(numberOfRows);
 
   /// Gets a data frame with rows ordered by the values in [column].
-  Dataframe withRowsOrderedBy(String column, {bool decreasing: false}) {
+  Dataframe withRowsOrderedBy(String column, {bool decreasing = false}) {
     var frame = Dataframe(
         Map<String, Categoric>.from(cats), Map<String, Numeric>.from(nums));
     if (frame.cats.containsKey(column)) {
@@ -237,7 +237,7 @@ class Dataframe {
   }
 
   /// Gets a data frame made up of rows randomly sampled from this data frame.
-  Dataframe withRowsSampled(int n, {bool replacement: false, int seed}) {
+  Dataframe withRowsSampled(int n, {bool replacement = false, int seed}) {
     if (n > numberOfRows && !replacement) {
       throw Exception(
           "Cannot sample more rows than available without replacement.");
@@ -354,7 +354,7 @@ class Dataframe {
   /// Gives the indices that match a template predicate.
   List<int> indicesWhereTemplate(
       String template, bool Function(String) predicate,
-      {String startQuote: "{", String endQuote: "}"}) {
+      {String startQuote = "{", String endQuote = "}"}) {
     final templateValues = _templateValues(template, startQuote, endQuote);
     return indices.where((index) => predicate(templateValues[index])).toList();
   }
@@ -362,7 +362,7 @@ class Dataframe {
   /// Gives a data frame with only the rows that match a template predicate.
   Dataframe withRowsWhereTemplate(
           String template, bool Function(String) predicate,
-          {String startQuote: "{", String endQuote: "}"}) =>
+          {String startQuote = "{", String endQuote = "}"}) =>
       withRowsAtIndices(indicesWhereTemplate(template, predicate,
           startQuote: startQuote, endQuote: endQuote));
 
@@ -380,7 +380,7 @@ class Dataframe {
   /// Gives the indices that match a template and formula predicate.
   List<int> indicesWhereTemplateAndFormula(
       String template, String formula, bool Function(String, num) predicate,
-      {String startQuote: "{", String endQuote: "}"}) {
+      {String startQuote = "{", String endQuote = "}"}) {
     final templateValues = _templateValues(template, startQuote, endQuote),
         formulaValues = _formulaValues(formula);
 
@@ -393,15 +393,15 @@ class Dataframe {
   /// Gives a data frame with only the rows that match a template and formula predicate.
   Dataframe withRowsWhereTemplateAndFormula(
           String template, String formula, bool Function(String, num) predicate,
-          {String startQuote: "{", String endQuote: "}"}) =>
+          {String startQuote = "{", String endQuote = "}"}) =>
       withRowsAtIndices(indicesWhereTemplateAndFormula(
           template, formula, predicate,
           startQuote: startQuote, endQuote: endQuote));
 
   /// A data frame with a categoric column from a template.
   Dataframe withCategoricFromTemplate(String name, String template,
-      {String startQuote: "{",
-      String endQuote: "}",
+      {String startQuote = "{",
+      String endQuote = "}",
       String Function(String) generator}) {
     generator = generator ?? (x) => x;
     final cats = Map<String, Categoric>.from(this.cats),
@@ -414,7 +414,7 @@ class Dataframe {
   /// A data frame with a numeric column from a template.
   Dataframe withNumericFromTemplate(
       String name, String template, num Function(String) generator,
-      {String startQuote: "{", String endQuote: "}"}) {
+      {String startQuote = "{", String endQuote = "}"}) {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums);
     nums[name] =
@@ -444,7 +444,7 @@ class Dataframe {
   /// A data frame with a categoric column from a template and formula.
   Dataframe withCategoricFromTemplateAndFormula(String name, String template,
       String formula, String Function(String, num) generator,
-      {String startQuote: "{", String endQuote: "}"}) {
+      {String startQuote = "{", String endQuote = "}"}) {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums),
         templateValues = _templateValues(template, startQuote, endQuote),
@@ -457,7 +457,7 @@ class Dataframe {
   /// A data frame with a numeric column from a template and formula.
   Dataframe withNumericFromTemplateAndFormula(String name, String template,
       String formula, num Function(String, num) generator,
-      {String startQuote: "{", String endQuote: "}"}) {
+      {String startQuote = "{", String endQuote = "}"}) {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums),
         templateValues = _templateValues(template, startQuote, endQuote),
@@ -775,7 +775,7 @@ class Dataframe {
 
   /// Gives a list of strings generated from the row values.
   List<String> stringsFromTemplate(String template,
-          {String startQuote: "{", String endQuote: "}"}) =>
+          {String startQuote = "{", String endQuote = "}"}) =>
       _templateValues(template, startQuote, endQuote);
 
   /// Gives the values in a row as a map.
@@ -787,7 +787,7 @@ class Dataframe {
 
   /// Gives a markdown representation of this data frame.
   String toMarkdown(
-      {Map<String, String> alignment, bool summary: false, int fixed}) {
+      {Map<String, String> alignment, bool summary = false, int fixed}) {
     alignment = alignment ?? <String, String>{};
 
     _validColumnCheck(alignment.keys);
@@ -847,7 +847,7 @@ ${rows.join("\n")}
 """;
   }
 
-  String toHtml({bool summary: false, int fixed}) {
+  String toHtml({bool summary = false, int fixed}) {
     final columnNames = List<String>.from(columnsInOrder)
           ..addAll(cats.keys.where((key) => !columnsInOrder.contains(key)))
           ..addAll((nums.keys.where((key) => !columnsInOrder.contains(key)))),
