@@ -1,6 +1,6 @@
 part of packhorse;
 
-abstract class Statistic {
+abstract class NumericStatistic {
   static const sum = "sum",
       sumOfSquares = "sumOfSquares",
       mean = "mean",
@@ -30,8 +30,6 @@ class Numeric extends Column<num> {
 
   /// The [List<num>] wrapped by this numeric.
   List<num> _elements;
-
-  Map<String, num> _statsMemoization = {};
 
   /// A helper method for defining operations.
   Numeric _operator(Object that, num Function(num, num) f, String name) {
@@ -208,6 +206,7 @@ class Numeric extends Column<num> {
   /// // [1, 1, 1, 3, 3, 3]
   /// ```
   ///
+  @override
   Numeric elementsAtIndices(List<int> indices) =>
       Numeric(indices.map((i) => this[i]).toList());
 
@@ -245,48 +244,44 @@ class Numeric extends Column<num> {
   Numeric get _nullsOmitted =>
       Numeric(where((x) => x != null && x != double.nan));
 
-  /// A helper method that looks up, calculates or stores statistics.
-  num _statistic(String key, num f(Iterable<num> xs)) =>
-      _statsMemoization.containsKey(key)
-          ? _statsMemoization[key]
-          : _statsMemoization[key] = f(_nullsOmitted);
-
   /// The sum of the elements.
-  num get sum => _statistic(Statistic.sum, (xs) => xs.fold(0, (a, b) => a + b));
+  num get sum =>
+      _statistic(NumericStatistic.sum, (xs) => xs.fold(0, (a, b) => a + b));
 
   /// The sum of the squares of the elements.
-  num get sumOfSquares => _statistic(Statistic.sumOfSquares,
+  num get sumOfSquares => _statistic(NumericStatistic.sumOfSquares,
       (xs) => xs.map((x) => x * x).fold(0, (a, b) => a + b));
 
   /// The mean of the elements.
-  num get mean => _statistic(Statistic.mean, (xs) => sum / xs.length);
+  num get mean => _statistic(NumericStatistic.mean, (xs) => sum / xs.length);
 
   /// The variance of the elements, treating these elements as
   /// the population.
   num get variance => _statistic(
-      Statistic.variance,
+      NumericStatistic.variance,
       (xs) =>
           xs.map((x) => math.pow(x - mean, 2)).fold(0, (a, b) => a + b) /
           xs.length);
 
   /// The unbiased estimate of the variance of the population
   /// these elements represent a sample of.
-  num get inferredVariance => _statistic(Statistic.inferredVariance,
+  num get inferredVariance => _statistic(NumericStatistic.inferredVariance,
       (xs) => variance * xs.length / (xs.length - 1));
 
   /// The standard deviation of the elements, treating this
   /// data as the population.
-  num get standardDeviation =>
-      _statistic(Statistic.standardDeviation, (_) => math.sqrt(variance));
+  num get standardDeviation => _statistic(
+      NumericStatistic.standardDeviation, (_) => math.sqrt(variance));
 
   /// The unbiased estimate of the standard deviation
   /// of the population these elements represent a sample of.
   num get inferredStandardDeviation => _statistic(
-      Statistic.inferredStandardDeviation, (_) => math.sqrt(inferredVariance));
+      NumericStatistic.inferredStandardDeviation,
+      (_) => math.sqrt(inferredVariance));
 
   /// The unbiased estimate of the skewness of the population
   /// these elements represent a sample of.
-  num get skewness => _statistic(Statistic.skewness, (_) {
+  num get skewness => _statistic(NumericStatistic.skewness, (_) {
         final cubedResiduals =
                 residuals.map((residual) => math.pow(residual, 3)),
             cubedResidualsMean = cubedResiduals.fold(0, (a, b) => a + b) /
@@ -296,28 +291,28 @@ class Numeric extends Column<num> {
 
   /// The mean absolute deviation from the mean of these elements.
   num get meanAbsoluteDeviation => _statistic(
-      Statistic.meanAbsoluteDeviation,
+      NumericStatistic.meanAbsoluteDeviation,
       (xs) =>
           xs.map((x) => (x - mean).abs()).fold(0, (a, b) => a + b) / xs.length);
 
   /// The lower quartile of these elements, calculated by interpolating the 0.25 quantile.
   num get lowerQuartile =>
-      _statistic(Statistic.lowerQuartile, (_) => quantile(0.25));
+      _statistic(NumericStatistic.lowerQuartile, (_) => quantile(0.25));
 
   /// The median of these elements, calculated by interpolating the 0.5 quantile.
-  num get median => _statistic(Statistic.median, (_) => quantile(0.5));
+  num get median => _statistic(NumericStatistic.median, (_) => quantile(0.5));
 
   /// The upper quartile of these elements, calculated by interpolating the 0.75 quantile.
   num get upperQuartile =>
-      _statistic(Statistic.upperQuartile, (_) => quantile(0.75));
+      _statistic(NumericStatistic.upperQuartile, (_) => quantile(0.75));
 
   /// The interquartile range of these elements.
-  num get interquartileRange => _statistic(
-      Statistic.interquartileRange, (_) => upperQuartile - lowerQuartile);
+  num get interquartileRange => _statistic(NumericStatistic.interquartileRange,
+      (_) => upperQuartile - lowerQuartile);
 
   /// The greatest value in these elements.
   num get greatest =>
-      _statistic(Statistic.greatest, (xs) => xs.reduce(math.max));
+      _statistic(NumericStatistic.greatest, (xs) => xs.reduce(math.max));
 
   /// The greatest non outlier in these elements.
   ///
@@ -325,13 +320,14 @@ class Numeric extends Column<num> {
   /// interquartile ranges from the nearest interquartile range boundary.)
   ///
   num get greatestNonOutlier => _statistic(
-      Statistic.greatestNonOutlier,
+      NumericStatistic.greatestNonOutlier,
       (xs) => xs
           .where((x) => x <= median + 1.5 * interquartileRange)
           .reduce(math.max));
 
   /// The least value in these elements.
-  num get least => _statistic(Statistic.least, (xs) => xs.reduce(math.min));
+  num get least =>
+      _statistic(NumericStatistic.least, (xs) => xs.reduce(math.min));
 
   /// The least non outlier in these elements.
   ///
@@ -339,13 +335,13 @@ class Numeric extends Column<num> {
   /// interquartile ranges from the nearest interquartile range boundary.)
   ///
   num get leastNonOutlier => _statistic(
-      Statistic.leastNonOutlier,
+      NumericStatistic.leastNonOutlier,
       (xs) => xs
           .where((x) => x >= median - 1.5 * interquartileRange)
           .reduce(math.min));
 
   /// The range of the values of elements in this numeric.
-  num get range => _statistic(Statistic.range, (_) => greatest - least);
+  num get range => _statistic(NumericStatistic.range, (_) => greatest - least);
 
   /// The p-quantile of the data.
   num quantile(num p) {
@@ -402,11 +398,6 @@ class Numeric extends Column<num> {
   /// The squared residuals with respect to the values predicted by model [f].
   Numeric squaredResidualsFromModel(num f(num x)) =>
       Numeric(map((x) => math.pow(x - f(x), 2)));
-
-  /// The indices of all null values or non numbers.
-  List<int> get nullIndices => indices
-      .where((index) => this[index] == null || this[index] == double.nan)
-      .toList();
 
   /// The counts, by value.
   Map<num, int> get counts => Map<num, int>.fromIterable(toSet(),
@@ -473,23 +464,24 @@ class Numeric extends Column<num> {
 
   num bootStrapStandardError(String statistic, {int n: 1000, int seed}) {
     final f = <String, Function(Numeric)>{
-      Statistic.sum: (x) => x.sum,
-      Statistic.sumOfSquares: (x) => x.sumOfSquares,
-      Statistic.mean: (x) => x.mean,
-      Statistic.variance: (x) => x.variance,
-      Statistic.inferredVariance: (x) => x.inferredVariance,
-      Statistic.standardDeviation: (x) => x.standardDeviation,
-      Statistic.inferredStandardDeviation: (x) => x.inferredStandardDeviation,
-      Statistic.meanAbsoluteDeviation: (x) => x.meanAbsoluteDeviation,
-      Statistic.lowerQuartile: (x) => x.lowerQuartile,
-      Statistic.median: (x) => x.median,
-      Statistic.upperQuartile: (x) => x.upperQuartile,
-      Statistic.interquartileRange: (x) => x.interquartileRange,
-      Statistic.greatest: (x) => x.greatest,
-      Statistic.greatestNonOutlier: (x) => x.greatestNonOutlier,
-      Statistic.least: (x) => x.least,
-      Statistic.leastNonOutlier: (x) => x.leastNonOutlier,
-      Statistic.range: (x) => x.range,
+      NumericStatistic.sum: (x) => x.sum,
+      NumericStatistic.sumOfSquares: (x) => x.sumOfSquares,
+      NumericStatistic.mean: (x) => x.mean,
+      NumericStatistic.variance: (x) => x.variance,
+      NumericStatistic.inferredVariance: (x) => x.inferredVariance,
+      NumericStatistic.standardDeviation: (x) => x.standardDeviation,
+      NumericStatistic.inferredStandardDeviation: (x) =>
+          x.inferredStandardDeviation,
+      NumericStatistic.meanAbsoluteDeviation: (x) => x.meanAbsoluteDeviation,
+      NumericStatistic.lowerQuartile: (x) => x.lowerQuartile,
+      NumericStatistic.median: (x) => x.median,
+      NumericStatistic.upperQuartile: (x) => x.upperQuartile,
+      NumericStatistic.interquartileRange: (x) => x.interquartileRange,
+      NumericStatistic.greatest: (x) => x.greatest,
+      NumericStatistic.greatestNonOutlier: (x) => x.greatestNonOutlier,
+      NumericStatistic.least: (x) => x.least,
+      NumericStatistic.leastNonOutlier: (x) => x.leastNonOutlier,
+      NumericStatistic.range: (x) => x.range,
     }[statistic];
     return Numeric(List<num>.generate(n, (_) => f(sample(length))))
         .inferredStandardDeviation;

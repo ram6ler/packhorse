@@ -1,5 +1,9 @@
 part of packhorse;
 
+abstract class CategoricStatistic {
+  static const impurity = "impurity", entropy = "entropy";
+}
+
 class Categoric extends Column<String> {
   Categoric(Iterable<String> data, {Iterable<String> withCategories}) {
     _categories = withCategories == null
@@ -98,6 +102,7 @@ class Categoric extends Column<String> {
   /// ```
   /// (Compare [elementsWhere].)
   ///
+  @override
   Categoric elementsAtIndices(List<int> indices) => Categoric(
       indices.map((index) => _categoryIndices[index] == -1
           ? null
@@ -123,6 +128,22 @@ class Categoric extends Column<String> {
   ///
   Categoric elementsWhere(bool predicate(String datum)) =>
       Categoric(where(predicate), withCategories: categories);
+
+  /// The Gini impurity.
+  num get impurity => _statistic(CategoricStatistic.impurity, (xs) {
+        final data = xs as Categoric, proportions = data.proportions;
+        return proportions.values
+            .map((p) => p * (1 - p))
+            .fold(0, (a, b) => a + b);
+      });
+
+  /// The entropy (in nats).
+  num get entropy => _statistic(CategoricStatistic.entropy, (xs) {
+        final data = xs as Categoric, proportions = data.proportions;
+        return -proportions.values
+            .map((p) => p == 0 ? 0 : p * math.log(p))
+            .fold(0, (a, b) => a + b);
+      });
 
   @override
   get length => _categoryIndices.length;
