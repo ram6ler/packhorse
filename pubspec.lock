@@ -10,12 +10,5 @@ packages:
       url: "https://ram6ler@bitbucket.org/ram6ler/function-tree.git"
     source: git
     version: "0.2.6"
-  meta:
-    dependency: "direct main"
-    description:
-      name: meta
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.7"
 sdks:
   dart: ">=2.1.0 <3.0.0"

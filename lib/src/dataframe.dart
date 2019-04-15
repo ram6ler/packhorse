@@ -236,8 +236,8 @@ class Dataframe {
     return frame;
   }
 
-  /// Gets a data frame made up of rows randomly sampled from this data frame.
-  Dataframe withRowsSampled(int n, {bool replacement = false, int seed}) {
+  /// Gets a list of sample row indices.
+  List<int> sampleRowIndices(int n, {bool replacement = false, int seed}) {
     if (n > numberOfRows && !replacement) {
       throw Exception(
           "Cannot sample more rows than available without replacement.");
@@ -246,9 +246,13 @@ class Dataframe {
         randomIndices = replacement
             ? List<int>.generate(n, (_) => rand.nextInt(numberOfRows))
             : (indices..shuffle(rand)).sublist(0, n);
-
-    return withRowsAtIndices(randomIndices);
+    return randomIndices;
   }
+
+  /// Gets a data frame made up of rows randomly sampled from this data frame.
+  Dataframe withRowsSampled(int n, {bool replacement = false, int seed}) =>
+      withRowsAtIndices(
+          sampleRowIndices(n, replacement: replacement, seed: seed));
 
   /// Gets a data frame with a row index column added.
   Dataframe withRowIndices(String name) => Dataframe(
