@@ -205,6 +205,11 @@ class Dataframe {
   /// The order of the columns in displays.
   List<String> columnsInOrder = [];
 
+  /// The names of the columns in this data frame.
+  List<String> get columnNames => List<String>.from(columnsInOrder)
+    ..addAll(cats.keys.where((key) => !columnsInOrder.contains(key)))
+    ..addAll((nums.keys.where((key) => !columnsInOrder.contains(key))));
+
   /// The number of rows in this data frame.
   num get numberOfRows {
     if (cats.length > 0) {
@@ -796,11 +801,8 @@ class Dataframe {
 
     _validColumnCheck(alignment.keys);
 
-    final columnNames = List<String>.from(columnsInOrder)
-          ..addAll(cats.keys.where((key) => !columnsInOrder.contains(key)))
-          ..addAll((nums.keys.where((key) => !columnsInOrder.contains(key)))),
-        table =
-            Map<String, List<String>>.fromIterable(columnNames, value: (key) {
+    final table =
+        Map<String, List<String>>.fromIterable(columnNames, value: (key) {
       if (cats.containsKey(key)) {
         return cats[key];
       } else {
@@ -852,11 +854,8 @@ ${rows.join("\n")}
   }
 
   String toHtml({bool summary = false, int fixed}) {
-    final columnNames = List<String>.from(columnsInOrder)
-          ..addAll(cats.keys.where((key) => !columnsInOrder.contains(key)))
-          ..addAll((nums.keys.where((key) => !columnsInOrder.contains(key)))),
-        table =
-            Map<String, List<String>>.fromIterable(columnNames, value: (key) {
+    final table =
+        Map<String, List<String>>.fromIterable(columnNames, value: (key) {
       if (cats.containsKey(key)) {
         return cats[key];
       } else {
@@ -898,10 +897,7 @@ ${rows.join("\n")}
   /// Gives a string representation of this data frame.
   @override
   String toString() {
-    final columnNames = List<String>.from(columnsInOrder)
-          ..addAll(cats.keys.where((key) => !columnsInOrder.contains(key)))
-          ..addAll((nums.keys.where((key) => !columnsInOrder.contains(key)))),
-        table =
+    final table =
             Map<String, List<String>>.fromIterable(columnNames, value: (key) {
       if (cats.containsKey(key)) {
         return cats[key];
