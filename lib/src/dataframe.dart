@@ -853,6 +853,29 @@ ${rows.join("\n")}
 """;
   }
 
+  String toCsv({bool markColumns: false, int fixed}) {
+    final table =
+        Map<String, List<String>>.fromIterable(columnNames, value: (key) {
+      if (cats.containsKey(key)) {
+        return cats[key];
+      } else {
+        return nums[key]
+            .map((x) => fixed == null ? x.toString() : x.toStringAsFixed(fixed))
+            .toList();
+      }
+    });
+
+    final header = "${columnNames.join(",")}",
+        rows = indices
+            .map((index) =>
+                "${columnNames.map((key) => table[key][index]).join(",")}")
+            .toList();
+
+    return """$header
+${rows.join("\n")}
+""";
+  }
+
   String toHtml({bool summary = false, int fixed}) {
     final table =
         Map<String, List<String>>.fromIterable(columnNames, value: (key) {
