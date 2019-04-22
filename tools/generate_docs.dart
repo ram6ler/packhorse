@@ -7,7 +7,9 @@ import "dart:io";
 ///
 /// Example usage:
 ///
-///     dart generate_docs.dart with_code.md > output/with_code_output.md
+/// ```
+/// dart generate_docs.dart input/with_code.md > output/with_code_output.md
+/// ```
 ///
 
 main(List<String> args) async {
@@ -16,7 +18,7 @@ main(List<String> args) async {
       buffer = StringBuffer(),
       codeTemplate = await File("templates/code_template.dart").readAsString(),
       outTemplate = await File("templates/output_template.md").readAsString();
-  for (final line in await (File("input/${args.first}").readAsLines())) {
+  for (final line in await (File("${args.first}").readAsLines())) {
     print(line);
     if (coding) {
       if (line.contains("```")) {
@@ -37,7 +39,7 @@ main(List<String> args) async {
         buffer.writeln(line);
       }
     } else {
-      if (line.contains("```")) {
+      if (line.contains("```dart")) {
         coding = true;
       }
     }

@@ -9,6 +9,7 @@ abstract class Alignment {
 }
 
 class Dataframe {
+  /// A data frame with `cats` and `nums` specified.
   Dataframe(this.cats, this.nums, {bool ignoreLengths: false}) {
     final lengths = (cats.keys.map((key) => cats[key].length).toList()
           ..addAll(nums.keys.map((key) => nums[key].length)))
@@ -16,6 +17,12 @@ class Dataframe {
     if (!ignoreLengths && lengths.length != 1) {
       throw Exception("Columns not all of the same length.");
     }
+  }
+
+  /// An empty data frame.
+  Dataframe.empty() {
+    cats = Map<String, Categoric>();
+    nums = Map<String, Numeric>();
   }
 
   /// A data frame from a map of lists.
@@ -853,9 +860,22 @@ ${rows.join("\n")}
 """;
   }
 
+  /// Gives a csv representation of this data frame.
   String toCsv({bool markColumns: false, int fixed}) {
     final table =
-        Map<String, List<String>>.fromIterable(columnNames, value: (key) {
+        Map<String, List<String>>.fromIterable(columnNames, key: (key) {
+      if (markColumns) {
+        if (cats.containsKey(key)) {
+          // Mark the column as categoric.
+          return "$key*";
+        } else {
+          // Mark the column as numeric.
+          return "$key^";
+        }
+      } else {
+        return key;
+      }
+    }, value: (key) {
       if (cats.containsKey(key)) {
         return cats[key];
       } else {
@@ -865,10 +885,10 @@ ${rows.join("\n")}
       }
     });
 
-    final header = "${columnNames.join(",")}",
+    final header = "${table.keys.join(",")}",
         rows = indices
             .map((index) =>
-                "${columnNames.map((key) => table[key][index]).join(",")}")
+                "${table.keys.map((key) => table[key][index]).join(",")}")
             .toList();
 
     return """$header
@@ -876,6 +896,7 @@ ${rows.join("\n")}
 """;
   }
 
+  /// Gives an html table representation of this data frame.
   String toHtml({bool summary = false, int fixed}) {
     final table =
         Map<String, List<String>>.fromIterable(columnNames, value: (key) {

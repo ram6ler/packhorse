@@ -3,6 +3,7 @@ part of packhorse;
 abstract class Column<T extends Comparable> extends ListBase<T> {
   List<int> get indices => List<int>.generate(length, (index) => index);
 
+  /// The indices that order the data.
   List<int> get orderedIndices => indices
     ..sort((a, b) {
       if (this[a] == null) {

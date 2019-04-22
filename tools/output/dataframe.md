@@ -1,6 +1,6 @@
 # Packhorse
 
-[Introduction](introduction.md) | [Numeric](numeric.md) | [Categoric](categoric.md) | [Dataframe](dataframe.md) | [Issues](issues.md) | [About](about.md)
+[Home](Home.md) | [Numeric](numeric.md) | [Categoric](categoric.md) | [Dataframe](dataframe.md) | [About](about.md)
 
 
 
@@ -12,50 +12,50 @@ In the examples that follow, we'll be using the following toy data sets taken fr
 
 ### `petals`
 
-|id|petal_length|petal_width|species|
-|:--:|:--:|:--:|:--:|
-|1|1.4|0.2|setosa|
-|2|1.4|0.2|setosa|
-|3|1.3|0.2|setosa|
-|4|1.5|0.2|setosa|
-|51|4.7|1.4|versicolor|
-|52|4.5|1.5|versicolor|
-|53|4.9|1.5|versicolor|
-|54|4.0|1.3|versicolor|
-|101|6.0|2.5|virginica|
-|102|5.1|1.9|virginica|
-|103|5.9|2.1|virginica|
-|104|5.6|1.8|virginica|
+|  id   | petal_length | petal_width |  species   |
+| :---: | :----------: | :---------: | :--------: |
+|   1   |     1.4      |     0.2     |   setosa   |
+|   2   |     1.4      |     0.2     |   setosa   |
+|   3   |     1.3      |     0.2     |   setosa   |
+|   4   |     1.5      |     0.2     |   setosa   |
+|  51   |     4.7      |     1.4     | versicolor |
+|  52   |     4.5      |     1.5     | versicolor |
+|  53   |     4.9      |     1.5     | versicolor |
+|  54   |     4.0      |     1.3     | versicolor |
+|  101  |     6.0      |     2.5     | virginica  |
+|  102  |     5.1      |     1.9     | virginica  |
+|  103  |     5.9      |     2.1     | virginica  |
+|  104  |     5.6      |     1.8     | virginica  |
 
 ### `sepals`
 
-|id|sepal_length|sepal_width|
-|:--:|:--:|:--:|
-|3|4.7|3.2|
-|4|4.6|3.1|
-|5|5.0|3.6|
-|6|5.4|3.9|
-|53|6.9|3.1|
-|54|5.5|2.3|
-|55|6.5|2.8|
-|56|5.7|2.8|
-|103|7.1|3.0|
-|104|6.3|2.9|
-|105|6.5|3.0|
-|106|7.6|3.0|
+|  id   | sepal_length | sepal_width |
+| :---: | :----------: | :---------: |
+|   3   |     4.7      |     3.2     |
+|   4   |     4.6      |     3.1     |
+|   5   |     5.0      |     3.6     |
+|   6   |     5.4      |     3.9     |
+|  53   |     6.9      |     3.1     |
+|  54   |     5.5      |     2.3     |
+|  55   |     6.5      |     2.8     |
+|  56   |     5.7      |     2.8     |
+|  103  |     7.1      |     3.0     |
+|  104  |     6.3      |     2.9     |
+|  105  |     6.5      |     3.0     |
+|  106  |     7.6      |     3.0     |
 
 ### Reading the data
 
 There are several ways to read the data into a `Dataframe` instance, including directly from a csv string through the `Dataframe.fromCsv` constructor:
 
 ```dart
-  final petals = Dataframe.fromCsv(await File("iris_petals_sample.csv").readAsString()),
+final petals = Dataframe.fromCsv(await File("iris_petals_sample.csv").readAsString()),
       sepals = Dataframe.fromCsv(await File("iris_sepals_sample.csv").readAsString());
 ```
 
 ### Accessing the data
 
-The data frame is a collection of instances of `Categoric`s and `Numerics` that can be interpreted as a table with the instances as columns. The main way of accessing the columns is via the maps `cats` and `nums`. For example, let's say we're interested in finding the mean of the numeric column *petal_length* in the data frame `petals`:
+The data frame is a collection of instances of `Categoric`s and `Numeric`s that can be interpreted as a table with the instances as rows and the measures or categories as columns. The main way of accessing the columns of the data frame is via the maps `cats` and `nums` for categoric and numeric columns respectively. For example, let's say we're interested in finding the mean of the numeric column *petal_length* in the data frame `petals`:
 
 ```dart
 print(petals.nums["petal_length"].mean);
@@ -80,8 +80,6 @@ versicolor: 4
 virginica: 4
 
 ```
-
-(We can also access the data directly (e.g. `petals["petal_length"].mean`) but we may lose editor awareness when we do so.)
 
 ### Presenting the data
 
@@ -190,7 +188,7 @@ The packhorse library provides the user a high level of control in data manipula
 
 #### Templates
 
-A *template* is a string such as `"{species}-{id}"` that is used to generate string values from the categoric values in each row of a data frame, which can then be used as a filter or to generate new columns.
+A *template* is a string such as `"{species}-{id}"` that is used to generate *strings* from the values in each row of a data frame, which can then be used as a filter or to generate new columns. Although numeric variable names can be included in a template (for example *id* might be a numeric column), templates are generally intended for generating strings from categories.
 
 For example, say we want to only see the rows in `petals` for which the species is *versicolor*:
 
@@ -247,9 +245,9 @@ print(petals.withCategoricFromTemplate("code", "{species}:{id}",
 
 #### Formulas
 
-A *formula* is a string such as `"(log(petal_width) + log(petal_length)) / 2"` that is used to generate numeric values from the numeric values in row of a data frame, which can then be used as a filter or to generate new columns, in much the same way as templates.
+A *formula* is a string such as `"(log(petal_width) + log(petal_length)) / 2"` that is used to generate numeric values from the numeric values in row of a data frame, which can then be used as a filter or to generate new columns, in much the same way as templates. Note that only numeric column names are recognized in a formula.
 
-For example, say we are just interested in the instances whose petal length-to-width ratio is greater than 3: 
+For example, say we are just interested in the instances whose petal length-to-width ratio is greater than 3:
 
 ```dart
 print(petals.withRowsWhereFormula(
@@ -277,7 +275,7 @@ We can be pretty free with our formulas; in general, if the expression is allowe
 
 ```dart
 print(petals
-  .withNumericFromFormula("mean_log", 
+  .withNumericFromFormula("mean_log",
     "(log(petal_width) + log(petal_length)) / 2"));
 ```
 
@@ -328,7 +326,7 @@ print(petals
   .withColumns(["species", "petal_length"])
   // Create a categoric column that depends on both species and petal_length.
   .withCategoricFromRowValues(
-    "petal_adjective", 
+    "petal_adjective",
     (cats, nums) {
       final species = cats["species"], petalLength = nums["petal_length"];
       if (petalLength > speciesMeans[species]) {
@@ -401,7 +399,7 @@ This library also provides support for data frame joins through the following me
 * `withRightOuterJoin`
 * `withOuterJoin`
 
-For exaample, let's perform an inner join on the data frames *petals* and *sepals*:
+For example, let's perform an inner join on the data frames *petals* and *sepals*:
 
 ```dart
 print(petals.withInnerJoin(sepals, "id"));
