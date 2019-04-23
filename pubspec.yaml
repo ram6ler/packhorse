@@ -8,7 +8,7 @@ environment:
   sdk: '>=2.1.0 <3.0.0'
 
 dependencies:
-  pedantic: '1.4.0'
+  pedantic: ^1.4.0
   function_tree: ^0.2.6
     #git: https://ram6ler@bitbucket.org/ram6ler/function-tree.git
   normal: ^0.5.1
