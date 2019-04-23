@@ -21,22 +21,6 @@ void _checkVariableName(String variable) {
   }
 }
 
-/// A numeric of values sampled from a normal distribution.
-///
-/// Uses the [Box-Muller transform](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform)
-/// to generate [n] values from a normal distribution with mean [mu] and standard deviation [sigma].
-///
-Numeric sampleNormal(n, {num mu: 0, num sigma: 1, int seed}) {
-  final rand = seed == null ? math.Random() : math.Random(seed);
-
-  return Numeric(List<num>.generate(n, (_) {
-    final u1 = rand.nextDouble(),
-        u2 = rand.nextDouble(),
-        z = math.sqrt(-2 * math.log(u1)) * math.cos(2 * math.pi * u2);
-    return z * sigma + mu;
-  }));
-}
-
 /// Ensures that the category index values in [a] and [b] match.
 void matchCategories(Categoric a, Categoric b) {
   final categories = (List<String>.from(a.categories)..addAll(b.categories))

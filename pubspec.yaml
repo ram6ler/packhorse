@@ -1,6 +1,6 @@
 name: packhorse
 description: Support for small to medium data manipulation and analysis projects, including numeric and categoric data list-like structures and data frames.
-version: 0.5.0
+version: 0.5.1
 homepage: https://bitbucket.org/ram6ler/packhorse
 author: Richard Ambler <rambler@ibwya.net>
 
@@ -8,7 +8,9 @@ environment:
   sdk: '>=2.1.0 <3.0.0'
 
 dependencies:
+  pedantic: '1.4.0'
   function_tree: ^0.2.6
     #git: https://ram6ler@bitbucket.org/ram6ler/function-tree.git
-
+  normal: ^0.5.1
+    #git: https://ram6ler@bitbucket.org/ram6ler/normal.git
 

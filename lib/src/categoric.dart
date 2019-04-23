@@ -88,7 +88,7 @@ class Categoric extends Column<String> {
   /// // [0, 1, 2, 3, 5]
   /// ```
   ///
-  List<int> indicesWhere(bool predicate(String)) =>
+  List<int> indicesWhere(bool predicate(String value)) =>
       indices.where((index) => predicate(this[index])).toList();
 
   /// Gets the elements at the specified indices.

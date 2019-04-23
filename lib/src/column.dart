@@ -15,6 +15,9 @@ abstract class Column<T extends Comparable> extends ListBase<T> {
       }
     });
 
+  /// The indices the data would be sent to upon ordering.
+  List<int> get indexOrders => Numeric(orderedIndices).orderedIndices;
+
   /// The indices of all null values.
   List<int> get nullIndices =>
       indices.where((index) => this[index] == null).toList();

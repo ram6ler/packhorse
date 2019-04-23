@@ -10,7 +10,7 @@ abstract class Alignment {
 
 class Dataframe {
   /// A data frame with `cats` and `nums` specified.
-  Dataframe(this.cats, this.nums, {bool ignoreLengths: false}) {
+  Dataframe(this.cats, this.nums, {bool ignoreLengths = false}) {
     final lengths = (cats.keys.map((key) => cats[key].length).toList()
           ..addAll(nums.keys.map((key) => nums[key].length)))
         .toSet();
@@ -146,7 +146,7 @@ class Dataframe {
         .split("\n")
         .map((line) => line.trim())
         // Allow comments in csv strings: line starting with #
-        .where((line) => !line.isEmpty && line[0] != "#")
+        .where((line) => line.isNotEmpty && line[0] != "#")
         .toList();
     columnsInOrder = lines.first.split(seperator);
 
@@ -219,9 +219,9 @@ class Dataframe {
 
   /// The number of rows in this data frame.
   num get numberOfRows {
-    if (cats.length > 0) {
+    if (cats.isNotEmpty) {
       return cats[cats.keys.first].length;
-    } else if (nums.length > 0) {
+    } else if (nums.isNotEmpty) {
       return nums[nums.keys.first].length;
     } else {
       return 0;
@@ -861,7 +861,7 @@ ${rows.join("\n")}
   }
 
   /// Gives a csv representation of this data frame.
-  String toCsv({bool markColumns: false, int fixed}) {
+  String toCsv({bool markColumns = false, int fixed}) {
     final table =
         Map<String, List<String>>.fromIterable(columnNames, key: (key) {
       if (markColumns) {

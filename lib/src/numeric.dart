@@ -222,7 +222,7 @@ class Numeric extends Column<num> {
   /// // [1, 5, 5, 5, 2, 2, 5, 2, 2, 5]
   /// ```
   ///
-  Numeric sample(int n, {bool replace: true, int seed}) {
+  Numeric sample(int n, {bool replace = true, int seed}) {
     if (n < 0) {
       throw Exception("Can only take a non negative number of instances.");
     }
@@ -372,6 +372,15 @@ class Numeric extends Column<num> {
   Numeric get outliers => Numeric(_nullsOmitted
       .where((x) => x < leastNonOutlier || x > greatestNonOutlier));
 
+  /// The cumulative relative frequency associated with these elements.
+  Numeric get pScores => Numeric(indices.map((i) => (i + 0.5) / length))
+      .elementsAtIndices(indexOrders);
+
+  /// The theoretical cumulative relative frequency associated with
+  /// these elements under the hypothesis of normal distribution.
+  Numeric get pScoresIfNormal => Numeric(
+      map((x) => Normal.cdf(x, mean: mean, variance: inferredVariance)));
+
   /// The z-scores, treating the data in this numeric as a population.
   Numeric get zScores => Numeric(map((x) =>
       x == null || x == double.nan ? null : (x - mean) / standardDeviation));
@@ -462,7 +471,7 @@ class Numeric extends Column<num> {
     return zScores.dot(thoseZScores) / length;
   }
 
-  num bootStrapStandardError(String statistic, {int n: 1000, int seed}) {
+  num bootStrapStandardError(String statistic, {int n = 1000, int seed}) {
     final f = <String, Function(Numeric)>{
       NumericStatistic.sum: (x) => x.sum,
       NumericStatistic.sumOfSquares: (x) => x.sumOfSquares,
