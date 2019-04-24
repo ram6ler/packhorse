@@ -343,17 +343,28 @@ class Numeric extends Column<num> {
   /// The range of the values of elements in this numeric.
   num get range => _statistic(NumericStatistic.range, (_) => greatest - least);
 
-  /// The p-quantile of the data.
+  Numeric _quantiles(Iterable<num> ps, Numeric ordered) => Numeric(ps.map((p) {
+        final position = p * (ordered.length - 1),
+            i = position.floor(),
+            j = position.ceil(),
+            weight = position - i;
+        return ordered[i] * weight + ordered[j] * (1 - weight);
+      }));
+
+  /// The interpolated p-quantile of the data.
   num quantile(num p) {
     if (p < 0 || p > 1) {
       throw Exception("Proportion should be in range [0, 1].");
     }
-    final temp = List.from(_nullsOmitted)..sort(),
-        position = p * (temp.length - 1),
-        i = position.floor(),
-        j = position.ceil(),
-        weight = position - i;
-    return temp[i] * weight + temp[j] * (1 - weight);
+    return _quantiles([p], _nullsOmitted..sort()).first;
+  }
+
+  /// The interpolated p-quantiles of the data.
+  Numeric quantiles(Iterable<num> ps) {
+    if (ps.any((p) => p < 0 || p > 1)) {
+      throw Exception("Proportion should be in range [0, 1].");
+    }
+    return _quantiles(ps, _nullsOmitted..sort());
   }
 
   /// The pth percentile of the data.

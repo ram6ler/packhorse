@@ -10,12 +10,16 @@ abstract class Alignment {
 
 class Dataframe {
   /// A data frame with `cats` and `nums` specified.
-  Dataframe(this.cats, this.nums, {bool ignoreLengths = false}) {
+  Dataframe(this.cats, this.nums, List<String> columnsInOrder,
+      {bool ignoreLengths = false}) {
     final lengths = (cats.keys.map((key) => cats[key].length).toList()
           ..addAll(nums.keys.map((key) => nums[key].length)))
         .toSet();
     if (!ignoreLengths && lengths.length != 1) {
       throw Exception("Columns not all of the same length.");
+    }
+    if (columnsInOrder != null) {
+      this.columnsInOrder = columnsInOrder;
     }
   }
 
@@ -236,8 +240,8 @@ class Dataframe {
 
   /// Gets a data frame with rows ordered by the values in [column].
   Dataframe withRowsOrderedBy(String column, {bool decreasing = false}) {
-    var frame = Dataframe(
-        Map<String, Categoric>.from(cats), Map<String, Numeric>.from(nums));
+    var frame = Dataframe(Map<String, Categoric>.from(cats),
+        Map<String, Numeric>.from(nums), columnsInOrder);
     if (frame.cats.containsKey(column)) {
       frame = frame.withRowsAtIndices(frame.cats[column].orderedIndices);
     } else if (frame.nums.containsKey(column)) {
@@ -269,7 +273,8 @@ class Dataframe {
   /// Gets a data frame with a row index column added.
   Dataframe withRowIndices(String name) => Dataframe(
       Map<String, Categoric>.from(cats),
-      Map<String, Numeric>.from(nums)..addAll({name: Numeric(indices)}));
+      Map<String, Numeric>.from(nums)..addAll({name: Numeric(indices)}),
+      [name]..addAll(columnsInOrder));
 
   /// Ckecks whether all [columns] are actually columns.
   void _validColumnCheck(Iterable<String> columns) {
@@ -286,30 +291,34 @@ class Dataframe {
   ///
   Dataframe withColumns(Iterable<String> columns) {
     _validColumnCheck(columns);
-    final nextCats = Map<String, Categoric>.from(this.cats)
+    final cats = Map<String, Categoric>.from(this.cats)
           ..removeWhere((key, _) => !columns.contains(key)),
-        nextNums = Map<String, Numeric>.from(this.nums)
-          ..removeWhere((key, _) => !columns.contains(key));
-    return Dataframe(nextCats, nextNums)..columnsInOrder = columns.toList();
+        nums = Map<String, Numeric>.from(this.nums)
+          ..removeWhere((key, _) => !columns.contains(key)),
+        keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame without the specified columns.
   Dataframe withColumnsDropped(Iterable<String> columns) {
     _validColumnCheck(columns);
-    final nextCats = Map<String, Categoric>.from(this.cats)
+    final cats = Map<String, Categoric>.from(this.cats)
           ..removeWhere((key, _) => columns.contains(key)),
-        nextNums = Map<String, Numeric>.from(this.nums)
-          ..removeWhere((key, _) => columns.contains(key));
-    return Dataframe(nextCats, nextNums);
+        nums = Map<String, Numeric>.from(this.nums)
+          ..removeWhere((key, _) => columns.contains(key)),
+        keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with column names changed.
   Dataframe withColumnNamesChanged(Map<String, String> names) {
     _validColumnCheck(names.keys);
     final changedCats = Map<String, Categoric>.from(cats),
-        changedNums = Map<String, Numeric>.from(nums);
+        changedNums = Map<String, Numeric>.from(nums),
+        order = List<String>.from(columnsInOrder);
 
     for (final key in names.keys) {
+      final index = order.indexOf(key);
       if (changedCats.containsKey(key)) {
         changedCats[names[key]] = changedCats[key];
         changedCats.remove(key);
@@ -317,9 +326,12 @@ class Dataframe {
         changedNums[names[key]] = changedNums[key];
         changedNums.remove(key);
       }
+      if (index != -1) {
+        order[index] = names[key];
+      }
     }
 
-    return Dataframe(changedCats, changedNums);
+    return Dataframe(changedCats, changedNums, order);
   }
 
   /// A data frame with only the columns specified by [predicate].
@@ -327,8 +339,9 @@ class Dataframe {
     final cats = Map<String, Categoric>.from(this.cats)
           ..removeWhere((key, _) => !predicate(key)),
         nums = Map<String, Numeric>.from(this.nums)
-          ..removeWhere((key, _) => !predicate(key));
-    return Dataframe(cats, nums);
+          ..removeWhere((key, _) => !predicate(key)),
+        keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with only the rows specified by [indices].
@@ -336,8 +349,9 @@ class Dataframe {
     final cats = Map<String, Categoric>.fromIterable(this.cats.keys,
             value: (key) => this.cats[key].elementsAtIndices(indices)),
         nums = Map<String, Numeric>.fromIterable(this.nums.keys,
-            value: (key) => this.nums[key].elementsAtIndices(indices));
-    return Dataframe(cats, nums);
+            value: (key) => this.nums[key].elementsAtIndices(indices)),
+        keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A helper function that generates the values specified by a template.
@@ -424,7 +438,8 @@ class Dataframe {
         nums = Map<String, Numeric>.from(this.nums);
     cats[name] = Categoric(
         _templateValues(template, startQuote, endQuote).map(generator));
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a numeric column from a template.
@@ -435,7 +450,8 @@ class Dataframe {
         nums = Map<String, Numeric>.from(this.nums);
     nums[name] =
         Numeric(_templateValues(template, startQuote, endQuote).map(generator));
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a categoric column from a formula.
@@ -444,7 +460,17 @@ class Dataframe {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums);
     cats[name] = Categoric(_formulaValues(formula).map(generator));
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
+  }
+
+  /// A data frame with a numeric inserted.
+  Dataframe withNumeric(String name, Numeric numeric) {
+    final cats = Map<String, Categoric>.from(this.cats),
+        nums = Map<String, Numeric>.from(this.nums);
+    nums[name] = numeric;
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a numeric column from a formula.
@@ -454,7 +480,8 @@ class Dataframe {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums);
     nums[name] = Numeric(_formulaValues(formula).map(generator));
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a categoric column from a template and formula.
@@ -467,7 +494,8 @@ class Dataframe {
         formulaValues = _formulaValues(formula);
     cats[name] = Categoric(indices.map(
         (index) => generator(templateValues[index], formulaValues[index])));
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a numeric column from a template and formula.
@@ -480,7 +508,8 @@ class Dataframe {
         formulaValues = _formulaValues(formula);
     nums[name] = Numeric(indices.map(
         (index) => generator(templateValues[index], formulaValues[index])));
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a categoric column from the row values.
@@ -498,7 +527,8 @@ class Dataframe {
       return generator(catsArgument, numsArgument);
     }));
 
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a numeric column from the row values.
@@ -514,7 +544,8 @@ class Dataframe {
       return generator(catsArgument, numsArgument);
     }));
 
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with a numeric column for each value in a categoric column.
@@ -526,7 +557,8 @@ class Dataframe {
       nums["${name}_$category"] =
           Numeric(cats[name].map((cat) => cat == category ? 1 : 0));
     }
-    return Dataframe(cats, nums);
+    final keys = cats.keys.toList()..addAll(nums.keys);
+    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// Generalized join helper function.
@@ -619,18 +651,18 @@ class Dataframe {
       }
     }
 
-    final joinedCats = Map<String, Categoric>.fromIterable(leftCats.keys,
+    final cats = Map<String, Categoric>.fromIterable(leftCats.keys,
             value: (key) => Categoric(leftCats[key]))
           ..addAll(Map<String, Categoric>.fromIterable(rightCats.keys,
               key: (key) => leftCats.keys.contains(key) ? "other_$key" : key,
               value: (key) => Categoric(rightCats[key]))),
-        joinedNums = Map<String, Numeric>.fromIterable(leftNums.keys,
+        nums = Map<String, Numeric>.fromIterable(leftNums.keys,
             value: (key) => Numeric(leftNums[key]))
           ..addAll(Map<String, Numeric>.fromIterable(rightNums.keys,
               key: (key) => leftNums.keys.contains(key) ? "other_$key" : key,
               value: (key) => Numeric(rightNums[key])));
 
-    return Dataframe(joinedCats, joinedNums);
+    return Dataframe(cats, nums, []);
   }
 
   /// A data frame from a full left join.
@@ -760,7 +792,8 @@ class Dataframe {
         Map<String, Categoric>.fromIterable(combinedCats.keys,
             value: (key) => Categoric(combinedCats[key])),
         Map<String, Numeric>.fromIterable(combinedNums.keys,
-            value: (key) => Numeric(combinedNums[key])));
+            value: (key) => Numeric(combinedNums[key])),
+        List<String>.from(columnsInOrder));
   }
 
   /// Gives a map of data frames grouped by category.
