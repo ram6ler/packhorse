@@ -40,3 +40,26 @@ void matchCategories(Categoric a, Categoric b) {
   recategorize(a);
   recategorize(b);
 }
+
+/// A simple structure representing a range of values.
+class AutoRange {
+  AutoRange(this.from, this.to);
+
+  /// A suitable range of values for representing [xs].
+  factory AutoRange.fromNumeric(Numeric xs) =>
+      AutoRange(xs.least - 0.1 * xs.range, xs.greatest + 0.1 * xs.range);
+  num from, to;
+}
+
+/// A simple representation of a histogram bar.
+class HistogramBar {
+  num lowerBound, upperBound, value;
+  HistogramBar(this.lowerBound, this.upperBound, this.value);
+}
+
+/// A simple representation of a 2d histogram block.
+class HistogramBlock {
+  num xLowerBound, xUpperBound, yLowerBound, yUpperBound, value;
+  HistogramBlock(this.xLowerBound, this.xUpperBound, this.yLowerBound,
+      this.yUpperBound, this.value);
+}

@@ -78,6 +78,23 @@ class Categoric extends Column<String> {
       Map<String, double>.fromIterable(_categories,
           value: (category) => where((c) => c == category).length / length);
 
+  /// The frequencies, by category.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// final colors = Categoric(["red", "red", "green", "red", "blue", "green"]);
+  /// colors.proportions.forEach((color, f) {
+  ///   print("$color: $f");
+  /// });
+  /// // blue: 1
+  /// // green: 2
+  /// // red: 3
+  /// ```
+  ///
+  Map<String, int> get frequencies => Map<String, int>.fromIterable(_categories,
+      value: (category) => where((c) => c == category).length);
+
   /// Gets the indices where [predicate] holds.
   ///
   /// Example:
