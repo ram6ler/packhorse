@@ -75,4 +75,6 @@ main() async {
           "${y.toStringAsFixed(2)}: ${xs.map((x) => density(x, y).toStringAsFixed(1)).join("\t")}");
     }
   }
+
+  
 }
