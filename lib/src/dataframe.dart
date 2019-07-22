@@ -799,7 +799,8 @@ class Dataframe {
       }
     }
 
-    final selectedIndices = indices.where((index) => !set.contains(index));
+    final selectedIndices =
+        indices.where((index) => !set.contains(index)).toList();
     return withRowsAtIndices(selectedIndices)..columnsInOrder = columnsInOrder;
   }
 

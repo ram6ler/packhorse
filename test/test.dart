@@ -6,6 +6,7 @@ main() {
   1,5,-3,hello,blue
   2,1,0,bye,orange
   4,9,-1,salve,purple
-  """).withColumns(["e", "b", "c"]);
+  hello,5,2,ola,green
+  """).withNullsDropped(); //.withColumns(["e", "b", "c"]);
   print(df);
 }
