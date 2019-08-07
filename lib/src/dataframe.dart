@@ -244,11 +244,11 @@ class Dataframe {
         Map<String, Numeric>.from(nums), columnsInOrder);
     if (frame.cats.containsKey(column)) {
       frame = decreasing
-          ? frame.withRowsAtIndices(frame.cats[column].orderedIndices..reversed)
+          ? frame.withRowsAtIndices(frame.cats[column].orderedIndices.reversed)
           : frame.withRowsAtIndices(frame.cats[column].orderedIndices);
     } else if (frame.nums.containsKey(column)) {
       frame = decreasing
-          ? frame.withRowsAtIndices(frame.nums[column].orderedIndices..reversed)
+          ? frame.withRowsAtIndices(frame.nums[column].orderedIndices.reversed)
           : frame.withRowsAtIndices(frame.nums[column].orderedIndices);
     } else {
       throw Exception("Unrecognized column: '$column'.");
