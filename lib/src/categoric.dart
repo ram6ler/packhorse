@@ -5,7 +5,7 @@ abstract class CategoricStatistic {
 }
 
 class Categoric extends Column<String> {
-  Categoric(List<String> data, {List<String> withCategories}) {
+  Categoric(Iterable<String> data, {List<String> withCategories}) {
     _categories = withCategories == null
         ? (data.where((value) => value != null).toSet().toList()..sort())
         : _categories = withCategories.toSet().toList();
