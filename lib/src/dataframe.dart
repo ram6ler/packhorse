@@ -317,7 +317,7 @@ class Dataframe {
 
   /// A data frame with column names changed.
   Dataframe withColumnNamesChanged(Map<String, String> names) {
-    _validColumnCheck(names.keys);
+    _validColumnCheck(names.keys.toList());
     final changedCats = Map<String, Categoric>.from(cats),
         changedNums = Map<String, Numeric>.from(nums),
         order = List<String>.from(columnsInOrder);
