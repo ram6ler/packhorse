@@ -243,9 +243,13 @@ class Dataframe {
     var frame = Dataframe(Map<String, Categoric>.from(cats),
         Map<String, Numeric>.from(nums), columnsInOrder);
     if (frame.cats.containsKey(column)) {
-      frame = frame.withRowsAtIndices(frame.cats[column].orderedIndices);
+      frame = decreasing
+          ? frame.withRowsAtIndices(frame.cats[column].orderedIndices..reversed)
+          : frame.withRowsAtIndices(frame.cats[column].orderedIndices);
     } else if (frame.nums.containsKey(column)) {
-      frame = frame.withRowsAtIndices(frame.nums[column].orderedIndices);
+      frame = decreasing
+          ? frame.withRowsAtIndices(frame.nums[column].orderedIndices..reversed)
+          : frame.withRowsAtIndices(frame.nums[column].orderedIndices);
     } else {
       throw Exception("Unrecognized column: '$column'.");
     }
