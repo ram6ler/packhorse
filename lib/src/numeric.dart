@@ -343,7 +343,7 @@ class Numeric extends Column<num> {
   /// The range of the values of elements in this numeric.
   num get range => _statistic(NumericStatistic.range, (_) => greatest - least);
 
-  Numeric _quantiles(Iterable<num> ps, Numeric ordered) => Numeric(ps.map((p) {
+  Numeric _quantiles(List<num> ps, Numeric ordered) => Numeric(ps.map((p) {
         final position = p * (ordered.length - 1),
             i = position.floor(),
             j = position.ceil(),
@@ -360,7 +360,7 @@ class Numeric extends Column<num> {
   }
 
   /// The interpolated p-quantiles of the data.
-  Numeric quantiles(Iterable<num> ps) {
+  Numeric quantiles(List<num> ps) {
     if (ps.any((p) => p < 0 || p > 1)) {
       throw Exception("Proportion should be in range [0, 1].");
     }

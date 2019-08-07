@@ -244,11 +244,13 @@ class Dataframe {
         Map<String, Numeric>.from(nums), columnsInOrder);
     if (frame.cats.containsKey(column)) {
       frame = decreasing
-          ? frame.withRowsAtIndices(frame.cats[column].orderedIndices.reversed)
+          ? frame.withRowsAtIndices(
+              frame.cats[column].orderedIndices.reversed.toList())
           : frame.withRowsAtIndices(frame.cats[column].orderedIndices);
     } else if (frame.nums.containsKey(column)) {
       frame = decreasing
-          ? frame.withRowsAtIndices(frame.nums[column].orderedIndices.reversed)
+          ? frame.withRowsAtIndices(
+              frame.nums[column].orderedIndices.reversed.toList())
           : frame.withRowsAtIndices(frame.nums[column].orderedIndices);
     } else {
       throw Exception("Unrecognized column: '$column'.");
@@ -281,7 +283,7 @@ class Dataframe {
       [name]..addAll(columnsInOrder));
 
   /// Ckecks whether all [columns] are actually columns.
-  void _validColumnCheck(Iterable<String> columns) {
+  void _validColumnCheck(List<String> columns) {
     for (final column in columns) {
       if (!(cats.containsKey(column) || nums.keys.contains(column))) {
         throw Exception("Unrecognized column: '$column'");
@@ -293,7 +295,7 @@ class Dataframe {
   ///
   /// (If a column name is repeated the column will appear more than once in presentations.)
   ///
-  Dataframe withColumns(Iterable<String> columns) {
+  Dataframe withColumns(List<String> columns) {
     _validColumnCheck(columns);
     final cats = Map<String, Categoric>.from(this.cats)
           ..removeWhere((key, _) => !columns.contains(key)),
@@ -303,7 +305,7 @@ class Dataframe {
   }
 
   /// A data frame without the specified columns.
-  Dataframe withColumnsDropped(Iterable<String> columns) {
+  Dataframe withColumnsDropped(List<String> columns) {
     _validColumnCheck(columns);
     final cats = Map<String, Categoric>.from(this.cats)
           ..removeWhere((key, _) => columns.contains(key)),
@@ -348,7 +350,7 @@ class Dataframe {
   }
 
   /// A data frame with only the rows specified by [indices].
-  Dataframe withRowsAtIndices(Iterable<int> indices) {
+  Dataframe withRowsAtIndices(List<int> indices) {
     final cats = Map<String, Categoric>.fromIterable(this.cats.keys,
             value: (key) => this.cats[key].elementsAtIndices(indices)),
         nums = Map<String, Numeric>.fromIterable(this.nums.keys,

@@ -5,7 +5,7 @@ abstract class CategoricStatistic {
 }
 
 class Categoric extends Column<String> {
-  Categoric(Iterable<String> data, {Iterable<String> withCategories}) {
+  Categoric(List<String> data, {List<String> withCategories}) {
     _categories = withCategories == null
         ? (data.where((value) => value != null).toSet().toList()..sort())
         : _categories = withCategories.toSet().toList();
@@ -28,14 +28,14 @@ class Categoric extends Column<String> {
   /// Redefines the categories.
   ///
   /// (Values that do not lie in the new category definition will be lost.)
-  void recategorize(Iterable<String> categories) {
+  void recategorize(List<String> categories) {
     final categoryList = categories.toSet().toList();
     _categoryIndices = map((datum) => categoryList.indexOf(datum)).toList();
     _categories = List<String>.from(categoryList);
   }
 
   /// Adds categories to the existing categories.
-  void addCategories(Iterable<String> newCategories) {
+  void addCategories(List<String> newCategories) {
     final categories = (List<String>.from(_categories)..addAll(newCategories))
         .toSet()
         .toList()
