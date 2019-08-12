@@ -853,7 +853,7 @@ class Dataframe {
       {Map<String, String> alignment, bool summary = false, int fixed}) {
     alignment = alignment ?? <String, String>{};
 
-    _validColumnCheck(alignment.keys);
+    _validColumnCheck(alignment.keys.toList());
 
     final table =
         Map<String, List<String>>.fromIterable(columnNames, value: (key) {
