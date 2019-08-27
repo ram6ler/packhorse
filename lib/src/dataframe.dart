@@ -393,6 +393,18 @@ class Dataframe {
     return indices.where((index) => predicate(templateValues[index])).toList();
   }
 
+  /// Gives the indices of rows whose values match the defined predicate.
+  List<int> indicesWhereRowValues(
+      bool Function(Map<String, String>, Map<String, num>) predicate) {
+    return indices.where((index) {
+      final catsMap = Map<String, String>.fromIterable(cats.keys,
+              value: (key) => cats[key][index]),
+          numsMap = Map<String, num>.fromIterable(nums.keys,
+              value: (key) => nums[key][index]);
+      return predicate(catsMap, numsMap);
+    }).toList();
+  }
+
   /// Gives a data frame with only the rows that match a template predicate.
   Dataframe withRowsWhereTemplate(
           String template, bool Function(String) predicate,
@@ -431,6 +443,11 @@ class Dataframe {
       withRowsAtIndices(indicesWhereTemplateAndFormula(
           template, formula, predicate,
           startQuote: startQuote, endQuote: endQuote));
+
+  /// Gives the data frame with only rows matched by the defined predicate.
+  Dataframe withRowsWhereRowValues(
+          bool Function(Map<String, String>, Map<String, num>) predicate) =>
+      withRowsAtIndices(indicesWhereRowValues(predicate));
 
   /// A data frame with a categoric column from a template.
   Dataframe withCategoricFromTemplate(String name, String template,
