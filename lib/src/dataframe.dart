@@ -1002,6 +1002,13 @@ ${rows.join("\n")}
 """;
   }
 
+  /// Gives a map of lists, each column name as a key.
+  Map<String, Column> toMapOfLists([List<String> columns]) =>
+      Map<String, Column>.fromIterable(
+          columns == null ? (cats.keys.toList()..addAll(nums.keys)) : columns,
+          value: (column) =>
+              cats.containsKey(column) ? cats[column] : nums[column]);
+
   /// Gives a list of maps, each map representing a row.
   List<Map<String, Object>> toListOfMaps([List<int> indices]) =>
       (indices == null ? this.indices : indices)
