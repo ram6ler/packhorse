@@ -1002,6 +1002,12 @@ ${rows.join("\n")}
 """;
   }
 
+  /// Gives a list of maps, each map representing a row.
+  List<Map<String, Object>> toListOfMaps([List<int> indices]) =>
+      (indices == null ? this.indices : indices)
+          .map((index) => valuesInRow(index))
+          .toList();
+
   /// Gives a string representation of this data frame.
   @override
   String toString() {
