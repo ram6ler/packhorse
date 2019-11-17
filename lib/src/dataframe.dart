@@ -156,7 +156,8 @@ class Dataframe {
             .toList();
     columnsInOrder = lines.first
         .split(splitRe)
-        .map((variable) => variable.replaceAll('"', "").trim());
+        .map((variable) => variable.replaceAll('"', "").trim())
+        .toList();
 
     types = types ?? Map<String, String>();
 
