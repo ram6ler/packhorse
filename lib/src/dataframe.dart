@@ -146,13 +146,14 @@ class Dataframe {
   ///
   Dataframe.fromCsv(String csv,
       {String seperator = ",", Map<String, String> types}) {
-    final lines = csv
-        .split("\n")
-        .map((line) => line.trim())
-        // Allow comments in csv strings: line starting with #
-        .where((line) => line.isNotEmpty && line[0] != "#")
-        .toList();
-    columnsInOrder = lines.first.split(seperator);
+    final splitRe = RegExp('($seperator)(?=(?:[^"]|"[^"]*")*\$)'),
+        lines = csv
+            .split("\n")
+            .map((line) => line.trim())
+            // Allow comments in csv strings: lines starting with #
+            .where((line) => line.isNotEmpty && line[0] != "#")
+            .toList();
+    columnsInOrder = lines.first.split(splitRe);
 
     types = types ?? Map<String, String>();
 
