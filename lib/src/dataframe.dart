@@ -146,26 +146,31 @@ class Dataframe {
   ///
   Dataframe.fromCsv(String csv,
       {String seperator = ",", Map<String, String> types}) {
-    final splitRe = RegExp('($seperator)(?=(?:[^"]|"[^"]*")*\$)'),
+    final splitRe = RegExp(
+            '($seperator)(?=(?:[^"]|"[^"]*")*\$)'), // see https://stackoverflow.com/a/632552/1340742
         lines = csv
             .split("\n")
             .map((line) => line.trim())
             // Allow comments in csv strings: lines starting with #
             .where((line) => line.isNotEmpty && line[0] != "#")
             .toList();
-    columnsInOrder = lines.first.split(splitRe);
+    columnsInOrder = lines.first
+        .split(splitRe)
+        .map((variable) => variable.replaceAll('"', "").trim());
 
     types = types ?? Map<String, String>();
 
     for (int i = 0; i < columnsInOrder.length; i++) {
       if (columnsInOrder[i].contains("*")) {
         // If the header contains an asterisk, the column is a categoric.
-        columnsInOrder[i] = columnsInOrder[i].replaceAll("*", "");
+        columnsInOrder[i] =
+            columnsInOrder[i].replaceAll("*", "").replaceAll('"', "");
         types[columnsInOrder[i]] = ColumnType.categoric;
       }
       if (columnsInOrder[i].contains("^")) {
         // If the header contains a carat, the column is a numeric.
-        columnsInOrder[i] = columnsInOrder[i].replaceAll("^", "");
+        columnsInOrder[i] =
+            columnsInOrder[i].replaceAll("^", "").replaceAll('"', "");
         types[columnsInOrder[i]] = ColumnType.numeric;
       }
     }
@@ -175,7 +180,10 @@ class Dataframe {
         value: (_) => <String>[]);
 
     for (final line in lines.sublist(1)) {
-      final datum = line.split(seperator);
+      final datum = line
+          .split(splitRe)
+          .map((value) => value.replaceAll('"', ""))
+          .toList();
       for (int i = 0; i < columnsInOrder.length; i++) {
         mapOfValueStrings[columnsInOrder[i]].add(datum[i]);
       }
