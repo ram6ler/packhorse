@@ -146,10 +146,26 @@ class Dataframe {
   ///
   Dataframe.fromCsv(String csv,
       {String seperator = ",", Map<String, String> types}) {
-    final splitRe = RegExp(
-            '($seperator)(?=(?:[^"]|"[^"]*")*\$)'), // see https://stackoverflow.com/a/632552/1340742
-        lines = csv
-            .split('(\n)(?=(?:[^"]|"[^"]*")*\$)')
+    final
+        // Separators not contained in quotes;
+        // see https://stackoverflow.com/a/632552/1340742
+        splitRe = RegExp('($seperator)(?=(?:[^"]|"[^"]*")*\$)'),
+        tempLines = csv.split("\n");
+
+    // Allow for quoted multiple lines.
+    String completeLine = "";
+    final nonQuote = RegExp(r'[^"]'),
+        lines = tempLines
+            .fold<List<String>>(List<String>(), (a, b) {
+              completeLine = "$completeLine$b";
+              if (completeLine.replaceAll(nonQuote, "").length % 2 == 0) {
+                a.add(completeLine);
+                completeLine = "";
+              } else {
+                completeLine += "[EOL]";
+              }
+              return a;
+            })
             .map((line) => line.trim())
             // Allow comments in csv strings: lines starting with #
             .where((line) => line.isNotEmpty && line[0] != "#")
