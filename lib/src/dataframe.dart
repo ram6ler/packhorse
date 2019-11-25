@@ -149,7 +149,7 @@ class Dataframe {
     final splitRe = RegExp(
             '($seperator)(?=(?:[^"]|"[^"]*")*\$)'), // see https://stackoverflow.com/a/632552/1340742
         lines = csv
-            .split("\n")
+            .split('(\n)(?=(?:[^"]|"[^"]*")*\$)')
             .map((line) => line.trim())
             // Allow comments in csv strings: lines starting with #
             .where((line) => line.isNotEmpty && line[0] != "#")
