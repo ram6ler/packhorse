@@ -21,6 +21,28 @@ abstract class NumericStatistic {
       range = "range";
 }
 
+extension Interoperability on num {
+  Numeric operator +(Numeric x) => x + this;
+  Numeric operator -(Numeric x) => x - this;
+  Numeric operator *(Numeric x) => x * this;
+  Numeric operator /(Numeric x) => x / this;
+  Numeric operator %(Numeric x) => x % this;
+  Numeric operator ~/(Numeric x) => x ~/ this;
+}
+
+/// Methods for Lists.
+extension CreateNumerics on List<num> {
+  /// A Numeric containing the data in the list.
+  Numeric toNumeric() => Numeric(this);
+
+  Numeric operator +(Numeric x) => x + this;
+  Numeric operator -(Numeric x) => x - this;
+  Numeric operator *(Numeric x) => x * this;
+  Numeric operator /(Numeric x) => x / this;
+  Numeric operator %(Numeric x) => x % this;
+  Numeric operator ~/(Numeric x) => x ~/ this;
+}
+
 /// A convenience wrapper class for [List<num>], with
 /// properties and methods commonly used in data analysis.
 class Numeric extends Column<num> {
@@ -50,17 +72,6 @@ class Numeric extends Column<num> {
   /// if it is a List<num>, its values are added to the respective
   /// values in this numeric.
   ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final xs = Numeric([1, 2, 3, 4]);
-  /// print(xs + 5);
-  /// // [6, 7, 8, 9]
-  /// print(xs + [5, 6, 7, 8]);
-  /// // [6, 8, 10, 12]
-  /// print(xs + xs);
-  /// // [2, 4, 6, 8]
-  /// ```
   ///
   @override
   Numeric operator +(Object that) =>
@@ -71,18 +82,6 @@ class Numeric extends Column<num> {
   /// If [that] is a num, its value is subtracted from
   /// each element; if it is a List<num>, its values are
   /// subtracted from the respective values in this numeric.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final xs = Numeric([1, 2, 3, 4]);
-  /// print(xs - 5);
-  /// // -4, -3, -2, -1]
-  /// print(xs - [5, 6, 7, 8]);
-  /// // [-4, -4, -4, -4]
-  /// print(xs - xs);
-  /// // [0, 0, 0, 0]
-  /// ```
   ///
   Numeric operator -(Object that) =>
       _operator(that, (a, b) => a - b, "subtraction");
@@ -96,20 +95,6 @@ class Numeric extends Column<num> {
   /// element; if it is a List<num>, its values are multiplied
   /// by the respective values in this numeric.
   ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final xs = Numeric([1, 2, 3, 4]);
-  /// print(xs * 5);
-  /// // [5, 10, 15, 20]
-  /// print(xs * [5, 6, 7, 8]);
-  /// // [5, 12, 21, 32]
-  /// print(xs * xs);
-  /// // [1, 4, 9, 16]
-  /// ```
-  ///
-  /// (Use [dot] for dot multiplication.)
-  ///
   Numeric operator *(Object that) =>
       _operator(that, (a, b) => a * b, "multiplication");
 
@@ -119,18 +104,6 @@ class Numeric extends Column<num> {
   /// divided by it; if it is a List<num>, the values in
   /// this numeric are divided by the respective values
   /// in it.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final xs = Numeric([1, 2, 3, 4]);
-  /// print(xs / 5);
-  /// // [0.2, 0.4, 0.6, 0.8]
-  /// print(xs / [5, 6, 7, 8]);
-  /// // [0.2, 0.3333333333333333, 0.42857142857142855, 0.5]
-  /// print(xs / xs);
-  /// // [1.0, 1.0, 1.0, 1.0]
-  /// ```
   ///
   Numeric operator /(Object that) =>
       _operator(that, (a, b) => a / b, "division");
@@ -142,20 +115,18 @@ class Numeric extends Column<num> {
   /// this numeric are divided by the respective values
   /// in it.
   ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final xs = Numeric([11, 12, 13, 14]);
-  /// print(xs % 5);
-  /// // [1, 2, 3, 4]
-  /// print(xs % [5, 6, 7, 8]);
-  /// // [1, 0, 6, 6]
-  /// print(xs % xs);
-  /// // [0, 0, 0, 0]
-  /// ```
-  ///
   Numeric operator %(Object that) =>
       _operator(that, (a, b) => a % b, "remainder");
+
+  /// Iteratively performs whole division by [that].
+  ///
+  /// If [that] is a num, each value in this numeric is
+  /// divided by it; if it is a List<num>, the values in
+  /// this numeric are divided by the respective values
+  /// in it.
+  ///
+  Numeric operator ~/(Object that) =>
+      _operator(that, (a, b) => a ~/ b, "whole division");
 
   /// Gives the indices of the elements that meet [predicate].
   ///

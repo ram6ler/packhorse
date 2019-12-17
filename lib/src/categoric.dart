@@ -1,5 +1,11 @@
 part of packhorse;
 
+/// Methods for Lists.
+extension CreateCategorics on List {
+  /// A Categoric containing the data in the list.
+  Categoric toCategoric() => Categoric(this.map((value) => value.toString()));
+}
+
 abstract class CategoricStatistic {
   static const impurity = "impurity", entropy = "entropy";
 }

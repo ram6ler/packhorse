@@ -14,4 +14,6 @@ main() {
   for (final x in List.generate(21, (i) => i * 0.5)) {
     print("${x.toStringAsFixed(1)} |${" " * (y(x) * 30).round()}:");
   }
+
+  print([1, 2, 3].toNumeric());
 }
