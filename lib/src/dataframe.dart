@@ -192,6 +192,14 @@ class Dataframe {
       }
     }
 
+    /// A data frame containing the first [n] rows.
+    Dataframe head([int n = 10]) =>
+        this.withRowsAtIndices(indices.sublist(math.max(n, numberOfRows)));
+
+    /// A data frame containing the last [n] rows.
+    Dataframe tail([int n = 10]) => this.withRowsAtIndices(
+        indices.reversed.take(math.max(n, numberOfRows)).toList());
+
     final mapOfValueStrings = Map<String, List<String>>.fromIterable(
         columnsInOrder,
         value: (_) => <String>[]);
@@ -839,17 +847,17 @@ class Dataframe {
       columns = columnNames;
     }
 
-    var set = Set<int>();
+    var variableSet = Set<int>();
     for (final column in columns) {
       if (cats.containsKey(column)) {
-        set.addAll(this.cats[column].nullIndices);
+        variableSet.addAll(this.cats[column].nullIndices);
       } else {
-        set.addAll(this.nums[column].nullIndices);
+        variableSet.addAll(this.nums[column].nullIndices);
       }
     }
 
     final selectedIndices =
-        indices.where((index) => !set.contains(index)).toList();
+        indices.where((index) => !variableSet.contains(index)).toList();
     return withRowsAtIndices(selectedIndices)..columnsInOrder = columnsInOrder;
   }
 
@@ -869,7 +877,7 @@ class Dataframe {
   /// Gives a map of data frames grouped by value.
   Map<num, Dataframe> groupedByNumeric(String numeric) {
     if (!nums.containsKey(numeric)) {
-      throw Exception("Unrecognized category: '$numeric'.");
+      throw Exception("Unrecognized numeric: '$numeric'.");
     }
 
     final values = nums[numeric].toSet();
@@ -880,7 +888,7 @@ class Dataframe {
   }
 
   /// Gives a list of strings generated from the row values.
-  List<String> stringsFromTemplate(String template,
+  List<String> toListOfStringsFromTemplate(String template,
           {String startQuote = "{", String endQuote = "}"}) =>
       _templateValues(template, startQuote, endQuote);
 

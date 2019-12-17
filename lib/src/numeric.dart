@@ -453,7 +453,8 @@ class Numeric extends Column<num> {
     return zScores.dot(thoseZScores) / length;
   }
 
-  num bootStrapStandardError(String statistic, {int n = 1000, int seed}) {
+  // TODO:
+  num bootStrap(String statistic, {int n = 1000, int seed}) {
     final f = <String, Function(Numeric)>{
       NumericStatistic.sum: (x) => x.sum,
       NumericStatistic.sumOfSquares: (x) => x.sumOfSquares,
@@ -500,8 +501,6 @@ class Numeric extends Column<num> {
         .toList();
   }
 
-  //List<List<HistogramBlock>> crossHistogram(Numeric that) {}
-
   /// A range containing all the data.
   AutoRange get autoRange => AutoRange.fromNumeric(this);
 
@@ -535,129 +534,6 @@ class Numeric extends Column<num> {
       return part * (ys[index + 1] - ys[index]) + ys[index];
     };
   }
-
-  num Function(num, num) crossDensity(Numeric that) {
-    final products = this * that,
-        prodMean = products.mean,
-        prodVariance = products.variance,
-        xFrom = autoRange.from,
-        xTo = autoRange.to,
-        yFrom = that.autoRange.from,
-        yTo = that.autoRange.to,
-        gaps = 40,
-        xGap = (xTo - xFrom) / gaps,
-        yGap = (yTo - yFrom) / gaps,
-        xBounds = List<num>.generate(gaps + 1, (i) => xFrom + i * xGap),
-        d = math.sqrt(gaps), // CHECK...
-        yBounds = List<num>.generate(gaps + 1, (i) => yFrom + i * yGap),
-        normalSums = xBounds.map((xBound) {
-      /*final xNormalSum =
-          map((x) => Normal.pdf(xBound, mean: x, variance: variance / d))
-              .fold(0, (a, b) => a + b);*/
-      return yBounds
-          .map((yBound) => that
-              .map((y) =>
-                  //xNormalSum *
-                  Normal.pdf(xBound * yBound,
-                      mean: prodMean, variance: prodVariance / d))
-              .fold(0, (a, b) => a + b))
-          .toList();
-    }).toList(),
-        trapezoidSum = sequence(gaps)
-            .map((i) =>
-                xGap *
-                yGap *
-                (normalSums[i][i] +
-                    normalSums[i + 1][i] +
-                    normalSums[i][i + 1] +
-                    normalSums[i + 1][i + 1]) /
-                4)
-            .fold(0, (a, b) => a + b),
-        zs = normalSums
-            .map((vs) => vs.map((v) => v / trapezoidSum).toList())
-            .toList();
-
-    return (num x, num y) {
-      if (x <= xFrom || x >= xTo || y < yFrom || y > yTo) {
-        return 0;
-      }
-
-      final xC = (x - xFrom) / (xTo - xFrom) * gaps,
-          xIndex = xC.floor(),
-          xPart = xC - xIndex,
-          yC = (y - yFrom) / (yTo - yFrom) * gaps,
-          yIndex = yC.floor(),
-          yPart = yC - yIndex,
-          ds = [
-        math.sqrt(math.pow(xPart, 2) + math.pow(yPart, 2)),
-        math.sqrt(math.pow(1 - xPart, 2) + math.pow(yPart, 2)),
-        math.sqrt(math.pow(xPart, 2) + math.pow(1 - yPart, 2)),
-        math.sqrt(math.pow(1 - xPart, 2) + math.pow(1 - yPart, 2))
-      ],
-          vs = [
-        zs[xIndex][yIndex],
-        zs[xIndex + 1][yIndex],
-        zs[xIndex][yIndex + 1],
-        zs[xIndex + 1][yIndex + 1]
-      ],
-          dSum = ds.fold(0, (a, b) => a + b);
-
-      return [0, 1, 2, 3]
-          .map((i) => vs[i] * (dSum - ds[i]) / dSum)
-          .fold(0, (a, b) => a + b);
-    };
-  }
-
-  /*num Function(num, num) crossDensity(Numeric that) {
-    final xFrom = autoRange.from,
-        xTo = autoRange.to,
-        yFrom = that.autoRange.from,
-        yTo = that.autoRange.to,
-        xf = density(),
-        yf = that.density(),
-        gaps = 40,
-        xGap = (xTo - xFrom) / gaps,
-        yGap = (yTo - yFrom) / gaps,
-        xBounds = List<num>.generate(gaps + 1, (i) => xFrom + i * xGap),
-        yBounds = List<num>.generate(gaps + 1, (i) => yFrom + i * yGap),
-        d = math.sqrt(gaps), // CHECK...
-        normalSums = xBounds
-            .map((xBound) => yBounds
-                .map((yBound) => math.sqrt(xf(xBound) * yf(yBound)))
-                .toList())
-            .toList(),
-        zs = normalSums; // check...
-
-    return (num x, num y) {
-      if (x <= xFrom || x >= xTo || y < yFrom || y > yTo) {
-        return 0;
-      }
-
-      final xC = (x - xFrom) / (xTo - xFrom) * gaps,
-          xIndex = xC.floor(),
-          xPart = xC - xIndex,
-          yC = (y - yFrom) / (yTo - yFrom) * gaps,
-          yIndex = yC.floor(),
-          yPart = yC - yIndex,
-          ds = [
-        math.sqrt(math.pow(xPart, 2) + math.pow(yPart, 2)),
-        math.sqrt(math.pow(1 - xPart, 2) + math.pow(yPart, 2)),
-        math.sqrt(math.pow(xPart, 2) + math.pow(1 - yPart, 2)),
-        math.sqrt(math.pow(1 - xPart, 2) + math.pow(1 - yPart, 2))
-      ],
-          vs = [
-        zs[xIndex][yIndex],
-        zs[xIndex + 1][yIndex],
-        zs[xIndex][yIndex + 1],
-        zs[xIndex + 1][yIndex + 1]
-      ],
-          dSum = ds.fold(0, (a, b) => a + b);
-
-      return [0, 1, 2, 3]
-          .map((i) => vs[i] * (dSum - ds[i]) / dSum)
-          .fold(0, (a, b) => a + b);
-    };
-  }*/
 
   @override
   get length => _elements.length;
