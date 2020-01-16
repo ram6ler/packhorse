@@ -7,7 +7,7 @@ packages:
       name: function_tree
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.6"
+    version: "0.5.0"
   normal:
     dependency: "direct main"
     description:
@@ -16,4 +16,4 @@ packages:
     source: hosted
     version: "0.5.1"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
+  dart: ">=2.7.0 <3.0.0"

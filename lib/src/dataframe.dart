@@ -410,8 +410,9 @@ class Dataframe {
 
   /// A helper function that generates values from a formula.
   List<num> _formulaValues(String formula) {
-    final f = FunctionTree(
-        fromExpression: formula, withVariableNames: nums.keys.toList());
+    /*final f = FunctionTree(
+        fromExpression: formula, withVariableNames: nums.keys.toList());*/
+    final f = formula.toMultiVariableFunction(nums.keys);
     return indices.map((index) {
       final arguments = Map<String, num>.fromIterable(nums.keys,
           value: (key) => nums[key][index]);
