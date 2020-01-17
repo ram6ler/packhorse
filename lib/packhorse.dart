@@ -12,3 +12,4 @@ part 'src/column.dart';
 part 'src/categoric.dart';
 part 'src/numeric.dart';
 part 'src/dataframe.dart';
+part 'src/extensions.dart';

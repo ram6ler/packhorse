@@ -210,7 +210,11 @@ class Dataframe {
           .map((value) => value.replaceAll('"', ""))
           .toList();
       for (int i = 0; i < columnsInOrder.length; i++) {
-        mapOfValueStrings[columnsInOrder[i]].add(datum[i]);
+        try {
+          mapOfValueStrings[columnsInOrder[i]].add(datum[i]);
+        } catch (_) {
+          throw Exception('Invalid row:\n  $line\n');
+        }
       }
     }
 

@@ -13,3 +13,7 @@ dependencies:
   normal: ^0.5.1
     #git: https://ram6ler@bitbucket.org/ram6ler/normal.git
 
+dev_dependencies:
+  popmark:
+    git: https://ram6ler@bitbucket.org/ram6ler/popmark.git
+
