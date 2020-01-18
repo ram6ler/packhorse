@@ -1,3 +1,6 @@
+# Packhorse
+
+[Home](Home.md) | [Numeric](numeric.md) | [Categoric](categoric.md) | [Dataframe](dataframe.md) | [About](about.md)
 
 Welcome to *packhorse*, a library that supports basic analysis for small to medium data projects.
 

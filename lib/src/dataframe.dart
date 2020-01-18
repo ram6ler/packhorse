@@ -1,22 +1,14 @@
 part of packhorse;
 
-abstract class ColumnType {
-  static const categoric = "cat", numeric = "num";
-}
-
-abstract class Alignment {
-  static const left = ":--", right = "--:", center = ":--:";
-}
-
 class Dataframe {
   /// A data frame with `cats` and `nums` specified.
   Dataframe(this.cats, this.nums, List<String> columnsInOrder,
-      {bool ignoreLengths = false}) {
+      {bool ignoreLengthMismatch = false}) {
     final lengths = (cats.keys.map((key) => cats[key].length).toList()
           ..addAll(nums.keys.map((key) => nums[key].length)))
         .toSet();
-    if (!ignoreLengths && lengths.length != 1) {
-      throw Exception("Columns not all of the same length.");
+    if (!ignoreLengthMismatch && lengths.length != 1) {
+      throw Exception('Columns not all of the same length.');
     }
     if (columnsInOrder != null) {
       this.columnsInOrder = List.from(columnsInOrder);
@@ -38,32 +30,32 @@ class Dataframe {
   ///
   /// ```dart
   /// final data = Dataframe.fromMapOfLists({
-  ///   "image": ["🍑", "🍆", "🍊", "🍓", "🍍", "🍉", "🍇", "🍌", "🍒", "🍎"],
-  ///   "fruit": [
-  ///     "peach",
-  ///     "eggplant",
-  ///     "tangerine",
-  ///     "strawberry",
-  ///     "pineapple",
-  ///     "watermelon",
-  ///     "grapes",
-  ///     "banana",
-  ///     "cherries",
-  ///     "apple"
+  ///   'image': ['🍑', '🍆', '🍊', '🍓', '🍍', '🍉', '🍇', '🍌', '🍒', '🍎'],
+  ///   'fruit': [
+  ///     'peach',
+  ///     'eggplant',
+  ///     'tangerine',
+  ///     'strawberry',
+  ///     'pineapple',
+  ///     'watermelon',
+  ///     'grapes',
+  ///     'banana',
+  ///     'cherries',
+  ///     'apple'
   ///   ],
-  ///   "color": [
-  ///     "pink",
-  ///     "purple",
-  ///     "orange",
-  ///     "red",
-  ///     "yellow",
-  ///     "pink",
-  ///     "purple",
-  ///     "yellow",
-  ///     "red",
-  ///     "red"
+  ///   'color': [
+  ///     'pink',
+  ///     'purple',
+  ///     'orange',
+  ///     'red',
+  ///     'yellow',
+  ///     'pink',
+  ///     'purple',
+  ///     'yellow',
+  ///     'red',
+  ///     'red'
   ///   ],
-  ///   "rating": [7, 7, 8, 9, 6, 6, 7, 7, 10, 5]
+  ///   'rating': [7, 7, 8, 9, 6, 6, 7, 7, 10, 5]
   /// });
   /// ```
   ///
@@ -85,21 +77,20 @@ class Dataframe {
   ///
   /// ```dart
   /// final data = Dataframe.fromListOfInstanceMaps([
-  ///   {"image": "🍑", "fruit": "peach", "color": "pink", "rating": 7},
-  ///   {"image": "🍆", "fruit": "eggplant", "color": "purple", "rating": 7},
-  ///   {"image": "🍊", "fruit": "tangerine", "color": "orange", "rating": 8},
-  ///   {"image": "🍓", "fruit": "strawberry", "color": "red", "rating": 9},
-  ///   {"image": "🍍", "fruit": "pineapple", "color": "yellow", "rating": 6},
-  ///   {"image": "🍉", "fruit": "watermelon", "color": "pink", "rating": 6},
-  ///   {"image": "🍇", "fruit": "grapes", "color": "purple", "rating": 7},
-  ///   {"image": "🍌", "fruit": "banana", "color": "yellow", "rating": 7},
-  ///   {"image": "🍒", "fruit": "cherries", "color": "red", "rating": 10},
-  ///   {"image": "🍎", "fruit": "apple", "color": "red", "rating": 5}
+  ///   {'image': '🍑', 'fruit': 'peach', 'color': 'pink', 'rating': 7},
+  ///   {'image': '🍆', 'fruit': 'eggplant', 'color': 'purple', 'rating': 7},
+  ///   {'image': '🍊', 'fruit': 'tangerine', 'color': 'orange', 'rating': 8},
+  ///   {'image': '🍓', 'fruit': 'strawberry', 'color': 'red', 'rating': 9},
+  ///   {'image': '🍍', 'fruit': 'pineapple', 'color': 'yellow', 'rating': 6},
+  ///   {'image': '🍉', 'fruit': 'watermelon', 'color': 'pink', 'rating': 6},
+  ///   {'image': '🍇', 'fruit': 'grapes', 'color': 'purple', 'rating': 7},
+  ///   {'image': '🍌', 'fruit': 'banana', 'color': 'yellow', 'rating': 7},
+  ///   {'image': '🍒', 'fruit': 'cherries', 'color': 'red', 'rating': 10},
+  ///   {'image': '🍎', 'fruit': 'apple', 'color': 'red', 'rating': 5}
   /// ]);
   /// ```
   ///
-  factory Dataframe.fromListOfInstanceMaps(
-      List<Map<String, Object>> instances) {
+  factory Dataframe.fromListOfMaps(List<Map<String, Object>> instances) {
     final data = Map<String, List<Object>>();
     for (int index = 0; index < instances.length; index++) {
       final instance = instances[index];
@@ -129,7 +120,7 @@ class Dataframe {
   /// Example:
   ///
   /// ```dart
-  /// final data = Dataframe.fromCsv("""
+  /// final data = Dataframe.fromCsv('''
   ///   image,fruit,color,rating
   ///   🍑,peach,pink,7
   ///   🍆,eggplant,purple,7
@@ -141,64 +132,56 @@ class Dataframe {
   ///   🍌,banana,yellow,7
   ///   🍒,cherries,red,10
   ///   🍎,apple,red,5
-  /// """);
+  /// ''');
   /// ```
   ///
   Dataframe.fromCsv(String csv,
-      {String seperator = ",", Map<String, String> types}) {
+      {String seperator = ',', Map<String, String> types}) {
     final
         // Separators not contained in quotes;
         // see https://stackoverflow.com/a/632552/1340742
         splitRe = RegExp('($seperator)(?=(?:[^"]|"[^"]*")*\$)'),
-        tempLines = csv.split("\n");
+        tempLines = csv.split('\n');
 
     // Allow for quoted multiple lines.
-    String completeLine = "";
+    String completeLine = '';
     final nonQuote = RegExp(r'[^"]'),
         lines = tempLines
             .fold<List<String>>(List<String>(), (a, b) {
-              completeLine = "$completeLine$b";
-              if (completeLine.replaceAll(nonQuote, "").length % 2 == 0) {
+              completeLine = '$completeLine$b';
+              if (completeLine.replaceAll(nonQuote, '').length % 2 == 0) {
                 a.add(completeLine);
-                completeLine = "";
+                completeLine = '';
               } else {
-                completeLine += "[EOL]";
+                completeLine += '[EOL]';
               }
               return a;
             })
             .map((line) => line.trim())
             // Allow comments in csv strings: lines starting with #
-            .where((line) => line.isNotEmpty && line[0] != "#")
+            .where((line) => line.isNotEmpty && line[0] != '#')
             .toList();
     columnsInOrder = lines.first
         .split(splitRe)
-        .map((variable) => variable.replaceAll('"', "").trim())
+        .map((variable) => variable.replaceAll('"', '').trim())
         .toList();
 
     types = types ?? Map<String, String>();
 
     for (int i = 0; i < columnsInOrder.length; i++) {
-      if (columnsInOrder[i].contains("*")) {
+      if (columnsInOrder[i].contains('*')) {
         // If the header contains an asterisk, the column is a categoric.
         columnsInOrder[i] =
-            columnsInOrder[i].replaceAll("*", "").replaceAll('"', "");
+            columnsInOrder[i].replaceAll('*', '').replaceAll('"', '');
         types[columnsInOrder[i]] = ColumnType.categoric;
       }
-      if (columnsInOrder[i].contains("^")) {
+      if (columnsInOrder[i].contains('^')) {
         // If the header contains a carat, the column is a numeric.
         columnsInOrder[i] =
-            columnsInOrder[i].replaceAll("^", "").replaceAll('"', "");
+            columnsInOrder[i].replaceAll('^', '').replaceAll('"', '');
         types[columnsInOrder[i]] = ColumnType.numeric;
       }
     }
-
-    /// A data frame containing the first [n] rows.
-    Dataframe head([int n = 10]) =>
-        this.withRowsAtIndices(indices.sublist(math.max(n, numberOfRows)));
-
-    /// A data frame containing the last [n] rows.
-    Dataframe tail([int n = 10]) => this.withRowsAtIndices(
-        indices.reversed.take(math.max(n, numberOfRows)).toList());
 
     final mapOfValueStrings = Map<String, List<String>>.fromIterable(
         columnsInOrder,
@@ -207,7 +190,7 @@ class Dataframe {
     for (final line in lines.sublist(1)) {
       final datum = line
           .split(splitRe)
-          .map((value) => value.replaceAll('"', ""))
+          .map((value) => value.replaceAll('"', ''))
           .toList();
       for (int i = 0; i < columnsInOrder.length; i++) {
         try {
@@ -235,7 +218,7 @@ class Dataframe {
 
     if (columnsInOrder.length !=
         categoricVariables.length + numericVariables.length) {
-      throw Exception("Unknown variable type encountered.");
+      throw Exception('Unknown variable type encountered.');
     }
 
     cats = Map<String, Categoric>.fromIterable(categoricVariables,
@@ -276,6 +259,19 @@ class Dataframe {
   /// A sequence of integers that runs along the rows of this data frame.
   List<int> get indices => sequence(numberOfRows);
 
+  /// TODO: document
+  Map<String, Map<String, Object>> get summary => {
+        for (final key in cats.keys) key: cats[key].summary
+      }..addAll({for (final key in nums.keys) key: nums[key].summary});
+
+  /// A data frame containing the first [n] rows.
+  Dataframe head([int n = 10]) =>
+      this.withRowsAtIndices(indices.take(math.min(n, numberOfRows)).toList());
+
+  /// A data frame containing the last [n] rows.
+  Dataframe tail([int n = 10]) => this.withRowsAtIndices(
+      indices.reversed.take(math.min(n, numberOfRows)).toList());
+
   /// Gets a data frame with rows ordered by the values in [column].
   Dataframe withRowsOrderedBy(String column, {bool decreasing = false}) {
     var frame = Dataframe(Map<String, Categoric>.from(cats),
@@ -291,7 +287,7 @@ class Dataframe {
               frame.nums[column].orderedIndices.reversed.toList())
           : frame.withRowsAtIndices(frame.nums[column].orderedIndices);
     } else {
-      throw Exception("Unrecognized column: '$column'.");
+      throw Exception('Unrecognized column: "$column".');
     }
     return frame;
   }
@@ -300,7 +296,7 @@ class Dataframe {
   List<int> sampleRowIndices(int n, {bool replacement = false, int seed}) {
     if (n > numberOfRows && !replacement) {
       throw Exception(
-          "Cannot sample more rows than available without replacement.");
+          'Cannot sample more rows than available without replacement.');
     }
     final rand = seed == null ? math.Random() : math.Random(seed),
         randomIndices = replacement
@@ -324,7 +320,7 @@ class Dataframe {
   void _validColumnCheck(List<String> columns) {
     for (final column in columns) {
       if (!(cats.containsKey(column) || nums.keys.contains(column))) {
-        throw Exception("Unrecognized column: '$column'");
+        throw Exception('Unrecognized column: "$column"');
       }
     }
   }
@@ -403,20 +399,18 @@ class Dataframe {
         String argument = template;
         for (String key in cats.keys) {
           argument =
-              argument.replaceAll("$startQuote$key$endQuote", cats[key][index]);
+              argument.replaceAll('$startQuote$key$endQuote', cats[key][index]);
         }
         for (String key in nums.keys) {
           argument = argument.replaceAll(
-              "$startQuote$key$endQuote", nums[key][index].toString());
+              '$startQuote$key$endQuote', nums[key][index].toString());
         }
         return argument;
       }).toList();
 
   /// A helper function that generates values from a formula.
   List<num> _formulaValues(String formula) {
-    /*final f = FunctionTree(
-        fromExpression: formula, withVariableNames: nums.keys.toList());*/
-    final f = formula.toMultiVariableFunction(nums.keys);
+    final f = formula.toMultiVariableFunction(nums.keys.toList());
     return indices.map((index) {
       final arguments = Map<String, num>.fromIterable(nums.keys,
           value: (key) => nums[key][index]);
@@ -427,7 +421,7 @@ class Dataframe {
   /// Gives the indices that match a template predicate.
   List<int> indicesWhereTemplate(
       String template, bool Function(String) predicate,
-      {String startQuote = "{", String endQuote = "}"}) {
+      {String startQuote = '{', String endQuote = '}'}) {
     final templateValues = _templateValues(template, startQuote, endQuote);
     return indices.where((index) => predicate(templateValues[index])).toList();
   }
@@ -447,7 +441,7 @@ class Dataframe {
   /// Gives a data frame with only the rows that match a template predicate.
   Dataframe withRowsWhereTemplate(
           String template, bool Function(String) predicate,
-          {String startQuote = "{", String endQuote = "}"}) =>
+          {String startQuote = '{', String endQuote = '}'}) =>
       withRowsAtIndices(indicesWhereTemplate(template, predicate,
           startQuote: startQuote, endQuote: endQuote));
 
@@ -465,7 +459,7 @@ class Dataframe {
   /// Gives the indices that match a template and formula predicate.
   List<int> indicesWhereTemplateAndFormula(
       String template, String formula, bool Function(String, num) predicate,
-      {String startQuote = "{", String endQuote = "}"}) {
+      {String startQuote = '{', String endQuote = '}'}) {
     final templateValues = _templateValues(template, startQuote, endQuote),
         formulaValues = _formulaValues(formula);
 
@@ -478,7 +472,7 @@ class Dataframe {
   /// Gives a data frame with only the rows that match a template and formula predicate.
   Dataframe withRowsWhereTemplateAndFormula(
           String template, String formula, bool Function(String, num) predicate,
-          {String startQuote = "{", String endQuote = "}"}) =>
+          {String startQuote = '{', String endQuote = '}'}) =>
       withRowsAtIndices(indicesWhereTemplateAndFormula(
           template, formula, predicate,
           startQuote: startQuote, endQuote: endQuote));
@@ -488,10 +482,26 @@ class Dataframe {
           bool Function(Map<String, String>, Map<String, num>) predicate) =>
       withRowsAtIndices(indicesWhereRowValues(predicate));
 
+  /// A data frame with a categoric inserted.
+  Dataframe withCategoric(String name, Categoric categoric) {
+    final cats = Map<String, Categoric>.from(this.cats),
+        nums = Map<String, Numeric>.from(this.nums);
+    cats[name] = categoric;
+    return Dataframe(cats, nums, columnsInOrder);
+  }
+
+  /// A data frame with a numeric inserted.
+  Dataframe withNumeric(String name, Numeric numeric) {
+    final cats = Map<String, Categoric>.from(this.cats),
+        nums = Map<String, Numeric>.from(this.nums);
+    nums[name] = numeric;
+    return Dataframe(cats, nums, columnsInOrder);
+  }
+
   /// A data frame with a categoric column from a template.
   Dataframe withCategoricFromTemplate(String name, String template,
-      {String startQuote = "{",
-      String endQuote = "}",
+      {String startQuote = '{',
+      String endQuote = '}',
       String Function(String) generator}) {
     generator = generator ?? (x) => x;
     final cats = Map<String, Categoric>.from(this.cats),
@@ -504,7 +514,7 @@ class Dataframe {
   /// A data frame with a numeric column from a template.
   Dataframe withNumericFromTemplate(
       String name, String template, num Function(String) generator,
-      {String startQuote = "{", String endQuote = "}"}) {
+      {String startQuote = '{', String endQuote = '}'}) {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums);
     nums[name] =
@@ -521,14 +531,6 @@ class Dataframe {
     return Dataframe(cats, nums, columnsInOrder);
   }
 
-  /// A data frame with a numeric inserted.
-  Dataframe withNumeric(String name, Numeric numeric) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    nums[name] = numeric;
-    return Dataframe(cats, nums, columnsInOrder);
-  }
-
   /// A data frame with a numeric column from a formula.
   Dataframe withNumericFromFormula(String name, String formula,
       {num Function(num) generator}) {
@@ -542,7 +544,7 @@ class Dataframe {
   /// A data frame with a categoric column from a template and formula.
   Dataframe withCategoricFromTemplateAndFormula(String name, String template,
       String formula, String Function(String, num) generator,
-      {String startQuote = "{", String endQuote = "}"}) {
+      {String startQuote = '{', String endQuote = '}'}) {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums),
         templateValues = _templateValues(template, startQuote, endQuote),
@@ -555,7 +557,7 @@ class Dataframe {
   /// A data frame with a numeric column from a template and formula.
   Dataframe withNumericFromTemplateAndFormula(String name, String template,
       String formula, num Function(String, num) generator,
-      {String startQuote = "{", String endQuote = "}"}) {
+      {String startQuote = '{', String endQuote = '}'}) {
     final cats = Map<String, Categoric>.from(this.cats),
         nums = Map<String, Numeric>.from(this.nums),
         templateValues = _templateValues(template, startQuote, endQuote),
@@ -605,114 +607,30 @@ class Dataframe {
         nums = Map<String, Numeric>.from(this.nums),
         categories = cats[name].categories;
     for (final category in categories) {
-      nums["${name}_$category"] =
+      nums['${name}_$category'] =
           Numeric(cats[name].map((cat) => cat == category ? 1 : 0));
     }
     return Dataframe(cats, nums, columnsInOrder);
   }
 
-  /// Generalized join helper function.
-  static Dataframe _join(Dataframe left, Dataframe right, String leftPivot,
-      String rightPivot, Set<Object> ids) {
-    if (![left.cats.keys, left.nums.keys]
-        .any((keys) => keys.contains(leftPivot))) {
-      throw Exception("Unrecognized pivot: '$leftPivot'.");
-    }
-    if (![right.cats.keys, right.nums.keys]
-        .any((keys) => keys.contains(rightPivot))) {
-      throw Exception("Unrecognized pivot: '$rightPivot'.");
-    }
+  Dataframe withNumericCategorized(String name,
+      {int bins, List<num> breaks, int decimalPlaces}) {
+    final bars = nums[name].histogram(bins: bins, breaks: breaks);
 
-    final leftCats = Map<String, List<String>>.fromIterable(left.cats.keys,
-            value: (_) => []),
-        rightCats = Map<String, List<String>>.fromIterable(right.cats.keys,
-            value: (_) => []),
-        leftNums = Map<String, List<num>>.fromIterable(left.nums.keys,
-            value: (_) => []),
-        rightNums = Map<String, List<num>>.fromIterable(right.nums.keys,
-            value: (_) => []);
-
-    for (final id in ids) {
-      final
-          // Rows in left that match id:
-          leftIndices = id is String
-              ? left.cats[leftPivot].indicesWhere((value) => value == id)
-              : left.nums[leftPivot].indicesWhere((value) => value == id),
-          // Rows in right that match id:
-          rightIndices = id is String
-              ? right.cats[rightPivot].indicesWhere((value) => value == id)
-              : right.nums[rightPivot].indicesWhere((value) => value == id);
-
-      if (leftIndices.isEmpty && rightIndices.isEmpty) {
-        // Dont' add any rows to the join.
-      } else if (leftIndices.isEmpty) {
-        for (final index in rightIndices) {
-          // Fill left with nulls...
-          for (final key in leftCats.keys) {
-            leftCats[key].add(null);
-          }
-          for (final key in leftNums.keys) {
-            leftNums[key].add(null);
-          }
-          // ... and right with values.
-          for (final key in rightCats.keys) {
-            rightCats[key].add(right.cats[key][index]);
-          }
-          for (final key in rightNums.keys) {
-            rightNums[key].add(right.nums[key][index]);
-          }
-        }
-      } else if (rightIndices.isEmpty) {
-        for (final index in leftIndices) {
-          // Fill left with values...
-          for (final key in leftCats.keys) {
-            leftCats[key].add(left.cats[key][index]);
-          }
-          for (final key in leftNums.keys) {
-            leftNums[key].add(left.nums[key][index]);
-          }
-          // ... and right with nulls.
-          for (final key in rightCats.keys) {
-            rightCats[key].add(null);
-          }
-          for (final key in rightNums.keys) {
-            rightNums[key].add(null);
-          }
-        }
-      } else {
-        for (final leftIndex in leftIndices) {
-          for (final rightIndex in rightIndices) {
-            // Fill left with values...
-            for (final key in leftCats.keys) {
-              leftCats[key].add(left.cats[key][leftIndex]);
-            }
-            for (final key in leftNums.keys) {
-              leftNums[key].add(left.nums[key][leftIndex]);
-            }
-            // ... and right with values.
-            for (final key in rightCats.keys) {
-              rightCats[key].add(right.cats[key][rightIndex]);
-            }
-            for (final key in rightNums.keys) {
-              rightNums[key].add(right.nums[key][rightIndex]);
-            }
-          }
+    String convert(num x) {
+      String category;
+      for (final bar in bars) {
+        if (x >= bar.lowerBound && x < bar.upperBound) {
+          category = decimalPlaces == null
+              ? '[${bar.lowerBound}, ${bar.upperBound})'
+              : '[${bar.lowerBound.toStringAsFixed(decimalPlaces)}, ${bar.upperBound.toStringAsFixed(decimalPlaces)})';
+          break;
         }
       }
+      return category;
     }
 
-    final cats = Map<String, Categoric>.fromIterable(leftCats.keys,
-            value: (key) => Categoric(leftCats[key]))
-          ..addAll(Map<String, Categoric>.fromIterable(rightCats.keys,
-              key: (key) => leftCats.keys.contains(key) ? "other_$key" : key,
-              value: (key) => Categoric(rightCats[key]))),
-        nums = Map<String, Numeric>.fromIterable(leftNums.keys,
-            value: (key) => Numeric(leftNums[key]))
-          ..addAll(Map<String, Numeric>.fromIterable(rightNums.keys,
-              key: (key) => leftNums.keys.contains(key) ? "other_$key" : key,
-              value: (key) => Numeric(rightNums[key])));
-
-    return Dataframe(cats, nums, []);
+    return withCategoricFromFormula('${name}_category', name, convert);
   }
 
   /// A data frame from a full left join.
@@ -846,7 +764,7 @@ class Dataframe {
         List<String>.from(columnsInOrder));
   }
 
-  ///
+  /// TODO: document
   Dataframe withNullsDropped([List<String> columns]) {
     if (columns == null) {
       columns = columnNames;
@@ -869,7 +787,7 @@ class Dataframe {
   /// Gives a map of data frames grouped by category.
   Map<String, Dataframe> groupedByCategoric(String category) {
     if (!cats.containsKey(category)) {
-      throw Exception("Unrecognized category: '$category'.");
+      throw Exception('Unrecognized category: "$category".');
     }
 
     final values = cats[category].toSet();
@@ -882,7 +800,7 @@ class Dataframe {
   /// Gives a map of data frames grouped by value.
   Map<num, Dataframe> groupedByNumeric(String numeric) {
     if (!nums.containsKey(numeric)) {
-      throw Exception("Unrecognized numeric: '$numeric'.");
+      throw Exception('Unrecognized numeric: "$numeric".');
     }
 
     final values = nums[numeric].toSet();
@@ -894,7 +812,7 @@ class Dataframe {
 
   /// Gives a list of strings generated from the row values.
   List<String> toListOfStringsFromTemplate(String template,
-          {String startQuote = "{", String endQuote = "}"}) =>
+          {String startQuote = '{', String endQuote = '}'}) =>
       _templateValues(template, startQuote, endQuote);
 
   /// Gives the values in a row as a map.
@@ -928,39 +846,39 @@ class Dataframe {
       } else {
         if (![Alignment.center, Alignment.left, Alignment.right]
             .contains(alignment[key])) {
-          throw Exception("Unknown markdown alignment: '${alignment[key]}'.");
+          throw Exception('Unknown markdown alignment: "${alignment[key]}".');
         }
       }
     }
 
-    final header = "|${columnNames.join("|")}|",
+    final header = '|${columnNames.join('|')}|',
         alignmentSetting =
-            "|${columnNames.map((key) => alignment[key]).join("|")}|",
+            '|${columnNames.map((key) => alignment[key]).join('|')}|',
         summarize = numberOfRows > 10 && summary,
         rows = (summarize
                 ? indices
                     .where((index) => index < 5 || numberOfRows - index <= 5)
                 : indices)
             .map((index) =>
-                "|${columnNames.map((key) => table[key][index]).join("|")}|")
+                '|${columnNames.map((key) => table[key][index]).join('|')}|')
             .toList(),
-        empty = "|${columnNames.map((_) => "...").join("|")}|";
+        empty = '|${columnNames.map((_) => '...').join('|')}|';
 
     return summarize
-        ? """
+        ? '''
 $header
 $alignmentSetting
-${rows.sublist(0, 5).join("\n")}
+${rows.sublist(0, 5).join('\n')}
 $empty
-${rows.sublist(5).join("\n")}
+${rows.sublist(5).join('\n')}
 
-"""
-        : """
+'''
+        : '''
 $header
 $alignmentSetting
-${rows.join("\n")}
+${rows.join('\n')}
 
-""";
+''';
   }
 
   /// Gives a csv representation of this data frame.
@@ -970,10 +888,10 @@ ${rows.join("\n")}
       if (markColumns) {
         if (cats.containsKey(key)) {
           // Mark the column as categoric.
-          return "$key*";
+          return '$key*';
         } else {
           // Mark the column as numeric.
-          return "$key^";
+          return '$key^';
         }
       } else {
         return key;
@@ -988,15 +906,15 @@ ${rows.join("\n")}
       }
     });
 
-    final header = "${table.keys.join(",")}",
+    final header = '${table.keys.join(',')}',
         rows = indices
             .map((index) =>
-                "${table.keys.map((key) => table[key][index]).join(",")}")
+                '${table.keys.map((key) => table[key][index]).join(',')}')
             .toList();
 
-    return """$header
-${rows.join("\n")}
-""";
+    return '''$header
+${rows.join('\n')}
+''';
   }
 
   /// Gives an html table representation of this data frame.
@@ -1013,32 +931,32 @@ ${rows.join("\n")}
     });
 
     final summarize = numberOfRows > 10 && summary,
-        header = "<tr><th>${columnNames.join("</th><th>")}</th></tr>",
+        header = '<tr><th>${columnNames.join('</th><th>')}</th></tr>',
         rows = (summarize
                 ? indices
                     .where((index) => index < 5 || numberOfRows - index <= 5)
                 : indices)
             .map((index) =>
-                "<tr><td>${columnNames.map((key) => table[key][index]).join("</td><td>")}</td></tr>")
+                '<tr><td>${columnNames.map((key) => table[key][index]).join('</td><td>')}</td></tr>')
             .toList(),
         empty =
-            "<tr><td>${columnNames.map((_) => "...").join("</td><td>")}</td></tr>";
+            '<tr><td>${columnNames.map((_) => '...').join('</td><td>')}</td></tr>';
 
     return summarize
-        ? """
+        ? '''
 <table>
 $header
-${rows.sublist(0, 5).join("\n")}
+${rows.sublist(0, 5).join('\n')}
 $empty
-${rows.sublist(5).join("\n")}
+${rows.sublist(5).join('\n')}
 </table>
-"""
-        : """
+'''
+        : '''
 <table>
 $header
-${rows.join("\n")}
+${rows.join('\n')}
 </table>
-""";
+''';
   }
 
   /// Gives a map of lists, each column name as a key.
@@ -1074,19 +992,19 @@ ${rows.join("\n")}
                         // convert potential nulls to Strings...
                         math.max(length, value.toString().length)))),
         horizontalLine = (String join) =>
-            "${columnNames.map((key) => "-" * widths[key]).join(join)}",
+            '${columnNames.map((key) => '-' * widths[key]).join(join)}',
         header =
-            "|${columnNames.map((key) => "${key.padLeft(widths[key], " ")}").join("|")}|",
+            '|${columnNames.map((key) => '${key.padLeft(widths[key], ' ')}').join('|')}|',
         rows = sequence(numberOfRows)
             .map((index) =>
-                "|${columnNames.map((key) => "${table[key][index].toString().padLeft(widths[key], " ")}").join("|")}|")
-            .join("\n");
-    return """
-.${horizontalLine(".")}.
+                '|${columnNames.map((key) => '${table[key][index].toString().padLeft(widths[key], ' ')}').join('|')}|')
+            .join('\n');
+    return '''
+.${horizontalLine('.')}.
 $header
-:${horizontalLine("+")}:
+:${horizontalLine('+')}:
 $rows
 '${horizontalLine("'")}'
-""";
+''';
   }
 }

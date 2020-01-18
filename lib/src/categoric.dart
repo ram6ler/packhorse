@@ -7,7 +7,7 @@ extension CreateCategorics on List {
 }
 
 abstract class CategoricStatistic {
-  static const impurity = "impurity", entropy = "entropy";
+  static const impurity = 'impurity', entropy = 'entropy';
 }
 
 class Categoric extends Column<String> {
@@ -54,9 +54,9 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(["red", "red", "green", "red", "blue", "green"]);
+  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
   /// colors.counts.forEach((color, count) {
-  ///   print("$color: $count");
+  ///   print('$color: $count');
   /// });
   /// // blue: 1
   /// // green: 2
@@ -71,9 +71,9 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(["red", "red", "green", "red", "blue", "green"]);
+  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
   /// colors.proportions.forEach((color, p) {
-  ///   print("$color: ${p.toStringAsFixed(2)}");
+  ///   print('$color: ${p.toStringAsFixed(2)}');
   /// });
   /// // blue: 0.17
   /// // green: 0.33
@@ -89,9 +89,9 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(["red", "red", "green", "red", "blue", "green"]);
+  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
   /// colors.proportions.forEach((color, f) {
-  ///   print("$color: $f");
+  ///   print('$color: $f');
   /// });
   /// // blue: 1
   /// // green: 2
@@ -106,8 +106,8 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(["red", "red", "green", "red", "blue", "green"]);
-  /// print(colors.indicesWhere((color) => color.contains("re")));
+  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
+  /// print(colors.indicesWhere((color) => color.contains('re')));
   /// // [0, 1, 2, 3, 5]
   /// ```
   ///
@@ -119,7 +119,7 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(["red", "red", "green", "red", "blue", "green"]);
+  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
   /// print(colors.elementsAtIndices([4, 4, 5, 5, 0]));
   /// // [blue, blue, green, green, red]
   /// ```
@@ -140,10 +140,10 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(["red", "red", "green", "red", "blue", "green"]);
-  /// print(colors.elementsWhere((color) => color.contains("re")));
+  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
+  /// print(colors.elementsWhere((color) => color.contains('re')));
   /// // [red, red, green, red, green]
-  /// print(colors.where((color) => color.contains("re")));
+  /// print(colors.where((color) => color.contains('re')));
   /// // (red, red, green, red, green)
   /// ```
   ///
@@ -168,6 +168,13 @@ class Categoric extends Column<String> {
             .fold(0, (a, b) => a + b);
       });
 
+  Map<String, Object> get summary => {
+        'counts': counts,
+        'proportions': proportions,
+        'impurity': impurity,
+        'entropy': entropy
+      };
+
   @override
   get length => _categoryIndices.length;
 
@@ -183,7 +190,7 @@ class Categoric extends Column<String> {
   operator []=(int index, String category) {
     if (!categories.contains(category)) {
       throw Exception(
-          "Unrecognized category: '$category'. (Use addCategories to add a category.)");
+          'Unrecognized category: "$category". (Use addCategories to add a category.)');
     }
     _categoryIndices[index % length] = _categories.indexOf(category);
   }

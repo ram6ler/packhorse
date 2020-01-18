@@ -45,36 +45,4 @@ main() async {
 
     bars.forEach(display);
   }
-
-  // cross density
-  {
-    final data = Dataframe.fromCsv(await File("iris_data.csv").readAsString()),
-        petals = data.nums["petal_width"],
-        petalRange = petals.autoRange,
-        sepals = data.nums["sepal_width"],
-        sepalRange = sepals.autoRange,
-        density = petals.crossDensity(sepals),
-        gaps = 20,
-        xs = List<num>.generate(
-            gaps,
-            (i) =>
-                petalRange.from + (petalRange.to - petalRange.from) / gaps * i),
-        ys = List<num>.generate(
-            gaps,
-            (i) =>
-                sepalRange.from + (sepalRange.to - sepalRange.from) / gaps * i),
-        level = 30;
-
-    for (final y in ys.reversed) {
-      print(
-          "${y.toStringAsFixed(2)}${xs.map((x) => density(x, y) > level ? "**" : "  ").join()}");
-    }
-
-    for (final y in ys.reversed) {
-      print(
-          "${y.toStringAsFixed(2)}: ${xs.map((x) => density(x, y).toStringAsFixed(1)).join("\t")}");
-    }
-  }
-
-  
 }

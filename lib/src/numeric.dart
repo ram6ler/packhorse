@@ -1,46 +1,24 @@
 part of packhorse;
 
 abstract class NumericStatistic {
-  static const sum = "sum",
-      sumOfSquares = "sumOfSquares",
-      mean = "mean",
-      variance = "variance",
-      inferredVariance = "inferredVariance",
-      standardDeviation = "standardDeviation",
-      inferredStandardDeviation = "inferredStandardDeviation",
-      skewness = "skewness",
-      meanAbsoluteDeviation = "meanAbsoluteDeviation",
-      lowerQuartile = "lowerQuartile",
-      median = "median",
-      upperQuartile = "upperQuartile",
-      interquartileRange = "interquartileRange",
-      greatest = "greatest",
-      greatestNonOutlier = "greatestNonOutlier",
-      least = "least",
-      leastNonOutlier = "leastNonOutlier",
-      range = "range";
-}
-
-extension Interoperability on num {
-  Numeric operator +(Numeric x) => x + this;
-  Numeric operator -(Numeric x) => x - this;
-  Numeric operator *(Numeric x) => x * this;
-  Numeric operator /(Numeric x) => x / this;
-  Numeric operator %(Numeric x) => x % this;
-  Numeric operator ~/(Numeric x) => x ~/ this;
-}
-
-/// Methods for Lists.
-extension CreateNumerics on List<num> {
-  /// A Numeric containing the data in the list.
-  Numeric toNumeric() => Numeric(this);
-
-  Numeric operator +(Numeric x) => x + this;
-  Numeric operator -(Numeric x) => x - this;
-  Numeric operator *(Numeric x) => x * this;
-  Numeric operator /(Numeric x) => x / this;
-  Numeric operator %(Numeric x) => x % this;
-  Numeric operator ~/(Numeric x) => x ~/ this;
+  static const sum = 'sum',
+      sumOfSquares = 'sumOfSquares',
+      mean = 'mean',
+      variance = 'variance',
+      inferredVariance = 'inferredVariance',
+      standardDeviation = 'standardDeviation',
+      inferredStandardDeviation = 'inferredStandardDeviation',
+      skewness = 'skewness',
+      meanAbsoluteDeviation = 'meanAbsoluteDeviation',
+      lowerQuartile = 'lowerQuartile',
+      median = 'median',
+      upperQuartile = 'upperQuartile',
+      interquartileRange = 'interquartileRange',
+      greatest = 'greatest',
+      greatestNonOutlier = 'greatestNonOutlier',
+      least = 'least',
+      leastNonOutlier = 'leastNonOutlier',
+      range = 'range';
 }
 
 /// A convenience wrapper class for [List<num>], with
@@ -63,7 +41,7 @@ class Numeric extends Column<num> {
       return Numeric(indices.map((i) => f(this[i], that[i])));
     }
 
-    throw Exception("Cannot apply $name to $that.");
+    throw Exception('Cannot apply $name to $that.');
   }
 
   /// Iteratively adds [that] to this numeric.
@@ -75,7 +53,7 @@ class Numeric extends Column<num> {
   ///
   @override
   Numeric operator +(Object that) =>
-      _operator(that, (a, b) => a + b, "addition");
+      _operator(that, (a, b) => a + b, 'addition');
 
   /// Iteratively subtracts [that] from this numeric.
   ///
@@ -84,7 +62,7 @@ class Numeric extends Column<num> {
   /// subtracted from the respective values in this numeric.
   ///
   Numeric operator -(Object that) =>
-      _operator(that, (a, b) => a - b, "subtraction");
+      _operator(that, (a, b) => a - b, 'subtraction');
 
   /// Iteratively negates each element in this numeric.
   Numeric operator -() => Numeric(map((x) => x == null ? null : -x));
@@ -96,7 +74,7 @@ class Numeric extends Column<num> {
   /// by the respective values in this numeric.
   ///
   Numeric operator *(Object that) =>
-      _operator(that, (a, b) => a * b, "multiplication");
+      _operator(that, (a, b) => a * b, 'multiplication');
 
   /// Iteratively divides this numeric by [that].
   ///
@@ -106,7 +84,7 @@ class Numeric extends Column<num> {
   /// in it.
   ///
   Numeric operator /(Object that) =>
-      _operator(that, (a, b) => a / b, "division");
+      _operator(that, (a, b) => a / b, 'division');
 
   /// Iteratively performs modular division by [that].
   ///
@@ -116,7 +94,7 @@ class Numeric extends Column<num> {
   /// in it.
   ///
   Numeric operator %(Object that) =>
-      _operator(that, (a, b) => a % b, "remainder");
+      _operator(that, (a, b) => a % b, 'remainder');
 
   /// Iteratively performs whole division by [that].
   ///
@@ -126,7 +104,19 @@ class Numeric extends Column<num> {
   /// in it.
   ///
   Numeric operator ~/(Object that) =>
-      _operator(that, (a, b) => a ~/ b, "whole division");
+      _operator(that, (a, b) => a ~/ b, 'whole division');
+
+  Numeric operator >(Object that) =>
+      _operator(that, (a, b) => a > b ? 1 : 0, 'greater than');
+
+  Numeric operator >=(Object that) =>
+      _operator(that, (a, b) => a >= b ? 1 : 0, 'at least');
+
+  Numeric operator <(Object that) =>
+      _operator(that, (a, b) => a < b ? 1 : 0, 'less than');
+
+  Numeric operator <=(Object that) =>
+      _operator(that, (a, b) => a <= b ? 1 : 0, 'at most');
 
   /// Gives the indices of the elements that meet [predicate].
   ///
@@ -135,7 +125,7 @@ class Numeric extends Column<num> {
   /// ```dart
   /// final xs = Numeric([1, 2, 3, 4, 5]);
   /// bool isOdd(x) => x % 2 == 1;
-  /// print("Indices of odd values:");
+  /// print('Indices of odd values:');
   /// print(xs.indicesWhere(isOdd));
   /// // [0, 2, 4]
   /// ```
@@ -155,7 +145,7 @@ class Numeric extends Column<num> {
   /// ```dart
   /// final xs = Numeric([1, 2, 3, 4, 5]);
   /// bool isOdd(x) => x % 2 == 1;
-  /// print("Elements with odd values:");
+  /// print('Elements with odd values:');
   /// print(xs.elementsWhere(isOdd));
   /// // [1, 3, 5]
   /// print(xs.where(isOdd));
@@ -195,7 +185,7 @@ class Numeric extends Column<num> {
   ///
   Numeric sample(int n, {bool replace = true, int seed}) {
     if (n < 0) {
-      throw Exception("Can only take a non negative number of instances.");
+      throw Exception('Can only take a non negative number of instances.');
     }
 
     final rand = seed == null ? math.Random() : math.Random(seed);
@@ -204,7 +194,7 @@ class Numeric extends Column<num> {
     } else {
       if (n > length) {
         throw Exception(
-            "With no replacement, can only take up to $length instances.");
+            'With no replacement, can only take up to $length instances.');
       }
       final shuffledIndices = indices..shuffle(rand);
       return Numeric(shuffledIndices.sublist(0, n).map((i) => this[i]));
@@ -285,6 +275,9 @@ class Numeric extends Column<num> {
   num get greatest =>
       _statistic(NumericStatistic.greatest, (xs) => xs.reduce(math.max));
 
+  /// The index of the greatest value in these elements.
+  int get greatestIndex => indexOf(greatest);
+
   /// The greatest non outlier in these elements.
   ///
   /// (Uses the convention that an outlier is any data point that lies further than 1.5
@@ -299,6 +292,9 @@ class Numeric extends Column<num> {
   /// The least value in these elements.
   num get least =>
       _statistic(NumericStatistic.least, (xs) => xs.reduce(math.min));
+
+  /// The index of the least value in these elements.
+  int get leastIndex => indexOf(least);
 
   /// The least non outlier in these elements.
   ///
@@ -325,7 +321,7 @@ class Numeric extends Column<num> {
   /// The interpolated p-quantile of the data.
   num quantile(num p) {
     if (p < 0 || p > 1) {
-      throw Exception("Proportion should be in range [0, 1].");
+      throw Exception('Proportion should be in range [0, 1].');
     }
     return _quantiles([p], _nullsOmitted..sort()).first;
   }
@@ -333,7 +329,7 @@ class Numeric extends Column<num> {
   /// The interpolated p-quantiles of the data.
   Numeric quantiles(List<num> ps) {
     if (ps.any((p) => p < 0 || p > 1)) {
-      throw Exception("Proportion should be in range [0, 1].");
+      throw Exception('Proportion should be in range [0, 1].');
     }
     return _quantiles(ps, _nullsOmitted..sort());
   }
@@ -341,7 +337,7 @@ class Numeric extends Column<num> {
   /// The pth percentile of the data.
   num percentile(num p) {
     if (p < 0 || p > 100) {
-      throw Exception("Expecting percent to be in range [0, 100].");
+      throw Exception('Expecting percent to be in range [0, 100].');
     }
     return quantile(p / 100);
   }
@@ -400,19 +396,19 @@ class Numeric extends Column<num> {
 
   /// A summary of these elements.
   Map<String, Object> get summary => {
-        "Sum": sum,
-        "Sum Of Squares": sumOfSquares,
-        "Mean": mean,
-        "Variance": inferredVariance,
-        "Standard Deviation": inferredStandardDeviation,
-        "Median": median,
-        "Lower Quartile": lowerQuartile,
-        "Upper Quartile": upperQuartile,
-        "Least Non Outlier": leastNonOutlier,
-        "Greatest Non Outlier": greatestNonOutlier,
-        "Least": least,
-        "Greatest": greatest,
-        "Outliers": outliers
+        'Sum': sum,
+        'Sum Of Squares': sumOfSquares,
+        'Mean': mean,
+        'Variance': inferredVariance,
+        'Standard Deviation': inferredStandardDeviation,
+        'Median': median,
+        'Lower Quartile': lowerQuartile,
+        'Upper Quartile': upperQuartile,
+        'Least Non Outlier': leastNonOutlier,
+        'Greatest Non Outlier': greatestNonOutlier,
+        'Least': least,
+        'Greatest': greatest,
+        'Outliers': outliers
       };
 
   /// The dot product with Numeric that.
@@ -427,7 +423,7 @@ class Numeric extends Column<num> {
   ///
   num dot(List<num> that) {
     if (that.length != length) {
-      throw Exception("Dot product requires lengths to be the same.");
+      throw Exception('Dot product requires lengths to be the same.');
     }
     if ((any((x) => x == null || x == double.nan)) ||
         (that.any((x) => x == null || x == double.nan))) {
@@ -491,12 +487,12 @@ class Numeric extends Column<num> {
           binWidth = (to - from) / bins;
       breaks = List<num>.generate(bins + 1, (i) => from + i * binWidth);
     }
-    breaks..sort();
+    breaks.sort();
     return sequence(breaks.length - 1)
         .map((i) => HistogramBar(
             breaks[i],
             breaks[i + 1],
-            where((x) => x > breaks[i] && x < breaks[i + 1]).length /
+            where((x) => x >= breaks[i] && x < breaks[i + 1]).length /
                 (density ? length * (breaks[i + 1] - breaks[i]) : 1)))
         .toList();
   }

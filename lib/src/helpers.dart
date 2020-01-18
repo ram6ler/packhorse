@@ -5,19 +5,19 @@ List<int> sequence(int n) => List<int>.generate(n, (index) => index);
 /// Checks that variable names are compatable with package FunctionTree.
 void _checkVariableName(String variable) {
   if (variable.isEmpty) {
-    throw Exception("Column name missing.");
+    throw Exception('Column name missing.');
   }
-  if (variable.contains(" ")) {
+  if (variable.contains(' ')) {
     throw Exception(
-        "Column name contains spaces: '$variable'. (Use _ instead.)");
+        'Column name contains spaces: "$variable". (Use _ instead.)');
   }
-  if ("0123456789_".contains(variable[0])) {
+  if ('0123456789_'.contains(variable[0])) {
     throw Exception(
-        "Column name should not start with a number or underscore: '$variable'");
+        'Column name should not start with a number or underscore: "$variable"');
   }
-  if (variable.contains(RegExp(r"[^A-Za-z0-9_]"))) {
+  if (variable.contains(RegExp(r'[^A-Za-z0-9_]'))) {
     throw Exception(
-        "Column name should only contain alphanumerics and underscores: '$variable'");
+        'Column name should only contain alphanumerics and underscores: "$variable"');
   }
 }
 
@@ -55,11 +55,4 @@ class AutoRange {
 class HistogramBar {
   num lowerBound, upperBound, value;
   HistogramBar(this.lowerBound, this.upperBound, this.value);
-}
-
-/// A simple representation of a 2d histogram block.
-class HistogramBlock {
-  num xLowerBound, xUpperBound, yLowerBound, yUpperBound, value;
-  HistogramBlock(this.xLowerBound, this.xUpperBound, this.yLowerBound,
-      this.yUpperBound, this.value);
 }
