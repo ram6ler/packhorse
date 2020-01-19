@@ -26,6 +26,9 @@ abstract class Column<T extends Comparable> extends ListBase<T> {
   List<int> get nonNullIndices =>
       indices.where((index) => this[index] != null).toList();
 
+  /// Descriptive statistics of the data contained.
+  Map<String, Object> get summary;
+
   Map<String, num> _statsMemoization = {};
 
   Column elementsAtIndices(List<int> indices);

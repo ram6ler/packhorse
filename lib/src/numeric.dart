@@ -1,26 +1,5 @@
 part of packhorse;
 
-abstract class NumericStatistic {
-  static const sum = 'sum',
-      sumOfSquares = 'sumOfSquares',
-      mean = 'mean',
-      variance = 'variance',
-      inferredVariance = 'inferredVariance',
-      standardDeviation = 'standardDeviation',
-      inferredStandardDeviation = 'inferredStandardDeviation',
-      skewness = 'skewness',
-      meanAbsoluteDeviation = 'meanAbsoluteDeviation',
-      lowerQuartile = 'lowerQuartile',
-      median = 'median',
-      upperQuartile = 'upperQuartile',
-      interquartileRange = 'interquartileRange',
-      greatest = 'greatest',
-      greatestNonOutlier = 'greatestNonOutlier',
-      least = 'least',
-      leastNonOutlier = 'leastNonOutlier',
-      range = 'range';
-}
-
 /// A convenience wrapper class for [List<num>], with
 /// properties and methods commonly used in data analysis.
 class Numeric extends Column<num> {
@@ -394,21 +373,24 @@ class Numeric extends Column<num> {
   Map<num, double> get proportions => Map<num, double>.fromIterable(toSet(),
       value: (value) => where((x) => x == value).length / length);
 
-  /// A summary of these elements.
+  @override
   Map<String, Object> get summary => {
-        'Sum': sum,
-        'Sum Of Squares': sumOfSquares,
-        'Mean': mean,
-        'Variance': inferredVariance,
-        'Standard Deviation': inferredStandardDeviation,
-        'Median': median,
-        'Lower Quartile': lowerQuartile,
-        'Upper Quartile': upperQuartile,
-        'Least Non Outlier': leastNonOutlier,
-        'Greatest Non Outlier': greatestNonOutlier,
-        'Least': least,
-        'Greatest': greatest,
-        'Outliers': outliers
+        NumericStatistic.numberOfInstances: length,
+        NumericStatistic.sum: sum,
+        NumericStatistic.sumOfSquares: sumOfSquares,
+        NumericStatistic.mean: mean,
+        NumericStatistic.variance: variance,
+        NumericStatistic.inferredVariance: inferredVariance,
+        NumericStatistic.standardDeviation: standardDeviation,
+        NumericStatistic.inferredStandardDeviation: inferredStandardDeviation,
+        NumericStatistic.median: median,
+        NumericStatistic.lowerQuartile: lowerQuartile,
+        NumericStatistic.upperQuartile: upperQuartile,
+        NumericStatistic.leastNonOutlier: leastNonOutlier,
+        NumericStatistic.greatestNonOutlier: greatestNonOutlier,
+        NumericStatistic.least: least,
+        NumericStatistic.greatest: greatest,
+        NumericStatistic.outliers: outliers
       };
 
   /// The dot product with Numeric that.

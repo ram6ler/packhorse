@@ -1,15 +1,5 @@
 part of packhorse;
 
-/// Methods for Lists.
-extension CreateCategorics on List {
-  /// A Categoric containing the data in the list.
-  Categoric toCategoric() => Categoric(this.map((value) => value.toString()));
-}
-
-abstract class CategoricStatistic {
-  static const impurity = 'impurity', entropy = 'entropy';
-}
-
 class Categoric extends Column<String> {
   Categoric(Iterable<String> data, {List<String> withCategories}) {
     _categories = withCategories == null
@@ -168,11 +158,13 @@ class Categoric extends Column<String> {
             .fold(0, (a, b) => a + b);
       });
 
+  @override
   Map<String, Object> get summary => {
-        'counts': counts,
-        'proportions': proportions,
-        'impurity': impurity,
-        'entropy': entropy
+        CategoricStatistic.numberOfInstances: length,
+        CategoricStatistic.counts: counts,
+        CategoricStatistic.proportions: proportions,
+        CategoricStatistic.impurity: impurity,
+        CategoricStatistic.entropy: entropy
       };
 
   @override
