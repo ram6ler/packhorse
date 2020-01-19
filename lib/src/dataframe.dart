@@ -265,11 +265,11 @@ class Dataframe {
       }..addAll({for (final key in nums.keys) key: nums[key].summary});
 
   /// A data frame containing the first [n] rows.
-  Dataframe head([int n = 10]) =>
+  Dataframe withHead([int n = 10]) =>
       this.withRowsAtIndices(indices.take(math.min(n, numberOfRows)).toList());
 
   /// A data frame containing the last [n] rows.
-  Dataframe tail([int n = 10]) => this.withRowsAtIndices(
+  Dataframe withTail([int n = 10]) => this.withRowsAtIndices(
       indices.reversed.take(math.min(n, numberOfRows)).toList());
 
   /// Gets a data frame with rows ordered by the values in [column].
@@ -331,21 +331,21 @@ class Dataframe {
   ///
   Dataframe withColumns(List<String> columns) {
     _validColumnCheck(columns);
-    final cats = Map<String, Categoric>.from(this.cats)
+    final pipedCats = Map<String, Categoric>.from(cats)
           ..removeWhere((key, _) => !columns.contains(key)),
-        nums = Map<String, Numeric>.from(this.nums)
+        pipedNums = Map<String, Numeric>.from(nums)
           ..removeWhere((key, _) => !columns.contains(key));
-    return Dataframe(cats, nums, columns.toList());
+    return Dataframe(pipedCats, pipedNums, columns.toList());
   }
 
   /// A data frame without the specified columns.
   Dataframe withColumnsDropped(List<String> columns) {
     _validColumnCheck(columns);
-    final cats = Map<String, Categoric>.from(this.cats)
+    final pipedCats = Map<String, Categoric>.from(cats)
           ..removeWhere((key, _) => columns.contains(key)),
-        nums = Map<String, Numeric>.from(this.nums)
+        pipedNums = Map<String, Numeric>.from(nums)
           ..removeWhere((key, _) => columns.contains(key));
-    return Dataframe(cats, nums,
+    return Dataframe(pipedCats, pipedNums,
         columnsInOrder.where((column) => !columns.contains(column)).toList());
   }
 
@@ -375,21 +375,22 @@ class Dataframe {
 
   /// A data frame with only the columns specified by [predicate].
   Dataframe withColumnsWhere(bool Function(String) predicate) {
-    final cats = Map<String, Categoric>.from(this.cats)
+    final pipedCats = Map<String, Categoric>.from(cats)
           ..removeWhere((key, _) => !predicate(key)),
-        nums = Map<String, Numeric>.from(this.nums)
+        pipedNums = Map<String, Numeric>.from(nums)
           ..removeWhere((key, _) => !predicate(key)),
-        keys = cats.keys.toList()..addAll(nums.keys);
-    return Dataframe(cats, nums, columnsInOrder.where(keys.contains).toList());
+        keys = pipedCats.keys.toList()..addAll(pipedNums.keys);
+    return Dataframe(
+        pipedCats, pipedNums, columnsInOrder.where(keys.contains).toList());
   }
 
   /// A data frame with only the rows specified by [indices].
   Dataframe withRowsAtIndices(List<int> indices) {
-    final cats = Map<String, Categoric>.fromIterable(this.cats.keys,
-            value: (key) => this.cats[key].elementsAtIndices(indices)),
-        nums = Map<String, Numeric>.fromIterable(this.nums.keys,
-            value: (key) => this.nums[key].elementsAtIndices(indices));
-    return Dataframe(cats, nums, columnsInOrder);
+    final pipedCats = Map<String, Categoric>.fromIterable(cats.keys,
+            value: (key) => cats[key].elementsAtIndices(indices)),
+        pipedNums = Map<String, Numeric>.fromIterable(nums.keys,
+            value: (key) => nums[key].elementsAtIndices(indices));
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A helper function that generates the values specified by a template.
@@ -484,19 +485,41 @@ class Dataframe {
 
   /// A data frame with a categoric inserted.
   Dataframe withCategoric(String name, Categoric categoric) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    cats[name] = categoric;
-    return Dataframe(cats, nums, columnsInOrder);
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedCats[name] = categoric;
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a numeric inserted.
   Dataframe withNumeric(String name, Numeric numeric) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    nums[name] = numeric;
-    return Dataframe(cats, nums, columnsInOrder);
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedNums[name] = numeric;
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
+
+  /// A data frame with a numeric based on an existing numeric.
+  Dataframe withNumericFromNumeric(String name, String existingNumericName,
+          Numeric Function(Numeric numeric) generator) =>
+      withNumeric(name, generator(nums[existingNumericName]));
+
+  /// A data frame with a numeric based on an existing categoric.
+  Dataframe withNumericFromCategoric(String name, String existingCategoricName,
+          Numeric Function(Categoric categoric) generator) =>
+      withNumeric(name, generator(cats[existingCategoricName]));
+
+  /// A data frame with a categoric based on an existing numeric.
+  Dataframe withCategoricFromNumeric(String name, String existingNumericName,
+          Categoric Function(Numeric numeric) generator) =>
+      withCategoric(name, generator(nums[existingNumericName]));
+
+  /// A data frame with a categoric based on an existing categoric.
+  Dataframe withCategoricFromCategoric(
+          String name,
+          String existingCategoricName,
+          Categoric Function(Categoric categoric) generator) =>
+      withCategoric(name, generator(cats[existingCategoricName]));
 
   /// A data frame with a categoric column from a template.
   Dataframe withCategoricFromTemplate(String name, String template,
@@ -504,67 +527,67 @@ class Dataframe {
       String endQuote = '}',
       String Function(String) generator}) {
     generator = generator ?? (x) => x;
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    cats[name] = Categoric(
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedCats[name] = Categoric(
         _templateValues(template, startQuote, endQuote).map(generator));
-    return Dataframe(cats, nums, columnsInOrder);
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a numeric column from a template.
   Dataframe withNumericFromTemplate(
       String name, String template, num Function(String) generator,
       {String startQuote = '{', String endQuote = '}'}) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    nums[name] =
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedNums[name] =
         Numeric(_templateValues(template, startQuote, endQuote).map(generator));
-    return Dataframe(cats, nums, columnsInOrder);
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a categoric column from a formula.
   Dataframe withCategoricFromFormula(
       String name, String formula, String Function(num) generator) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    cats[name] = Categoric(_formulaValues(formula).map(generator));
-    return Dataframe(cats, nums, columnsInOrder);
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedCats[name] = Categoric(_formulaValues(formula).map(generator));
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a numeric column from a formula.
   Dataframe withNumericFromFormula(String name, String formula,
       {num Function(num) generator}) {
     generator = generator ?? (x) => x;
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    nums[name] = Numeric(_formulaValues(formula).map(generator));
-    return Dataframe(cats, nums, columnsInOrder);
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedNums[name] = Numeric(_formulaValues(formula).map(generator));
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a categoric column from a template and formula.
   Dataframe withCategoricFromTemplateAndFormula(String name, String template,
       String formula, String Function(String, num) generator,
       {String startQuote = '{', String endQuote = '}'}) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums),
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums),
         templateValues = _templateValues(template, startQuote, endQuote),
         formulaValues = _formulaValues(formula);
-    cats[name] = Categoric(indices.map(
+    pipedCats[name] = Categoric(indices.map(
         (index) => generator(templateValues[index], formulaValues[index])));
-    return Dataframe(cats, nums, columnsInOrder);
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a numeric column from a template and formula.
   Dataframe withNumericFromTemplateAndFormula(String name, String template,
       String formula, num Function(String, num) generator,
       {String startQuote = '{', String endQuote = '}'}) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums),
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums),
         templateValues = _templateValues(template, startQuote, endQuote),
         formulaValues = _formulaValues(formula);
-    nums[name] = Numeric(indices.map(
+    pipedNums[name] = Numeric(indices.map(
         (index) => generator(templateValues[index], formulaValues[index])));
-    return Dataframe(cats, nums, columnsInOrder);
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a categoric column from the row values.
@@ -572,45 +595,45 @@ class Dataframe {
       String name,
       String Function(Map<String, String> cats, Map<String, num> nums)
           generator) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    cats[name] = Categoric(indices.map((index) {
-      final catsArgument = Map<String, String>.fromIterable(this.cats.keys,
-              value: (key) => this.cats[key][index]),
-          numsArgument = Map<String, num>.fromIterable(this.nums.keys,
-              value: (key) => this.nums[key][index]);
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedCats[name] = Categoric(indices.map((index) {
+      final catsArgument = Map<String, String>.fromIterable(cats.keys,
+              value: (key) => cats[key][index]),
+          numsArgument = Map<String, num>.fromIterable(nums.keys,
+              value: (key) => nums[key][index]);
       return generator(catsArgument, numsArgument);
     }));
 
-    return Dataframe(cats, nums, columnsInOrder);
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a numeric column from the row values.
   Dataframe withNumericFromRowValues(String name,
       num Function(Map<String, String> cats, Map<String, num> nums) generator) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums);
-    nums[name] = Numeric(indices.map((index) {
-      final catsArgument = Map<String, String>.fromIterable(this.cats.keys,
-              value: (key) => this.cats[key][index]),
-          numsArgument = Map<String, num>.fromIterable(this.nums.keys,
-              value: (key) => this.nums[key][index]);
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums);
+    pipedNums[name] = Numeric(indices.map((index) {
+      final catsArgument = Map<String, String>.fromIterable(cats.keys,
+              value: (key) => cats[key][index]),
+          numsArgument = Map<String, num>.fromIterable(nums.keys,
+              value: (key) => nums[key][index]);
       return generator(catsArgument, numsArgument);
     }));
 
-    return Dataframe(cats, nums, columnsInOrder);
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   /// A data frame with a numeric column for each value in a categoric column.
   Dataframe withCategoricEnumerated(String name) {
-    final cats = Map<String, Categoric>.from(this.cats),
-        nums = Map<String, Numeric>.from(this.nums),
-        categories = cats[name].categories;
+    final pipedCats = Map<String, Categoric>.from(cats),
+        pipedNums = Map<String, Numeric>.from(nums),
+        categories = pipedCats[name].categories;
     for (final category in categories) {
-      nums['${name}_$category'] =
-          Numeric(cats[name].map((cat) => cat == category ? 1 : 0));
+      pipedNums['${name}_$category'] =
+          Numeric(pipedCats[name].map((cat) => cat == category ? 1 : 0));
     }
-    return Dataframe(cats, nums, columnsInOrder);
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
   Dataframe withNumericCategorized(String name,
@@ -773,9 +796,9 @@ class Dataframe {
     var variableSet = Set<int>();
     for (final column in columns) {
       if (cats.containsKey(column)) {
-        variableSet.addAll(this.cats[column].nullIndices);
+        variableSet.addAll(cats[column].nullIndices);
       } else {
-        variableSet.addAll(this.nums[column].nullIndices);
+        variableSet.addAll(nums[column].nullIndices);
       }
     }
 

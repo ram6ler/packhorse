@@ -27,7 +27,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "748b5f2973b410bfda3c1865cccd52b88e7e7f2e"
+      resolved-ref: "9105f13a9e12034a96f7cad6433113fa9c4df0cf"
       url: "https://ram6ler@bitbucket.org/ram6ler/popmark.git"
     source: git
     version: "0.1.0"
