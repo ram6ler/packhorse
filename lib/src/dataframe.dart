@@ -30,6 +30,9 @@ class Dataframe {
         value: (key) => Numeric(data[key].map((x) => x as num)));
   }
 
+  factory Dataframe.fromJsonAsMapOfLists(String jsonString) =>
+      jsonString.parseAsMapOfLists();
+
   factory Dataframe.fromListOfMaps(List<Map<String, Object>> instances) {
     final data = Map<String, List<Object>>();
     for (int index = 0; index < instances.length; index++) {
@@ -44,9 +47,11 @@ class Dataframe {
         data[key].add(null);
       }
     }
-
     return Dataframe.fromMapOfLists(data);
   }
+
+  factory Dataframe.fromJsonAsListOfMaps(String jsonString) =>
+      jsonString.parseAsListOfMaps();
 
   Dataframe.fromCsv(String csv,
       {String seperator = ',', Map<String, String> types}) {
@@ -380,7 +385,6 @@ class Dataframe {
           bool Function(Map<String, String>, Map<String, num>) predicate) =>
       withRowsAtIndices(indicesWhereRowValues(predicate));
 
-  /// Returns a data frame with a categoric column inserted.
   Dataframe withCategoric(String name, Categoric categoric) {
     if (categoric.length != numberOfRows) {
       throw Exception(
@@ -388,18 +392,17 @@ class Dataframe {
     }
     final pipedCats = Map<String, Categoric>.from(cats),
         pipedNums = Map<String, Numeric>.from(nums);
-    pipedCats[name] = categoric;
+    pipedCats[name] = Categoric(categoric);
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// Returns a data frame with a numeric inserted.
   Dataframe withNumeric(String name, Numeric numeric) {
     if (numeric.length != numberOfRows) {
       throw Exception('Expecting $numberOfRows values; got ${numeric.length}.');
     }
     final pipedCats = Map<String, Categoric>.from(cats),
         pipedNums = Map<String, Numeric>.from(nums);
-    pipedNums[name] = numeric;
+    pipedNums[name] = Numeric(numeric);
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
@@ -407,17 +410,14 @@ class Dataframe {
           Numeric Function(Numeric numeric) generator) =>
       withNumeric(name, generator(nums[existingNumericName]));
 
-  /// Returns a data frame with a numeric based on an existing categoric.
   Dataframe withNumericFromCategoric(String name, String existingCategoricName,
           Numeric Function(Categoric categoric) generator) =>
       withNumeric(name, generator(cats[existingCategoricName]));
 
-  /// Returns a data frame with a categoric based on an existing numeric.
   Dataframe withCategoricFromNumeric(String name, String existingNumericName,
           Categoric Function(Numeric numeric) generator) =>
       withCategoric(name, generator(nums[existingNumericName]));
 
-  /// Returns a data frame with a categoric based on an existing categoric.
   Dataframe withCategoricFromCategoric(
           String name,
           String existingCategoricName,
@@ -836,6 +836,11 @@ ${rows.join('\n')}
 ${rows.join('\n')}
 ''';
   }
+
+  ///
+  String toJsonAsListOfMaps() => json.encode(toListOfMaps());
+
+  String toJsonAsMapOfLists() => json.encode(toMapOfLists());
 
   /// Gives an html table representation of this data frame.
   String toHtml({bool summary = false, int fixed}) {

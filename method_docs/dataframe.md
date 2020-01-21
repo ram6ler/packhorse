@@ -9,37 +9,26 @@ Example:
 
 ```dart
 final data = Dataframe.fromMapOfLists({
-   'image': ['🍑', '🍆', '🍊', '🍓', '🍍'],
-   'fruit': [
-     'peach',
-     'eggplant',
-     'tangerine',
-     'strawberry',
-     'pineapple'
-   ],
-   'color': [
-     'pink',
-     'purple',
-     'orange',
-     'red',
-     'yellow'
-   ],
-   'rating': [7, 7, 8, 9, 6]
- });
+   'id': [3, 55, 114, 107, 122], 
+   'species': ['setosa', 'versicolor', 'virginica', 'virginica', 'virginica'], 
+   'sepal_length': [4.7, 6.5, 5.7, 4.9, 5.6], 
+   'sepal_width': [3.2, 2.8, 2.5, 2.5, 2.8], 
+   'petal_length': [1.3, 4.6, 5.0, 4.5, 4.9], 
+   'petal_width': [0.2, 1.5, 2.0, 1.7, 2.0]});
 
 print(data);
 ```
 
 ```text
-.-----.----------.------.------.
-|image|     fruit| color|rating|
-:-----+----------+------+------:
-|   🍑|     peach|  pink|     7|
-|   🍆|  eggplant|purple|     7|
-|   🍊| tangerine|orange|     8|
-|   🍓|strawberry|   red|     9|
-|   🍍| pineapple|yellow|     6|
-'-----'----------'------'------'
+.----------.---.------------.-----------.------------.-----------.
+|   species| id|sepal_length|sepal_width|petal_length|petal_width|
+:----------+---+------------+-----------+------------+-----------:
+|    setosa|  3|         4.7|        3.2|         1.3|        0.2|
+|versicolor| 55|         6.5|        2.8|         4.6|        1.5|
+| virginica|114|         5.7|        2.5|         5.0|        2.0|
+| virginica|107|         4.9|        2.5|         4.5|        1.7|
+| virginica|122|         5.6|        2.8|         4.9|        2.0|
+'----------'---'------------'-----------'------------'-----------'
 
 ```
 
@@ -54,26 +43,25 @@ Example:
 
 ```dart
 final data = Dataframe.fromListOfMaps([
-  {'image': '🍑', 'fruit': 'peach', 'color': 'pink', 'rating': 7},
-  {'image': '🍆', 'fruit': 'eggplant', 'color': 'purple', 'rating': 7},
-  {'image': '🍊', 'fruit': 'tangerine', 'color': 'orange', 'rating': 8},
-  {'image': '🍓', 'fruit': 'strawberry', 'color': 'red', 'rating': 9},
-  {'image': '🍍', 'fruit': 'pineapple', 'color': 'yellow', 'rating': 6}
-]);
+  {'id': 103, 'species': 'virginica', 'petal_length': 5.9, 'petal_width': 2.1},
+  {'id': 53, 'species': 'versicolor', 'petal_length': 4.9, 'petal_width': 1.5},
+  {'id': 52, 'species': 'versicolor', 'petal_length': 4.5, 'petal_width': 1.5},
+  {'id': 101, 'species': 'virginica', 'petal_length': 6.0, 'petal_width': 2.5},
+  {'id': 4, 'species': 'setosa', 'petal_length': 1.5, 'petal_width': 0.2}]);
 
 print(data);
 ```
 
 ```text
-.-----.----------.------.------.
-|image|     fruit| color|rating|
-:-----+----------+------+------:
-|   🍑|     peach|  pink|     7|
-|   🍆|  eggplant|purple|     7|
-|   🍊| tangerine|orange|     8|
-|   🍓|strawberry|   red|     9|
-|   🍍| pineapple|yellow|     6|
-'-----'----------'------'------'
+.----------.---.------------.-----------.
+|   species| id|petal_length|petal_width|
+:----------+---+------------+-----------:
+| virginica|103|         5.9|        2.1|
+|versicolor| 53|         4.9|        1.5|
+|versicolor| 52|         4.5|        1.5|
+| virginica|101|         6.0|        2.5|
+|    setosa|  4|         1.5|        0.2|
+'----------'---'------------'-----------'
 
 ```
 
@@ -92,27 +80,26 @@ Example:
 
 ```dart
 final data = Dataframe.fromCsv('''
-  image,fruit,color,rating
-  🍑,peach,pink,7
-  🍆,eggplant,purple,7
-  🍊,tangerine,orange,8
-  🍓,strawberry,red,9
-  🍍,pineapple,yellow,6
+    id,sepal_length,sepal_width,petal_length,petal_width,species
+    57,6.3,3.3,4.7,1.6,versicolor
+    44,5.0,3.5,1.6,0.6,setosa
+    58,4.9,2.4,3.3,1.0,versicolor
+    68,5.8,2.7,4.1,1.0,versicolor
+    94,5.0,2.3,3.3,1.0,versicolor
 ''');
-
 print(data);
 ```
 
 ```text
-.-----.----------.------.------.
-|image|     fruit| color|rating|
-:-----+----------+------+------:
-|   🍑|     peach|  pink|     7|
-|   🍆|  eggplant|purple|     7|
-|   🍊| tangerine|orange|     8|
-|   🍓|strawberry|   red|     9|
-|   🍍| pineapple|yellow|     6|
-'-----'----------'------'------'
+.--.------------.-----------.------------.-----------.----------.
+|id|sepal_length|sepal_width|petal_length|petal_width|   species|
+:--+------------+-----------+------------+-----------+----------:
+|57|         6.3|        3.3|         4.7|        1.6|versicolor|
+|44|         5.0|        3.5|         1.6|        0.6|    setosa|
+|58|         4.9|        2.4|         3.3|        1.0|versicolor|
+|68|         5.8|        2.7|         4.1|        1.0|versicolor|
+|94|         5.0|        2.3|         3.3|        1.0|versicolor|
+'--'------------'-----------'------------'-----------'----------'
 
 ```
 
@@ -876,11 +863,11 @@ print(iris.withRowsSampled(5));
 .---.------------.-----------.------------.-----------.----------.
 | id|sepal_length|sepal_width|petal_length|petal_width|   species|
 :---+------------+-----------+------------+-----------+----------:
-| 33|         5.2|        4.1|         1.5|        0.1|    setosa|
-| 92|         6.1|        3.0|         4.6|        1.4|versicolor|
-| 25|         4.8|        3.4|         1.9|        0.2|    setosa|
-| 20|         5.1|        3.8|         1.5|        0.3|    setosa|
-|112|         6.4|        2.7|         5.3|        1.9| virginica|
+|116|         6.4|        3.2|         5.3|        2.3| virginica|
+|101|         6.3|        3.3|         6.0|        2.5| virginica|
+| 61|         5.0|        2.0|         3.5|        1.0|versicolor|
+| 17|         5.4|        3.9|         1.3|        0.4|    setosa|
+| 54|         5.5|        2.3|         4.0|        1.3|versicolor|
 '---'------------'-----------'------------'-----------'----------'
 
 ```
@@ -1142,6 +1129,66 @@ print(iris.withRowsWhereRowValues((cats, nums) =>
 
 ```
 
+# `withCategoric`
+
+Returns a data frame with a categoric column inserted.
+
+Example:
+
+```dart
+print(sepals.withCategoric('species', petals.cats['species']));
+```
+
+```text
+.---.------------.-----------.----------.
+| id|sepal_length|sepal_width|   species|
+:---+------------+-----------+----------:
+|  3|         4.7|        3.2|    setosa|
+|  4|         4.6|        3.1|    setosa|
+|  5|         5.0|        3.6|    setosa|
+|  6|         5.4|        3.9|    setosa|
+| 53|         6.9|        3.1|versicolor|
+| 54|         5.5|        2.3|versicolor|
+| 55|         6.5|        2.8|versicolor|
+| 56|         5.7|        2.8|versicolor|
+|103|         7.1|        3.0| virginica|
+|104|         6.3|        2.9| virginica|
+|105|         6.5|        3.0| virginica|
+|106|         7.6|        3.0| virginica|
+'---'------------'-----------'----------'
+
+```
+
+# `withNumeric`
+
+Returns a data frame with a numeric inserted.
+
+Example:
+
+```dart
+print(petals.withNumeric('sepal_length', sepals.nums['sepal_length']));
+```
+
+```text
+.---.------------.-----------.----------.------------.
+| id|petal_length|petal_width|   species|sepal_length|
+:---+------------+-----------+----------+------------:
+|  1|         1.4|        0.2|    setosa|         4.7|
+|  2|         1.4|        0.2|    setosa|         4.6|
+|  3|         1.3|        0.2|    setosa|         5.0|
+|  4|         1.5|        0.2|    setosa|         5.4|
+| 51|         4.7|        1.4|versicolor|         6.9|
+| 52|         4.5|        1.5|versicolor|         5.5|
+| 53|         4.9|        1.5|versicolor|         6.5|
+| 54|         4.0|        1.3|versicolor|         5.7|
+|101|         6.0|        2.5| virginica|         7.1|
+|102|         5.1|        1.9| virginica|         6.3|
+|103|         5.9|        2.1| virginica|         6.5|
+|104|         5.6|        1.8| virginica|         7.6|
+'---'------------'-----------'----------'------------'
+
+```
+
 # `withNumericFromNumeric`
 
 Returns a data frame with a numeric based on an existing numeric.
@@ -1173,6 +1220,66 @@ print(petals.withNumericFromNumeric('petal_length_z', 'petal_length',
 
 ```
 
+# `withNumericFromCategoric`
+
+Returns a data frame with a numeric based on an existing categoric.
+
+Example:
+
+```dart
+final sample = iris.withRowsSampled(10, seed: 0);
+print(sample.withNumericFromCategoric('proportion', 'species',
+  (species) => Numeric(species.map((name) => species.proportions[name]))));
+```
+
+```text
+.---.------------.-----------.------------.-----------.----------.----------.
+| id|sepal_length|sepal_width|petal_length|petal_width|   species|proportion|
+:---+------------+-----------+------------+-----------+----------+----------:
+|111|         6.5|        3.2|         5.1|        2.0| virginica|       0.3|
+|147|         6.3|        2.5|         5.0|        1.9| virginica|       0.3|
+| 79|         6.0|        2.9|         4.5|        1.5|versicolor|       0.4|
+| 34|         5.5|        4.2|         1.4|        0.2|    setosa|       0.3|
+| 86|         6.0|        3.4|         4.5|        1.6|versicolor|       0.4|
+| 61|         5.0|        2.0|         3.5|        1.0|versicolor|       0.4|
+| 40|         5.1|        3.4|         1.5|        0.2|    setosa|       0.3|
+|119|         7.7|        2.6|         6.9|        2.3| virginica|       0.3|
+|  8|         5.0|        3.4|         1.5|        0.2|    setosa|       0.3|
+| 56|         5.7|        2.8|         4.5|        1.3|versicolor|       0.4|
+'---'------------'-----------'------------'-----------'----------'----------'
+
+```
+
+# `withCategoricFromNumeric`
+
+Returns a data frame with a categoric based on an existing numeric.
+
+Example:
+
+```dart
+final sample = iris.withRowsSampled(10, seed: 0);
+print(sample.withCategoricFromNumeric('sepal_length_outlier', 'sepal_length',
+  (width) => Categoric(width.map((w) => width.outliers.contains(w) ? 'yes': 'no'))));
+```
+
+```text
+.---.------------.-----------.------------.-----------.----------.--------------------.
+| id|sepal_length|sepal_width|petal_length|petal_width|   species|sepal_length_outlier|
+:---+------------+-----------+------------+-----------+----------+--------------------:
+|111|         6.5|        3.2|         5.1|        2.0| virginica|                  no|
+|147|         6.3|        2.5|         5.0|        1.9| virginica|                  no|
+| 79|         6.0|        2.9|         4.5|        1.5|versicolor|                  no|
+| 34|         5.5|        4.2|         1.4|        0.2|    setosa|                  no|
+| 86|         6.0|        3.4|         4.5|        1.6|versicolor|                  no|
+| 61|         5.0|        2.0|         3.5|        1.0|versicolor|                  no|
+| 40|         5.1|        3.4|         1.5|        0.2|    setosa|                  no|
+|119|         7.7|        2.6|         6.9|        2.3| virginica|                 yes|
+|  8|         5.0|        3.4|         1.5|        0.2|    setosa|                  no|
+| 56|         5.7|        2.8|         4.5|        1.3|versicolor|                  no|
+'---'------------'-----------'------------'-----------'----------'--------------------'
+
+```
+
 # `withCategoricFromTemplate`
 
 Returns a data frame with a categoric column from a template.
@@ -1201,6 +1308,35 @@ print(petals.withCategoricFromTemplate('id_code', template));
 |103|         5.9|        2.1| virginica|virginica-103|
 |104|         5.6|        1.8| virginica|virginica-104|
 '---'------------'-----------'----------'-------------'
+
+```
+
+# `withCategoricFromCategoric`
+
+Returns a data frame with a categoric based on an existing categoric.
+
+```dart
+final sample = iris.withRowsSampled(10, seed: 0);
+print(sample.withCategoricFromCategoric('rarity', 'species',
+  (species) => Categoric(
+      species.map((s) => species.proportions[s] <= 0.3 ? 'rare': 'common'))));
+```
+
+```text
+.---.------------.-----------.------------.-----------.----------.------.
+| id|sepal_length|sepal_width|petal_length|petal_width|   species|rarity|
+:---+------------+-----------+------------+-----------+----------+------:
+|111|         6.5|        3.2|         5.1|        2.0| virginica|  rare|
+|147|         6.3|        2.5|         5.0|        1.9| virginica|  rare|
+| 79|         6.0|        2.9|         4.5|        1.5|versicolor|common|
+| 34|         5.5|        4.2|         1.4|        0.2|    setosa|  rare|
+| 86|         6.0|        3.4|         4.5|        1.6|versicolor|common|
+| 61|         5.0|        2.0|         3.5|        1.0|versicolor|common|
+| 40|         5.1|        3.4|         1.5|        0.2|    setosa|  rare|
+|119|         7.7|        2.6|         6.9|        2.3| virginica|  rare|
+|  8|         5.0|        3.4|         1.5|        0.2|    setosa|  rare|
+| 56|         5.7|        2.8|         4.5|        1.3|versicolor|common|
+'---'------------'-----------'------------'-----------'----------'------'
 
 ```
 
