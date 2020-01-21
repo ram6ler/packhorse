@@ -1,7 +1,7 @@
 part of packhorse;
 
 class Dataframe {
-  /// A data frame with `cats` and `nums` specified.
+  /// Creates a data frame with `cats` and `nums` specified.
   Dataframe(this.cats, this.nums, List<String> columnsInOrder,
       {bool ignoreLengthMismatch = false}) {
     final lengths = (cats.keys.map((key) => cats[key].length).toList()
@@ -21,44 +21,6 @@ class Dataframe {
     nums = Map<String, Numeric>();
   }
 
-  /// A data frame from a map of lists.
-  ///
-  /// The keya of the map are interpreted as the column names;
-  /// the values in the respective lists populate the rows.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final data = Dataframe.fromMapOfLists({
-  ///   'image': ['🍑', '🍆', '🍊', '🍓', '🍍', '🍉', '🍇', '🍌', '🍒', '🍎'],
-  ///   'fruit': [
-  ///     'peach',
-  ///     'eggplant',
-  ///     'tangerine',
-  ///     'strawberry',
-  ///     'pineapple',
-  ///     'watermelon',
-  ///     'grapes',
-  ///     'banana',
-  ///     'cherries',
-  ///     'apple'
-  ///   ],
-  ///   'color': [
-  ///     'pink',
-  ///     'purple',
-  ///     'orange',
-  ///     'red',
-  ///     'yellow',
-  ///     'pink',
-  ///     'purple',
-  ///     'yellow',
-  ///     'red',
-  ///     'red'
-  ///   ],
-  ///   'rating': [7, 7, 8, 9, 6, 6, 7, 7, 10, 5]
-  /// });
-  /// ```
-  ///
   Dataframe.fromMapOfLists(Map<String, List<Object>> data) {
     cats = Map<String, Categoric>.fromIterable(
         data.keys.where((key) => data[key].first is String),
@@ -68,28 +30,6 @@ class Dataframe {
         value: (key) => Numeric(data[key].map((x) => x as num)));
   }
 
-  /// A data frame form a list of maps.
-  ///
-  /// Each map populates a row; the keys in each map determine
-  /// the column each value should be put into.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final data = Dataframe.fromListOfInstanceMaps([
-  ///   {'image': '🍑', 'fruit': 'peach', 'color': 'pink', 'rating': 7},
-  ///   {'image': '🍆', 'fruit': 'eggplant', 'color': 'purple', 'rating': 7},
-  ///   {'image': '🍊', 'fruit': 'tangerine', 'color': 'orange', 'rating': 8},
-  ///   {'image': '🍓', 'fruit': 'strawberry', 'color': 'red', 'rating': 9},
-  ///   {'image': '🍍', 'fruit': 'pineapple', 'color': 'yellow', 'rating': 6},
-  ///   {'image': '🍉', 'fruit': 'watermelon', 'color': 'pink', 'rating': 6},
-  ///   {'image': '🍇', 'fruit': 'grapes', 'color': 'purple', 'rating': 7},
-  ///   {'image': '🍌', 'fruit': 'banana', 'color': 'yellow', 'rating': 7},
-  ///   {'image': '🍒', 'fruit': 'cherries', 'color': 'red', 'rating': 10},
-  ///   {'image': '🍎', 'fruit': 'apple', 'color': 'red', 'rating': 5}
-  /// ]);
-  /// ```
-  ///
   factory Dataframe.fromListOfMaps(List<Map<String, Object>> instances) {
     final data = Map<String, List<Object>>();
     for (int index = 0; index < instances.length; index++) {
@@ -108,33 +48,6 @@ class Dataframe {
     return Dataframe.fromMapOfLists(data);
   }
 
-  /// A data frame from a csv expression.
-  ///
-  /// Whether a column contains numeric or categorig is either
-  /// explicitly set using [types] or guessed based on the values
-  /// in the first row of data. A shorthand way of explicitly
-  /// defining column type is to include an asterisk (*) or carat (^) in
-  /// the column header to force a column to be categoric or numeric
-  /// respectively.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final data = Dataframe.fromCsv('''
-  ///   image,fruit,color,rating
-  ///   🍑,peach,pink,7
-  ///   🍆,eggplant,purple,7
-  ///   🍊,tangerine,orange,8
-  ///   🍓,strawberry,red,9
-  ///   🍍,pineapple,yellow,6
-  ///   🍉,watermelon,pink,6
-  ///   🍇,grapes,purple,7
-  ///   🍌,banana,yellow,7
-  ///   🍒,cherries,red,10
-  ///   🍎,apple,red,5
-  /// ''');
-  /// ```
-  ///
   Dataframe.fromCsv(String csv,
       {String seperator = ',', Map<String, String> types}) {
     final
@@ -259,20 +172,17 @@ class Dataframe {
   /// A sequence of integers that runs along the rows of this data frame.
   List<int> get indices => sequence(numberOfRows);
 
-  /// TODO: document
+  /// A summary of each column in this data frame.
   Map<String, Map<String, Object>> get summary => {
         for (final key in cats.keys) key: cats[key].summary
       }..addAll({for (final key in nums.keys) key: nums[key].summary});
 
-  /// A data frame containing the first [n] rows.
   Dataframe withHead([int n = 10]) =>
       this.withRowsAtIndices(indices.take(math.min(n, numberOfRows)).toList());
 
-  /// A data frame containing the last [n] rows.
   Dataframe withTail([int n = 10]) => this.withRowsAtIndices(
       indices.reversed.take(math.min(n, numberOfRows)).toList());
 
-  /// Gets a data frame with rows ordered by the values in [column].
   Dataframe withRowsOrderedBy(String column, {bool decreasing = false}) {
     var frame = Dataframe(Map<String, Categoric>.from(cats),
         Map<String, Numeric>.from(nums), columnsInOrder);
@@ -305,12 +215,11 @@ class Dataframe {
     return randomIndices;
   }
 
-  /// Gets a data frame made up of rows randomly sampled from this data frame.
   Dataframe withRowsSampled(int n, {bool replacement = false, int seed}) =>
       withRowsAtIndices(
           sampleRowIndices(n, replacement: replacement, seed: seed));
 
-  /// Gets a data frame with a row index column added.
+  /// Returns a data frame with a row index column added.
   Dataframe withRowIndices(String name) => Dataframe(
       Map<String, Categoric>.from(cats),
       Map<String, Numeric>.from(nums)..addAll({name: Numeric(indices)}),
@@ -325,10 +234,6 @@ class Dataframe {
     }
   }
 
-  /// A data frame with only the specified columns, in that order.
-  ///
-  /// (If a column name is repeated the column will appear more than once in presentations.)
-  ///
   Dataframe withColumns(List<String> columns) {
     _validColumnCheck(columns);
     final pipedCats = Map<String, Categoric>.from(cats)
@@ -338,7 +243,6 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columns.toList());
   }
 
-  /// A data frame without the specified columns.
   Dataframe withColumnsDropped(List<String> columns) {
     _validColumnCheck(columns);
     final pipedCats = Map<String, Categoric>.from(cats)
@@ -349,7 +253,6 @@ class Dataframe {
         columnsInOrder.where((column) => !columns.contains(column)).toList());
   }
 
-  /// A data frame with column names changed.
   Dataframe withColumnNamesChanged(Map<String, String> names) {
     _validColumnCheck(names.keys.toList());
     final changedCats = Map<String, Categoric>.from(cats),
@@ -373,7 +276,6 @@ class Dataframe {
     return Dataframe(changedCats, changedNums, order);
   }
 
-  /// A data frame with only the columns specified by [predicate].
   Dataframe withColumnsWhere(bool Function(String) predicate) {
     final pipedCats = Map<String, Categoric>.from(cats)
           ..removeWhere((key, _) => !predicate(key)),
@@ -384,7 +286,6 @@ class Dataframe {
         pipedCats, pipedNums, columnsInOrder.where(keys.contains).toList());
   }
 
-  /// A data frame with only the rows specified by [indices].
   Dataframe withRowsAtIndices(List<int> indices) {
     final pipedCats = Map<String, Categoric>.fromIterable(cats.keys,
             value: (key) => cats[key].elementsAtIndices(indices)),
@@ -439,7 +340,6 @@ class Dataframe {
     }).toList();
   }
 
-  /// Gives a data frame with only the rows that match a template predicate.
   Dataframe withRowsWhereTemplate(
           String template, bool Function(String) predicate,
           {String startQuote = '{', String endQuote = '}'}) =>
@@ -452,7 +352,6 @@ class Dataframe {
     return indices.where((index) => predicate(formulaValues[index])).toList();
   }
 
-  /// Gives a data frame with only the rows that match a formula predicate.
   Dataframe withRowsWhereFormula(
           String formula, bool Function(num) predicate) =>
       withRowsAtIndices(indicesWhereFormula(formula, predicate));
@@ -470,7 +369,6 @@ class Dataframe {
         .toList();
   }
 
-  /// Gives a data frame with only the rows that match a template and formula predicate.
   Dataframe withRowsWhereTemplateAndFormula(
           String template, String formula, bool Function(String, num) predicate,
           {String startQuote = '{', String endQuote = '}'}) =>
@@ -478,50 +376,54 @@ class Dataframe {
           template, formula, predicate,
           startQuote: startQuote, endQuote: endQuote));
 
-  /// Gives the data frame with only rows matched by the defined predicate.
   Dataframe withRowsWhereRowValues(
           bool Function(Map<String, String>, Map<String, num>) predicate) =>
       withRowsAtIndices(indicesWhereRowValues(predicate));
 
-  /// A data frame with a categoric inserted.
+  /// Returns a data frame with a categoric column inserted.
   Dataframe withCategoric(String name, Categoric categoric) {
+    if (categoric.length != numberOfRows) {
+      throw Exception(
+          'Expecting $numberOfRows values; got ${categoric.length}.');
+    }
     final pipedCats = Map<String, Categoric>.from(cats),
         pipedNums = Map<String, Numeric>.from(nums);
     pipedCats[name] = categoric;
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a numeric inserted.
+  /// Returns a data frame with a numeric inserted.
   Dataframe withNumeric(String name, Numeric numeric) {
+    if (numeric.length != numberOfRows) {
+      throw Exception('Expecting $numberOfRows values; got ${numeric.length}.');
+    }
     final pipedCats = Map<String, Categoric>.from(cats),
         pipedNums = Map<String, Numeric>.from(nums);
     pipedNums[name] = numeric;
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a numeric based on an existing numeric.
   Dataframe withNumericFromNumeric(String name, String existingNumericName,
           Numeric Function(Numeric numeric) generator) =>
       withNumeric(name, generator(nums[existingNumericName]));
 
-  /// A data frame with a numeric based on an existing categoric.
+  /// Returns a data frame with a numeric based on an existing categoric.
   Dataframe withNumericFromCategoric(String name, String existingCategoricName,
           Numeric Function(Categoric categoric) generator) =>
       withNumeric(name, generator(cats[existingCategoricName]));
 
-  /// A data frame with a categoric based on an existing numeric.
+  /// Returns a data frame with a categoric based on an existing numeric.
   Dataframe withCategoricFromNumeric(String name, String existingNumericName,
           Categoric Function(Numeric numeric) generator) =>
       withCategoric(name, generator(nums[existingNumericName]));
 
-  /// A data frame with a categoric based on an existing categoric.
+  /// Returns a data frame with a categoric based on an existing categoric.
   Dataframe withCategoricFromCategoric(
           String name,
           String existingCategoricName,
           Categoric Function(Categoric categoric) generator) =>
       withCategoric(name, generator(cats[existingCategoricName]));
 
-  /// A data frame with a categoric column from a template.
   Dataframe withCategoricFromTemplate(String name, String template,
       {String startQuote = '{',
       String endQuote = '}',
@@ -534,7 +436,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a numeric column from a template.
+  /// Returns a data frame with a numeric column from a template.
   Dataframe withNumericFromTemplate(
       String name, String template, num Function(String) generator,
       {String startQuote = '{', String endQuote = '}'}) {
@@ -545,7 +447,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a categoric column from a formula.
+  /// Returns a data frame with a categoric column from a formula.
   Dataframe withCategoricFromFormula(
       String name, String formula, String Function(num) generator) {
     final pipedCats = Map<String, Categoric>.from(cats),
@@ -554,7 +456,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a numeric column from a formula.
+  /// Returns a data frame with a numeric column from a formula.
   Dataframe withNumericFromFormula(String name, String formula,
       {num Function(num) generator}) {
     generator = generator ?? (x) => x;
@@ -564,7 +466,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a categoric column from a template and formula.
+  /// Returns a data frame with a categoric column from a template and formula.
   Dataframe withCategoricFromTemplateAndFormula(String name, String template,
       String formula, String Function(String, num) generator,
       {String startQuote = '{', String endQuote = '}'}) {
@@ -577,7 +479,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a numeric column from a template and formula.
+  /// Returns a data frame with a numeric column from a template and formula.
   Dataframe withNumericFromTemplateAndFormula(String name, String template,
       String formula, num Function(String, num) generator,
       {String startQuote = '{', String endQuote = '}'}) {
@@ -590,7 +492,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a categoric column from the row values.
+  /// Returns a data frame with a categoric column from the row values.
   Dataframe withCategoricFromRowValues(
       String name,
       String Function(Map<String, String> cats, Map<String, num> nums)
@@ -608,7 +510,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a numeric column from the row values.
+  /// Returns a data frame with a numeric column from the row values.
   Dataframe withNumericFromRowValues(String name,
       num Function(Map<String, String> cats, Map<String, num> nums) generator) {
     final pipedCats = Map<String, Categoric>.from(cats),
@@ -624,7 +526,7 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
-  /// A data frame with a numeric column for each value in a categoric column.
+  /// Returns a data frame with a numeric column for each value in a categoric column.
   Dataframe withCategoricEnumerated(String name) {
     final pipedCats = Map<String, Categoric>.from(cats),
         pipedNums = Map<String, Numeric>.from(nums),
@@ -656,7 +558,7 @@ class Dataframe {
     return withCategoricFromFormula('${name}_category', name, convert);
   }
 
-  /// A data frame from a full left join.
+  /// Returns a data frame from a full left join.
   Dataframe withLeftJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
     final ids =
@@ -664,7 +566,7 @@ class Dataframe {
     return _join(this, other, pivot, otherPivot, ids);
   }
 
-  /// A data frame from a full right join.
+  /// Returns a data frame from a full right join.
   Dataframe withRightJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
     final ids = other.cats.containsKey(otherPivot)
@@ -673,7 +575,7 @@ class Dataframe {
     return _join(this, other, pivot, otherPivot, ids);
   }
 
-  /// A data frame from an inner join.
+  /// Returns a data frame from an inner join.
   Dataframe withInnerJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
     final ids =
@@ -684,7 +586,7 @@ class Dataframe {
     return _join(this, other, pivot, otherPivot, ids);
   }
 
-  /// A data frame from a full join.
+  /// Returns a data frame from a full join.
   Dataframe withFullJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
     final ids =
@@ -695,7 +597,7 @@ class Dataframe {
     return _join(this, other, pivot, otherPivot, ids);
   }
 
-  /// A data frame from an outer left join.
+  /// Returns a data frame from an outer left join.
   Dataframe withLeftOuterJoin(Dataframe other, String pivot,
       {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
@@ -708,7 +610,7 @@ class Dataframe {
     return _join(this, other, pivot, otherPivot, ids);
   }
 
-  /// A data frame from an outer right join.
+  /// Returns a data frame from an outer right join.
   Dataframe withRightOuterJoin(Dataframe other, String pivot,
       {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
@@ -721,7 +623,7 @@ class Dataframe {
     return _join(this, other, pivot, otherPivot, ids);
   }
 
-  /// A data frame from an outer join.
+  /// Returns a data frame from an outer join.
   Dataframe withOuterJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
     final a =
@@ -733,7 +635,7 @@ class Dataframe {
     return _join(this, other, pivot, otherPivot, ids);
   }
 
-  /// A data frame with the rows of [other] added.
+  /// Returns a data frame with the rows of [other] added.
   Dataframe withDataAdded(Dataframe other) {
     final catsKeysSet = (cats.keys.toList()..addAll(other.cats.keys)).toSet(),
         combinedCats = Map<String, List<String>>.fromIterable(catsKeysSet,
@@ -832,11 +734,6 @@ class Dataframe {
         value: (value) =>
             withRowsAtIndices(nums[numeric].indicesWhere((v) => v == value)));
   }
-
-  /// Gives a list of strings generated from the row values.
-  List<String> toListOfStringsFromTemplate(String template,
-          {String startQuote = '{', String endQuote = '}'}) =>
-      _templateValues(template, startQuote, endQuote);
 
   /// Gives the values in a row as a map.
   Map<String, Object> valuesInRow(int index) =>
@@ -994,6 +891,17 @@ ${rows.join('\n')}
       (indices == null ? this.indices : indices)
           .map((index) => valuesInRow(index))
           .toList();
+
+  /// Gives a list of strings generated from the row values.
+  List<String> toListOfStringsFromTemplate(String template,
+          {String startQuote = '{',
+          String endQuote = '}',
+          String Function(String) generator}) =>
+      generator == null
+          ? _templateValues(template, startQuote, endQuote)
+          : _templateValues(template, startQuote, endQuote)
+              .map(generator)
+              .toList();
 
   /// Gives a string representation of this data frame.
   @override
