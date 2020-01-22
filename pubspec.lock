@@ -25,11 +25,9 @@ packages:
   popmark:
     dependency: "direct dev"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "380ef5a8cfc45d9cffc1c61ee8b145eac3527f32"
-      url: "https://ram6ler@bitbucket.org/ram6ler/popmark.git"
-    source: git
+      name: popmark
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.0"
 sdks:
   dart: ">=2.7.0 <3.0.0"

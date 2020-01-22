@@ -5,22 +5,21 @@ print(petals.toMarkdown());
 ```
 
 ```text
-|id|petal_length|petal_width|species|
-|:--:|:--:|:--:|:--:|
-|1|1.4|0.2|setosa|
-|2|1.4|0.2|setosa|
-|3|1.3|0.2|setosa|
-|4|1.5|0.2|setosa|
-|51|4.7|1.4|versicolor|
-|52|4.5|1.5|versicolor|
-|53|4.9|1.5|versicolor|
-|54|4.0|1.3|versicolor|
-|101|6.0|2.5|virginica|
-|102|5.1|1.9|virginica|
-|103|5.9|2.1|virginica|
-|104|5.6|1.8|virginica|
+|  id   | petal_length | petal_width |  species   |
+| :---: | :----------: | :---------: | :--------: |
+|   1   |     1.4      |     0.2     |   setosa   |
+|   2   |     1.4      |     0.2     |   setosa   |
+|   3   |     1.3      |     0.2     |   setosa   |
+|   4   |     1.5      |     0.2     |   setosa   |
+|  51   |     4.7      |     1.4     | versicolor |
+|  52   |     4.5      |     1.5     | versicolor |
+|  53   |     4.9      |     1.5     | versicolor |
+|  54   |     4.0      |     1.3     | versicolor |
+|  101  |     6.0      |     2.5     | virginica  |
+|  102  |     5.1      |     1.9     | virginica  |
+|  103  |     5.9      |     2.1     | virginica  |
+|  104  |     5.6      |     1.8     | virginica  |
 
-[4110 μs]
 ```
 
 ```dart
@@ -42,7 +41,6 @@ id,petal_length,petal_width,species
 103,5.9,2.1,virginica
 104,5.6,1.8,virginica
 
-[4983 μs]
 ```
 
 ```dart
@@ -66,6 +64,13 @@ print(petals.toHtml());
 <tr><td>104</td><td>5.6</td><td>1.8</td><td>virginica</td></tr>
 </table>
 
-[3694 μs]
+```
+
+```dart
+print(sepals.withHead(2).toJsonAsMapOfLists());
+```
+
+```text
+{"id":["3","4"],"sepal_length":[4.7,4.6],"sepal_width":[3.2,3.1]}
 ```
 

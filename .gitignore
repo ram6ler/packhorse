@@ -13,3 +13,6 @@ build/
 
 # Directory created by dartdoc
 doc/api/
+
+# Popmark cache
+.popmark/
