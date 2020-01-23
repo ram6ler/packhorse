@@ -8,6 +8,21 @@ abstract class Alignment {
   static const left = ':--', right = '--:', center = ':--:';
 }
 
+class RowValues {
+  Map<String, String> cats;
+  Map<String, num> nums;
+
+  RowValues(this.cats, this.nums);
+
+  @override
+  String toString() => '''
+cats:
+${[for (final key in cats.keys) '  $key: ${cats[key]}'].join('\n')}  
+nums:
+${[for (final key in nums.keys) '  $key: ${nums[key]}'].join('\n')}
+  ''';
+}
+
 /// Generalized join helper function.
 Dataframe _join(Dataframe left, Dataframe right, String leftPivot,
     String rightPivot, Set<Object> ids) {

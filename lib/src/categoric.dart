@@ -39,6 +39,38 @@ class Categoric extends Column<String> {
     recategorize(categories);
   }
 
+  /// Returns a random sample of `n` elements as a numeric.
+  ///
+  /// Optionally set the `seed` to reproduce the results. To draw a
+  /// sample without replacement, set `withReplacement` to `false`.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// final xs = Categoric(['a', 'b', 'c', 'd', 'e']);
+  /// print(xs.sample(10, seed: 0));
+  /// ```
+  ///
+  Categoric sample(int n, {bool withReplacement = true, int seed}) {
+    if (n < 0) {
+      throw Exception('Can only take a non negative number of instances.');
+    }
+
+    final rand = seed == null ? math.Random() : math.Random(seed);
+    if (withReplacement) {
+      return Categoric(sequence(n).map((_) => this[rand.nextInt(length)]),
+          withCategories: categories);
+    } else {
+      if (n > length) {
+        throw Exception(
+            'With no replacement, can only take up to $length instances.');
+      }
+      final shuffledIndices = indices..shuffle(rand);
+      return Categoric(shuffledIndices.sublist(0, n).map((i) => this[i]),
+          withCategories: categories);
+    }
+  }
+
   /// The counts, by category.
   ///
   /// Example:
@@ -116,7 +148,7 @@ class Categoric extends Column<String> {
   /// (Compare [elementsWhere].)
   ///
   @override
-  Categoric elementsAtIndices(List<int> indices) => Categoric(
+  Categoric elementsAtIndices(Iterable<int> indices) => Categoric(
       indices.map((index) => _categoryIndices[index] == -1
           ? null
           : _categories[_categoryIndices[index]]),
@@ -143,29 +175,33 @@ class Categoric extends Column<String> {
       Categoric(where(predicate), withCategories: categories);
 
   /// The Gini impurity.
-  num get impurity => _statistic(CategoricStatistic.impurity, (xs) {
-        final data = xs as Categoric, proportions = data.proportions;
+  num get impurity => _statistic(CategoricStatistic.impurity, (data) {
+        final proportions = data.proportions;
         return proportions.values
             .map((p) => p * (1 - p))
             .fold(0, (a, b) => a + b);
       });
 
   /// The entropy (in nats).
-  num get entropy => _statistic(CategoricStatistic.entropy, (xs) {
-        final data = xs as Categoric, proportions = data.proportions;
+  num get entropy => _statistic(CategoricStatistic.entropy, (data) {
+        final proportions = data.proportions;
         return -proportions.values
             .map((p) => p == 0 ? 0 : p * math.log(p))
             .fold(0, (a, b) => a + b);
       });
 
-  @override
   Map<String, Object> get summary => {
-        CategoricStatistic.numberOfInstances: length,
-        CategoricStatistic.counts: counts,
-        CategoricStatistic.proportions: proportions,
-        CategoricStatistic.impurity: impurity,
-        CategoricStatistic.entropy: entropy
+        for (final statistic in CategoricStatistic.values)
+          statistic.toString().split('.').last:
+              _categoricStatisticGenerator[statistic](this)
       };
+
+  Numeric bootstrapSampled(CategoricStatistic statistic,
+          {int samples = 100, int seed}) =>
+      Numeric([
+        ...sequence(samples)
+            .map((_) => _categoricStatisticGenerator[statistic](sample(length)))
+      ]);
 
   @override
   get length => _categoryIndices.length;
@@ -251,4 +287,16 @@ class Categoric extends Column<String> {
   void retainWhere(bool Function(String) predicate) {
     _categoryIndices.retainWhere((index) => predicate(this[index]));
   }
+
+  @override
+  String toString() => 'Categoric ${elementsAtIndices(indices)}';
+
+  /// A store for calculated statistics.
+  Map<CategoricStatistic, num> _statsMemoization = {};
+
+  /// A helper method that looks up, calculates or stores statistics.
+  num _statistic(CategoricStatistic key, num f(Categoric xs)) =>
+      _statsMemoization.containsKey(key)
+          ? _statsMemoization[key]
+          : _statsMemoization[key] = f(elementsAtIndices(nonNullIndices));
 }

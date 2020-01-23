@@ -55,4 +55,7 @@ class AutoRange {
 class HistogramBar {
   num lowerBound, upperBound, value;
   HistogramBar(this.lowerBound, this.upperBound, this.value);
+
+  @override
+  String toString() => 'Bar from $lowerBound to $upperBound: $value';
 }

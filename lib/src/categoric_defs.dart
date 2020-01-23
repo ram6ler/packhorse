@@ -1,9 +1,10 @@
 part of packhorse;
 
-abstract class CategoricStatistic {
-  static const numberOfInstances = 'numberOfInstances',
-      counts = 'counts',
-      proportions = 'proportions',
-      impurity = 'impurity',
-      entropy = 'entropy';
-}
+enum CategoricStatistic { numberOfInstances, impurity, entropy }
+
+final _categoricStatisticGenerator =
+    <CategoricStatistic, num Function(Categoric)>{
+  CategoricStatistic.numberOfInstances: (x) => x.length,
+  CategoricStatistic.impurity: (x) => x.impurity,
+  CategoricStatistic.entropy: (x) => x.entropy
+};
