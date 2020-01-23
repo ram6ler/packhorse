@@ -265,10 +265,11 @@ class Dataframe {
             // Allow comments in csv strings: lines starting with #
             .where((line) => line.isNotEmpty && line[0] != '#')
             .toList();
-    columnsInOrder = lines.first
-        .split(splitRe)
-        .map((variable) => variable.replaceAll('"', '').trim())
-        .toList();
+    columnsInOrder = [
+      ...lines.first
+          .split(splitRe)
+          .map((variable) => variable.replaceAll('"', '').trim())
+    ];
 
     types = types ?? Map<String, String>();
 
@@ -292,10 +293,9 @@ class Dataframe {
     };
 
     for (final line in lines.sublist(1)) {
-      final datum = line
-          .split(splitRe)
-          .map((value) => value.replaceAll('"', ''))
-          .toList();
+      final datum = [
+        ...line.split(splitRe).map((value) => value.replaceAll('"', ''))
+      ];
       for (int i = 0; i < columnsInOrder.length; i++) {
         try {
           mapOfValueStrings[columnsInOrder[i]].add(datum[i]);
@@ -370,7 +370,7 @@ class Dataframe {
   List<int> get indices => sequence(numberOfRows);
 
   /// A summary of each column in this data frame.
-  Map<String, Map<String, Object>> get summary => {
+  Map<String, Map<String, num>> get summary => {
         for (final key in cats.keys) key: cats[key].summary,
         ...{for (final key in nums.keys) key: nums[key].summary}
       };
@@ -397,7 +397,7 @@ class Dataframe {
   /// ```
   ///
   Dataframe withHead([int n = 10]) =>
-      this.withRowsAtIndices(indices.take(math.min(n, numberOfRows)).toList());
+      withRowsAtIndices(indices.take(math.min(n, numberOfRows)));
 
   /// Returns a data frame with just the last, specified number of rows.
   ///
@@ -420,8 +420,8 @@ class Dataframe {
   ///
   /// ```
   ///
-  Dataframe withTail([int n = 10]) => this.withRowsAtIndices(
-      indices.reversed.take(math.min(n, numberOfRows)).toList());
+  Dataframe withTail([int n = 10]) =>
+      withRowsAtIndices(indices.reversed.take(math.min(n, numberOfRows)));
 
   /// Returns a data frame with the rows ordered by the values in the specified column.
   ///
@@ -455,13 +455,11 @@ class Dataframe {
     var frame = Dataframe({...cats}, {...nums}, columnsInOrder);
     if (frame.cats.containsKey(column)) {
       frame = decreasing
-          ? frame.withRowsAtIndices(
-              frame.cats[column].orderedIndices.reversed.toList())
+          ? frame.withRowsAtIndices(frame.cats[column].orderedIndices.reversed)
           : frame.withRowsAtIndices(frame.cats[column].orderedIndices);
     } else if (frame.nums.containsKey(column)) {
       frame = decreasing
-          ? frame.withRowsAtIndices(
-              frame.nums[column].orderedIndices.reversed.toList())
+          ? frame.withRowsAtIndices(frame.nums[column].orderedIndices.reversed)
           : frame.withRowsAtIndices(frame.nums[column].orderedIndices);
     } else {
       throw Exception('Unrecognized column: "$column".');
@@ -631,7 +629,7 @@ class Dataframe {
   /// ```
   ///
   Dataframe withColumnNamesChanged(Map<String, String> names) {
-    _validColumnCheck(names.keys.toList());
+    _validColumnCheck([...names.keys]);
     final changedCats = {...cats},
         changedNums = {...nums},
         order = [...columnsInOrder];
@@ -686,7 +684,7 @@ class Dataframe {
         pipedNums = {...nums}..removeWhere((key, _) => !predicate(key)),
         keys = [...pipedCats.keys, ...pipedNums.keys];
     return Dataframe(
-        pipedCats, pipedNums, columnsInOrder.where(keys.contains).toList());
+        pipedCats, pipedNums, [...columnsInOrder.where(keys.contains)]);
   }
 
   /// Returns a data frame with only the rows at specified indices.
@@ -708,7 +706,7 @@ class Dataframe {
   ///
   /// ```
   ///
-  Dataframe withRowsAtIndices(List<int> indices) => Dataframe(
+  Dataframe withRowsAtIndices(Iterable<int> indices) => Dataframe(
       {for (final key in cats.keys) key: cats[key].elementsAtIndices(indices)},
       {for (final key in nums.keys) key: nums[key].elementsAtIndices(indices)},
       columnsInOrder);
@@ -716,26 +714,30 @@ class Dataframe {
   /// A helper function that generates the values specified by a template.
   List<String> _templateValues(
           String template, String startQuote, String endQuote) =>
-      indices.map((index) {
-        String argument = template;
-        for (String key in cats.keys) {
-          argument =
-              argument.replaceAll('$startQuote$key$endQuote', cats[key][index]);
-        }
-        for (String key in nums.keys) {
-          argument = argument.replaceAll(
-              '$startQuote$key$endQuote', nums[key][index].toString());
-        }
-        return argument;
-      }).toList();
+      [
+        ...indices.map((index) {
+          String argument = template;
+          for (String key in cats.keys) {
+            argument = argument.replaceAll(
+                '$startQuote$key$endQuote', cats[key][index]);
+          }
+          for (String key in nums.keys) {
+            argument = argument.replaceAll(
+                '$startQuote$key$endQuote', nums[key][index].toString());
+          }
+          return argument;
+        })
+      ];
 
   /// A helper function that generates values from a formula.
   List<num> _formulaValues(String formula) {
-    final f = formula.toMultiVariableFunction(nums.keys.toList());
-    return indices.map((index) {
-      final arguments = {for (final key in nums.keys) key: nums[key][index]};
-      return f(arguments);
-    }).toList();
+    final f = formula.toMultiVariableFunction([...nums.keys]);
+    return [
+      ...indices.map((index) {
+        final arguments = {for (final key in nums.keys) key: nums[key][index]};
+        return f(arguments);
+      })
+    ];
   }
 
   /// Gives the indices that match a template predicate.
@@ -743,7 +745,7 @@ class Dataframe {
       String template, bool Function(String) predicate,
       {String startQuote = '{', String endQuote = '}'}) {
     final templateValues = _templateValues(template, startQuote, endQuote);
-    return indices.where((index) => predicate(templateValues[index])).toList();
+    return [...indices.where((index) => predicate(templateValues[index]))];
   }
 
   Map<String, String> _catsMap(int index) =>
@@ -755,10 +757,12 @@ class Dataframe {
   /// Gives the indices of rows whose values match the defined predicate.
   List<int> indicesWhereRowValues(
       bool Function(Map<String, String>, Map<String, num>) predicate) {
-    return indices.where((index) {
-      final catsMap = _catsMap(index), numsMap = _numsMap(index);
-      return predicate(catsMap, numsMap);
-    }).toList();
+    return [
+      ...indices.where((index) {
+        final catsMap = _catsMap(index), numsMap = _numsMap(index);
+        return predicate(catsMap, numsMap);
+      })
+    ];
   }
 
   /// Returns a data frame with only the rows that match a template predicate.
@@ -794,7 +798,7 @@ class Dataframe {
   /// Gives the indices that match a formula predicate.
   List<int> indicesWhereFormula(String formula, bool Function(num) predicate) {
     final formulaValues = _formulaValues(formula);
-    return indices.where((index) => predicate(formulaValues[index])).toList();
+    return [...indices.where((index) => predicate(formulaValues[index]))];
   }
 
   /// Returns a data frame with only the rows that match a formula predicate.
@@ -829,10 +833,10 @@ class Dataframe {
     final templateValues = _templateValues(template, startQuote, endQuote),
         formulaValues = _formulaValues(formula);
 
-    return indices
-        .where(
-            (index) => predicate(templateValues[index], formulaValues[index]))
-        .toList();
+    return [
+      ...indices.where(
+          (index) => predicate(templateValues[index], formulaValues[index]))
+    ];
   }
 
   /// Returns a data frame with only the rows that match a template and formula predicate.
@@ -1456,8 +1460,8 @@ class Dataframe {
   ///
   Dataframe withLeftJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
-    final ids =
-        cats.containsKey(pivot) ? cats[pivot].toSet() : nums[pivot].toSet();
+    final ids = cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]};
+
     return _join(this, other, pivot, otherPivot, ids);
   }
 
@@ -1536,8 +1540,9 @@ class Dataframe {
   Dataframe withRightJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
     final ids = other.cats.containsKey(otherPivot)
-        ? other.cats[otherPivot].toSet()
-        : other.nums[otherPivot].toSet();
+        ? {...other.cats[otherPivot]}
+        : {...other.nums[otherPivot]};
+
     return _join(this, other, pivot, otherPivot, ids);
   }
 
@@ -1609,11 +1614,11 @@ class Dataframe {
   ///
   Dataframe withInnerJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
-    final ids =
-        (cats.containsKey(pivot) ? cats[pivot].toSet() : nums[pivot].toSet())
-            .intersection(other.cats.containsKey(otherPivot)
-                ? other.cats[otherPivot].toSet()
-                : other.nums[otherPivot].toSet());
+    final ids = (cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]})
+        .intersection(other.cats.containsKey(otherPivot)
+            ? {...other.cats[otherPivot]}
+            : {...other.nums[otherPivot]});
+
     return _join(this, other, pivot, otherPivot, ids);
   }
 
@@ -1697,11 +1702,11 @@ class Dataframe {
   ///
   Dataframe withFullJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
-    final ids =
-        (cats.containsKey(pivot) ? cats[pivot].toSet() : nums[pivot].toSet())
-            .union(other.cats.containsKey(otherPivot)
-                ? other.cats[otherPivot].toSet()
-                : other.nums[otherPivot].toSet());
+    final ids = (cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]})
+        .union(other.cats.containsKey(otherPivot)
+            ? {...other.cats[otherPivot]}
+            : {...other.nums[otherPivot]});
+
     return _join(this, other, pivot, otherPivot, ids);
   }
 
@@ -1774,12 +1779,12 @@ class Dataframe {
   Dataframe withLeftOuterJoin(Dataframe other, String pivot,
       {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
-    final a =
-            cats.containsKey(pivot) ? cats[pivot].toSet() : nums[pivot].toSet(),
+    final a = cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]},
         b = other.cats.containsKey(otherPivot)
-            ? other.cats[otherPivot].toSet()
-            : other.nums[otherPivot].toSet(),
+            ? {...other.cats[otherPivot]}
+            : {...other.nums[otherPivot]},
         ids = a.difference(b);
+
     return _join(this, other, pivot, otherPivot, ids);
   }
 
@@ -1852,12 +1857,12 @@ class Dataframe {
   Dataframe withRightOuterJoin(Dataframe other, String pivot,
       {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
-    final a =
-            cats.containsKey(pivot) ? cats[pivot].toSet() : nums[pivot].toSet(),
+    final a = cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]},
         b = other.cats.containsKey(otherPivot)
-            ? other.cats[otherPivot].toSet()
-            : other.nums[otherPivot].toSet(),
+            ? {...other.cats[otherPivot]}
+            : {...other.nums[otherPivot]},
         ids = b.difference(a);
+
     return _join(this, other, pivot, otherPivot, ids);
   }
 
@@ -1935,12 +1940,12 @@ class Dataframe {
   ///
   Dataframe withOuterJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
-    final a =
-            cats.containsKey(pivot) ? cats[pivot].toSet() : nums[pivot].toSet(),
+    final a = cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]},
         b = other.cats.containsKey(otherPivot)
-            ? other.cats[otherPivot].toSet()
-            : other.nums[otherPivot].toSet(),
+            ? {...other.cats[otherPivot]}
+            : {...other.nums[otherPivot]},
         ids = a.union(b).difference(a.intersection(b));
+
     return _join(this, other, pivot, otherPivot, ids);
   }
 
@@ -2005,7 +2010,7 @@ class Dataframe {
     return Dataframe(combinedCats, combinedNums, [...columnsInOrder]);
   }
 
-  /// TODO: document
+  /// Returns a data frame with all rows containing nulls dropped.
   Dataframe withNullsDropped([List<String> columns]) {
     if (columns == null) {
       columns = columnNames;
@@ -2020,12 +2025,13 @@ class Dataframe {
       }
     }
 
-    final selectedIndices =
-        indices.where((index) => !variableSet.contains(index)).toList();
+    final selectedIndices = [
+      ...indices.where((index) => !variableSet.contains(index))
+    ];
+
     return withRowsAtIndices(selectedIndices)..columnsInOrder = columnsInOrder;
   }
 
-  /// TODO: document
   /// Gives a map of data frames grouped by category.
   Map<String, Dataframe> groupedByCategoric(String category) {
     if (!cats.containsKey(category)) {
@@ -2041,7 +2047,6 @@ class Dataframe {
     };
   }
 
-  /// TODO: document
   /// Gives a map of data frames grouped by value.
   Map<num, Dataframe> groupedByNumeric(String numeric) {
     if (!nums.containsKey(numeric)) {
@@ -2112,7 +2117,7 @@ class Dataframe {
       {Map<String, String> alignment, bool summary = false, int fixed}) {
     alignment = alignment ?? <String, String>{};
 
-    _validColumnCheck(alignment.keys.toList());
+    _validColumnCheck([...alignment.keys]);
 
     final table = {
       for (final key in columnNames)
@@ -2213,10 +2218,10 @@ ${rows.join('\n')}
     });
 
     final header = '${table.keys.join(',')}',
-        rows = indices
-            .map((index) =>
-                '${table.keys.map((key) => table[key][index]).join(',')}')
-            .toList();
+        rows = [
+      ...indices.map(
+          (index) => '${table.keys.map((key) => table[key][index]).join(',')}')
+    ];
 
     return '''$header
 ${rows.join('\n')}
@@ -2345,9 +2350,7 @@ ${rows.join('\n')}
           String Function(String) generator}) =>
       generator == null
           ? _templateValues(template, startQuote, endQuote)
-          : _templateValues(template, startQuote, endQuote)
-              .map(generator)
-              .toList();
+          : [..._templateValues(template, startQuote, endQuote).map(generator)];
 
   /// Gives a string representation of this data frame.
   @override

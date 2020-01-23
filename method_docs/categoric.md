@@ -1,86 +1,372 @@
+
+
+
+
+
+
+
+
+
+
+
 The internal list of categories in this categoric.
+
+
 The list of categories in this categoric.
-The internal data, as indices in `_categories`.
-The internal data, as indices in `categories`.
+
+
+The internal data, as indices in [_categories].
+
+
+The internal data, as indices in [categories].
+
+
 Redefines the categories.
 
 (Values that do not lie in the new category definition will be lost.)
+
+
+
+
+
+
 Adds categories to the existing categories.
+
+
+
+
+
+
+
+
+Returns a random sample of `n` elements as a numeric.
+
+Optionally set the `seed` to reproduce the results. To draw a
+sample without replacement, set `withReplacement` to `false`.
+
+Example:
+
+```dart
+for (final species in iris.cats['species'].sample(5)) {
+print(species);
+}
+```
+
+```text
+setosa
+setosa
+setosa
+virginica
+setosa
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 The counts, by category.
 
 Example:
 
 ```dart
-final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-colors.counts.forEach((color, count) {
-print('$color: $count');
+iris.cats['species'].counts.forEach((species, count) {
+print('$species: $count');
 });
 
 ```
+
+```text
+setosa: 50
+versicolor: 50
+virginica: 50
+```
+
+
+
+
+# `proportions`
 
 The proportions, by category.
 
 Example:
 
 ```dart
-final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-colors.proportions.forEach((color, p) {
-print('$color: ${p.toStringAsFixed(2)}');
+iris.cats['species'].proportions.forEach((species, proportion) {
+print('$species: $proportion');
 });
 
 ```
 
-The frequencies, by category.
+```text
+setosa: 0.3333333333333333
+versicolor: 0.3333333333333333
+virginica: 0.3333333333333333
+```
+
+
+
+
+
+Returns the indices of elements that match a specified predicate.
+
+(Use `elementsWhere` to get elements that match a predicate.)
 
 Example:
 
 ```dart
-final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-colors.proportions.forEach((color, f) {
-print('$color: $f');
-});
-
-
-
+for (final index in iris.cats['species'].indicesWhere(
+(species) => species.contains('color')).take(5)) {
+print(index);
+}
 ```
 
-Gets the indices where `predicate` holds.
+```text
+50
+51
+52
+53
+54
+```
+
+
+
+
+Returns the elements at the specified indices.
 
 Example:
 
 ```dart
-final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-print(colors.indicesWhere((color) => color.contains('re')));
-
+for (final species in iris.cats['species'].elementsAtIndices([0, 50, 100])) {
+print(species);
+}
 ```
 
-Gets the elements at the specified indices.
+```text
+setosa
+versicolor
+virginica
+```
+
+
+
+
+
+
+
+
+Returns the elements that match a predicate.
+
+This is similar to 'where' but, whereas 'where' returns an iterable, 'elementsWhere' returns a categoric.
+
+(Use `indicesWhere` to get the indices of the elements.)
 
 Example:
 
 ```dart
-final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-print(colors.elementsAtIndices([4, 4, 5, 5, 0]));
-
-```
-(Compare `elementsWhere`.)
-
-Gets the elements that match `predicate`.
-
-This is similar to `where` (which also works on this categoric) but, whereas
-`where` only returns an iterable, `elementsWhere` returns a categoric.
-
-Example:
-
-```dart
-final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-print(colors.elementsWhere((color) => color.contains('re')));
-
-print(colors.where((color) => color.contains('re')));
-
+for (final element in iris.cats['species'].elementsWhere(
+(species) => species.contains('color')).take(5)) {
+print(element);
+}
 ```
 
-(Compare `indicesWhere`.)
+```text
+versicolor
+versicolor
+versicolor
+versicolor
+versicolor
+```
+
+
+
 
 The Gini impurity.
+
+Example:
+
+```dart
+print(iris.cats['species'].impurity);
+```
+
+```text
+0.6666666666666667
+```
+
+
+
+
+
+
+
+
 The entropy (in nats).
+
+Example:
+
+```dart
+print(iris.cats['species'].entropy);
+```
+
+```text
+1.0986122886681096
+```
+
+
+
+
+
+
+
+
+A summary of the stistics associated with this data.
+
+
+
+
+
+
+Returns a sample of measures for a specified statistic reaped
+from bootstrapping on these elements.
+
+Example:
+
+```dart
+for (final entropy in iris.cats['species'].bootstrapSampled(
+CategoricStatistic.entropy, samples: 10)) {
+print(entropy.toStringAsFixed(4));
+}
+```
+
+```text
+1.0970
+1.0904
+1.0969
+1.0958
+1.0805
+1.0985
+1.0936
+1.0958
+1.0948
+1.0985
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+A store for calculated statistics.
+
+
+A helper method that looks up, calculates or stores statistics.
+
+
+
+
+

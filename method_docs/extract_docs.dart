@@ -6,6 +6,8 @@ Future<void> main(List<String> args) async {
   for (final line in await File(dartFile).readAsLines()) {
     if (line.contains(expr)) {
       print(line.replaceAll(expr, ''));
+    } else {
+      stdout.writeln();
     }
   }
 }

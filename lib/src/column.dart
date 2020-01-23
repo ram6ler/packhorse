@@ -1,7 +1,7 @@
 part of packhorse;
 
 abstract class Column<T extends Comparable> extends ListBase<T> {
-  List<int> get indices => List<int>.generate(length, (index) => index);
+  List<int> get indices => sequence(length);
 
   /// The indices that order the data.
   List<int> get orderedIndices => indices
@@ -20,11 +20,11 @@ abstract class Column<T extends Comparable> extends ListBase<T> {
 
   /// The indices of all null values.
   List<int> get nullIndices =>
-      indices.where((index) => this[index] == null).toList();
+      [...indices.where((index) => this[index] == null)];
 
   /// The indices of all non null values.
   List<int> get nonNullIndices =>
-      indices.where((index) => this[index] != null).toList();
+      [...indices.where((index) => this[index] != null)];
 
   Column elementsAtIndices(Iterable<int> indices);
 }

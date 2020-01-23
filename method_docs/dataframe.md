@@ -1,5 +1,33 @@
+
+
+
 Creates a data frame with `cats` and `nums` specified.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 An empty data frame.
+
+
+
+
+
 Creates a data frame from a map of lists.
 
 The keys of the map are interpreted as the column names;
@@ -31,6 +59,20 @@ print(data);
 '----------'---'------------'-----------'------------'-----------'
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Creates a data frame from a json string.
 
@@ -69,6 +111,9 @@ print(Dataframe.fromJsonAsMapOfLists('''
 
 ```
 
+
+
+
 Creates a data frame form a list of maps.
 
 Each map populates a row; the keys in each map determine
@@ -99,6 +144,23 @@ print(data);
 '----------'---'------------'-----------'
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Creates a data fram from a json string.
 
@@ -137,6 +199,9 @@ print(Dataframe.fromJsonAsListOfMaps('''
 
 ```
 
+
+
+
 Creates a data frame from a csv expression.
 
 Whether a column contains numeric or categorig is either
@@ -174,14 +239,142 @@ print(data);
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 The categoric columns in this data frame.
+
+
 The numeric columns in this data frame.
+
+
 The order of the columns in displays.
+
+
 The names of the columns in this data frame.
+
+
+
+
+
+
 The number of rows in this data frame.
+
+
+
+
+
+
+
+
+
+
 The number of columns in this data frame.
+
+
 A sequence of integers that runs along the rows of this data frame.
+
+
 A summary of each column in this data frame.
+
+
+
+
+
 Returns a data frame with just the first, specified number of rows.
 
 Example:
@@ -203,6 +396,9 @@ print(iris.withHead(5));
 
 ```
 
+
+
+
 Returns a data frame with just the last, specified number of rows.
 
 Example:
@@ -223,6 +419,9 @@ print(iris.withTail(5));
 '---'------------'-----------'------------'-----------'---------'
 
 ```
+
+
+
 
 Returns a data frame with the rows ordered by the values in the specified column.
 
@@ -252,7 +451,37 @@ print(petals.withRowsOrderedBy('petal_width'));
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Gets a list of sample row indices.
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame made up of rows randomly sampled from this data frame.
 
 Example:
@@ -265,17 +494,39 @@ print(iris.withRowsSampled(5));
 .---.------------.-----------.------------.-----------.----------.
 | id|sepal_length|sepal_width|petal_length|petal_width|   species|
 :---+------------+-----------+------------+-----------+----------:
-| 88|         6.3|        2.3|         4.4|        1.3|versicolor|
-| 91|         5.5|        2.6|         4.4|        1.2|versicolor|
-| 65|         5.6|        2.9|         3.6|        1.3|versicolor|
-| 62|         5.9|        3.0|         4.2|        1.5|versicolor|
 |136|         7.7|        3.0|         6.1|        2.3| virginica|
+|137|         6.3|        3.4|         5.6|        2.4| virginica|
+| 22|         5.1|        3.7|         1.5|        0.4|    setosa|
+| 70|         5.6|        2.5|         3.9|        1.1|versicolor|
+|139|         6.0|        3.0|         4.8|        1.8| virginica|
 '---'------------'-----------'------------'-----------'----------'
 
 ```
 
+
+
+
+
 Returns a data frame with a row index column added.
+
+
+
+
+
+
+
+
+
+
 Ckecks whether all [columns] are actually columns.
+
+
+
+
+
+
+
+
 Returns a data frame with only the specified columns, in that order.
 
 Example:
@@ -304,6 +555,14 @@ print(petals.withColumns(['species', 'petal_length']));
 
 ```
 
+
+
+
+
+
+
+
+
 Returns a data frame with the specified columns dropped.
 
 Example:
@@ -313,24 +572,33 @@ print(petals.withColumnsDropped(['id', 'petal_width']));
 ```
 
 ```text
-.----------.------------.
-|   species|petal_length|
-:----------+------------:
-|    setosa|         1.4|
-|    setosa|         1.4|
-|    setosa|         1.3|
-|    setosa|         1.5|
-|versicolor|         4.7|
-|versicolor|         4.5|
-|versicolor|         4.9|
-|versicolor|         4.0|
-| virginica|         6.0|
-| virginica|         5.1|
-| virginica|         5.9|
-| virginica|         5.6|
-'----------'------------'
+.------------.----------.
+|petal_length|   species|
+:------------+----------:
+|         1.4|    setosa|
+|         1.4|    setosa|
+|         1.3|    setosa|
+|         1.5|    setosa|
+|         4.7|versicolor|
+|         4.5|versicolor|
+|         4.9|versicolor|
+|         4.0|versicolor|
+|         6.0| virginica|
+|         5.1| virginica|
+|         5.9| virginica|
+|         5.6| virginica|
+'------------'----------'
 
 ```
+
+
+
+
+
+
+
+
+
 
 Returns a data frame with the specified columns renamed.
 
@@ -362,6 +630,29 @@ print(petals.withColumnNamesChanged({
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with only the predicated columns.
 
 Example:
@@ -390,6 +681,14 @@ print(petals.withColumnsWhere((column) => column.contains('petal')));
 
 ```
 
+
+
+
+
+
+
+
+
 Returns a data frame with only the rows at specified indices.
 
 Example:
@@ -409,10 +708,59 @@ print(iris.withRowsAtIndices([0, 20, 40]));
 
 ```
 
+
+
+
+
+
 A helper function that generates the values specified by a template.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 A helper function that generates values from a formula.
+
+
+
+
+
+
+
+
 Gives the indices that match a template predicate.
+
+
+
+
+
+
+
+
+
+
+
+
+
 Gives the indices of rows whose values match the defined predicate.
+
+
+
+
+
+
+
+
 Returns a data frame with only the rows that match a template predicate.
 
 Example:
@@ -437,7 +785,18 @@ print(petals.withRowsWhereTemplate(template,
 
 ```
 
+
+
+
+
+
+
 Gives the indices that match a formula predicate.
+
+
+
+
+
 Returns a data frame with only the rows that match a formula predicate.
 
 Example:
@@ -459,7 +818,23 @@ print(petals.withRowsWhereFormula(formula, (result) => result < 0));
 
 ```
 
+
+
+
+
 Gives the indices that match a template and formula predicate.
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with only the rows that match a template and formula predicate.
 
 Example:
@@ -495,6 +870,13 @@ templateResult == 'virginica' && formulaResult > 3));
 
 ```
 
+
+
+
+
+
+
+
 Returns the data frame with only rows matched by the defined predicate.
 
 Example:
@@ -520,6 +902,10 @@ cats['species'] == 'virginica' && nums['petal_length'] > 6));
 '---'------------'-----------'------------'-----------'---------'
 
 ```
+
+
+
+
 
 Returns a data frame with a categoric column inserted.
 
@@ -549,6 +935,16 @@ print(sepals.withCategoric('species', petals.cats['species']));
 
 ```
 
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with a numeric inserted.
 
 Example:
@@ -576,6 +972,15 @@ print(petals.withNumeric('sepal_length', sepals.nums['sepal_length']));
 '---'------------'-----------'----------'------------'
 
 ```
+
+
+
+
+
+
+
+
+
 
 Returns a data frame with a numeric based on an existing numeric.
 
@@ -606,6 +1011,10 @@ print(petals.withNumericFromNumeric('petal_length_z', 'petal_length',
 
 ```
 
+
+
+
+
 Returns a data frame with a numeric based on an existing categoric.
 
 Example:
@@ -633,6 +1042,10 @@ print(sample.withNumericFromCategoric('proportion', 'species',
 '---'------------'-----------'------------'-----------'----------'----------'
 
 ```
+
+
+
+
 
 Returns a data frame with a categoric based on an existing numeric.
 
@@ -662,6 +1075,10 @@ print(sample.withCategoricFromNumeric('sepal_length_outlier', 'sepal_length',
 
 ```
 
+
+
+
+
 Returns a data frame with a categoric based on an existing categoric.
 
 ```dart
@@ -688,6 +1105,12 @@ species.map((s) => species.proportions[s] <= 0.3 ? 'rare': 'common'))));
 '---'------------'-----------'------------'-----------'----------'------'
 
 ```
+
+
+
+
+
+
 
 Returns a data frame with a new categoric column created from a template.
 
@@ -718,6 +1141,17 @@ print(petals.withCategoricFromTemplate('id_code', template));
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with a new numeric column created from a template.
 
 Example:
@@ -747,6 +1181,15 @@ print(petals.withNumericFromTemplate('species_letters', template,
 '---'------------'-----------'----------'---------------'
 
 ```
+
+
+
+
+
+
+
+
+
 
 Returns a data frame with a new categoric column created from a formula.
 
@@ -779,6 +1222,13 @@ print(petals.withCategoricFromFormula('description', formula,
 
 ```
 
+
+
+
+
+
+
+
 Returns a data frame with a new numeric column created from a formula.
 
 Example:
@@ -809,8 +1259,40 @@ print(petals.withNumericFromFormula('log_petal_area', formula));
 
 ```
 
+
+
+
+
+
+
+
+
 Returns a data frame with a categoric column from a template and formula.
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with a numeric column from a template and formula.
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with a new categoric column created from the row values.
 
 Example:
@@ -845,8 +1327,61 @@ return '$pre-$area';
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with a numeric column from the row values.
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with a numeric column for each value in a categoric column.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a left join on the data frame.
 
 Example:
@@ -918,6 +1453,13 @@ Left-join:
 '---'----------'--------'------------'-----------'------------'-----------'
 
 ```
+
+
+
+
+
+
+
 
 Returns a right join on the data frame.
 
@@ -991,6 +1533,14 @@ Right-join:
 
 ```
 
+
+
+
+
+
+
+
+
 Returns an inner join on the data frame.
 
 Example:
@@ -1056,6 +1606,16 @@ Inner-join:
 '---'----------'--------'------------'-----------'------------'-----------'
 
 ```
+
+
+
+
+
+
+
+
+
+
 
 Returns a full join on the data frame.
 
@@ -1135,6 +1695,16 @@ Full-join:
 
 ```
 
+
+
+
+
+
+
+
+
+
+
 Returns a left outer join on the data frame.
 
 Example:
@@ -1201,6 +1771,18 @@ Left-outer-join:
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a right outer join on the data frame.
 
 Example:
@@ -1266,6 +1848,18 @@ Right-outer-join:
 '----'-------'--------'------------'-----------'------------'-----------'
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 Returns an outer join on the data frame.
 
@@ -1339,6 +1933,17 @@ Outer-join:
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
 Returns a data frame with the rows of [other] added.
 
 Example:
@@ -1366,11 +1971,92 @@ print(headAndTail);
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 TODO: document
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 TODO: document
 Gives a map of data frames grouped by category.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 TODO: document
 Gives a map of data frames grouped by value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Returns an object containing the data in the specified row
 
 The returned object has map properties `cats` and `nums` with the
@@ -1385,13 +2071,16 @@ print(rowData);
 
 ```text
 cats:
-  id: 1
-  species: setosa  
+id: 1
+species: setosa
 nums:
-  petal_length: 1.4
-  petal_width: 0.2
-  
+petal_length: 1.4
+petal_width: 0.2
+
 ```
+
+
+
 
 Gives a markdown representation of this data frame.
 
@@ -1419,6 +2108,60 @@ print(petals.toMarkdown());
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Gives a csv representation of this data frame.
 
 Example:
@@ -1444,6 +2187,42 @@ id,petal_length,petal_width,species
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Returns a json representation of the data frame.
 
 The json represents a single list of maps representing instances.
@@ -1457,6 +2236,8 @@ print(sepals.withHead(2).toJsonAsListOfMaps());
 ```text
 [{"id":"3","sepal_length":4.7,"sepal_width":3.2},{"id":"4","sepal_length":4.6,"sepal_width":3.1}]
 ```
+
+
 
 Returns a json representation of the data frame.
 
@@ -1472,6 +2253,8 @@ print(sepals.withHead(2).toJsonAsMapOfLists());
 ```text
 {"id":["3","4"],"sepal_length":[4.7,4.6],"sepal_width":[3.2,3.1]}
 ```
+
+
 
 Gives an html table representation of this data frame.
 
@@ -1500,7 +2283,103 @@ print(petals.toHtml());
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Gives a map of lists, each column name as a key.
+
+
+
+
+
+
+
+
+
+
 Gives a list of maps, each map representing a row.
+
+
+
 Gives a list of strings generated from the row values.
+
+
+
+
+
+
+
+
+
+
 Gives a string representation of this data frame.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

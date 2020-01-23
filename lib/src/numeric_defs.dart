@@ -14,13 +14,12 @@ enum NumericStatistic {
   lowerQuartile,
   median,
   upperQuartile,
-  interquartileRange,
+  interQuartileRange,
   greatest,
   greatestNonOutlier,
   least,
   leastNonOutlier,
-  range,
-  outliers
+  range
 }
 
 final _numericStatisticGenerator = <NumericStatistic, num Function(Numeric)>{
@@ -42,5 +41,5 @@ final _numericStatisticGenerator = <NumericStatistic, num Function(Numeric)>{
   NumericStatistic.greatestNonOutlier: (x) => x.greatestNonOutlier,
   NumericStatistic.greatest: (x) => x.greatest,
   NumericStatistic.range: (x) => x.range,
-  NumericStatistic.interquartileRange: (x) => x.interQuartileRange
+  NumericStatistic.interQuartileRange: (x) => x.interQuartileRange
 };

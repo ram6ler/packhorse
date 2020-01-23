@@ -3,10 +3,14 @@ part of packhorse;
 class Categoric extends Column<String> {
   Categoric(Iterable<String> data, {List<String> withCategories}) {
     _categories = withCategories == null
-        ? (data.where((value) => value != null).toSet().toList()..sort())
-        : _categories = withCategories.toSet().toList();
+        ? ([
+            ...{...data.where((value) => value != null)}
+          ]..sort())
+        : [
+            ...{...withCategories}
+          ];
 
-    _categoryIndices = data.map((datum) => _categories.indexOf(datum)).toList();
+    _categoryIndices = [...data.map((datum) => _categories.indexOf(datum))];
   }
 
   /// The internal list of categories in this categoric.
@@ -25,17 +29,18 @@ class Categoric extends Column<String> {
   ///
   /// (Values that do not lie in the new category definition will be lost.)
   void recategorize(List<String> categories) {
-    final categoryList = categories.toSet().toList();
-    _categoryIndices = map((datum) => categoryList.indexOf(datum)).toList();
+    final categoryList = [
+      ...{...categories}
+    ];
+    _categoryIndices = [...map((datum) => categoryList.indexOf(datum))];
     _categories = List<String>.from(categoryList);
   }
 
   /// Adds categories to the existing categories.
   void addCategories(List<String> newCategories) {
-    final categories = (List<String>.from(_categories)..addAll(newCategories))
-        .toSet()
-        .toList()
-          ..sort();
+    final categories = [
+      ...{..._categories, ...newCategories}
+    ]..sort();
     recategorize(categories);
   }
 
@@ -47,8 +52,17 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final xs = Categoric(['a', 'b', 'c', 'd', 'e']);
-  /// print(xs.sample(10, seed: 0));
+  /// for (final species in iris.cats['species'].sample(5)) {
+  ///     print(species);
+  /// }
+  /// ```
+  ///
+  /// ```text
+  /// setosa
+  /// setosa
+  /// setosa
+  /// virginica
+  /// setosa
   /// ```
   ///
   Categoric sample(int n, {bool withReplacement = true, int seed}) {
@@ -66,7 +80,8 @@ class Categoric extends Column<String> {
             'With no replacement, can only take up to $length instances.');
       }
       final shuffledIndices = indices..shuffle(rand);
-      return Categoric(shuffledIndices.sublist(0, n).map((i) => this[i]),
+      return Categoric(
+          [for (final index in shuffledIndices.sublist(0, n)) this[index]],
           withCategories: categories);
     }
   }
@@ -76,76 +91,83 @@ class Categoric extends Column<String> {
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-  /// colors.counts.forEach((color, count) {
-  ///   print('$color: $count');
+  /// iris.cats['species'].counts.forEach((species, count) {
+  ///    print('$species: $count');
   /// });
-  /// // blue: 1
-  /// // green: 2
-  /// // red: 3
+  ///
+  /// ```
+  ///
+  /// ```text
+  /// setosa: 50
+  /// versicolor: 50
+  /// virginica: 50
   /// ```
   ///
   Map<String, int> get counts => Map<String, int>.fromIterable(_categories,
       value: (category) => where((c) => c == category).length);
 
+  /// # `proportions`
+  ///
   /// The proportions, by category.
   ///
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-  /// colors.proportions.forEach((color, p) {
-  ///   print('$color: ${p.toStringAsFixed(2)}');
+  /// iris.cats['species'].proportions.forEach((species, proportion) {
+  ///    print('$species: $proportion');
   /// });
-  /// // blue: 0.17
-  /// // green: 0.33
-  /// // red: 0.50
+  ///
+  /// ```
+  ///
+  /// ```text
+  /// setosa: 0.3333333333333333
+  /// versicolor: 0.3333333333333333
+  /// virginica: 0.3333333333333333
   /// ```
   ///
   Map<String, double> get proportions =>
       Map<String, double>.fromIterable(_categories,
           value: (category) => where((c) => c == category).length / length);
 
-  /// The frequencies, by category.
+  /// Returns the indices of elements that match a specified predicate.
+  ///
+  /// (Use `elementsWhere` to get elements that match a predicate.)
   ///
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-  /// colors.proportions.forEach((color, f) {
-  ///   print('$color: $f');
-  /// });
-  /// // blue: 1
-  /// // green: 2
-  /// // red: 3
+  /// for (final index in iris.cats['species'].indicesWhere(
+  ///     (species) => species.contains('color')).take(5)) {
+  ///         print(index);
+  ///     }
   /// ```
   ///
-  Map<String, int> get frequencies => Map<String, int>.fromIterable(_categories,
-      value: (category) => where((c) => c == category).length);
-
-  /// Gets the indices where [predicate] holds.
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-  /// print(colors.indicesWhere((color) => color.contains('re')));
-  /// // [0, 1, 2, 3, 5]
+  /// ```text
+  /// 50
+  /// 51
+  /// 52
+  /// 53
+  /// 54
   /// ```
   ///
   List<int> indicesWhere(bool predicate(String value)) =>
-      indices.where((index) => predicate(this[index])).toList();
+      [...indices.where((index) => predicate(this[index]))];
 
-  /// Gets the elements at the specified indices.
+  /// Returns the elements at the specified indices.
   ///
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-  /// print(colors.elementsAtIndices([4, 4, 5, 5, 0]));
-  /// // [blue, blue, green, green, red]
+  /// for (final species in iris.cats['species'].elementsAtIndices([0, 50, 100])) {
+  ///     print(species);
+  /// }
   /// ```
-  /// (Compare [elementsWhere].)
+  ///
+  /// ```text
+  /// setosa
+  /// versicolor
+  /// virginica
+  /// ```
   ///
   @override
   Categoric elementsAtIndices(Iterable<int> indices) => Categoric(
@@ -154,27 +176,44 @@ class Categoric extends Column<String> {
           : _categories[_categoryIndices[index]]),
       withCategories: categories);
 
-  /// Gets the elements that match [predicate].
+  /// Returns the elements that match a predicate.
   ///
-  /// This is similar to [where] (which also works on this categoric) but, whereas
-  /// [where] only returns an iterable, [elementsWhere] returns a categoric.
+  /// This is similar to 'where' but, whereas 'where' returns an iterable, 'elementsWhere' returns a categoric.
+  ///
+  /// (Use `indicesWhere` to get the indices of the elements.)
   ///
   /// Example:
   ///
   /// ```dart
-  /// final colors = Categoric(['red', 'red', 'green', 'red', 'blue', 'green']);
-  /// print(colors.elementsWhere((color) => color.contains('re')));
-  /// // [red, red, green, red, green]
-  /// print(colors.where((color) => color.contains('re')));
-  /// // (red, red, green, red, green)
+  /// for (final element in iris.cats['species'].elementsWhere(
+  ///     (species) => species.contains('color')).take(5)) {
+  ///         print(element);
+  ///     }
   /// ```
   ///
-  /// (Compare [indicesWhere].)
+  /// ```text
+  /// versicolor
+  /// versicolor
+  /// versicolor
+  /// versicolor
+  /// versicolor
+  /// ```
   ///
   Categoric elementsWhere(bool predicate(String datum)) =>
       Categoric(where(predicate), withCategories: categories);
 
   /// The Gini impurity.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// print(iris.cats['species'].impurity);
+  /// ```
+  ///
+  /// ```text
+  /// 0.6666666666666667
+  /// ```
+  ///
   num get impurity => _statistic(CategoricStatistic.impurity, (data) {
         final proportions = data.proportions;
         return proportions.values
@@ -183,6 +222,17 @@ class Categoric extends Column<String> {
       });
 
   /// The entropy (in nats).
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// print(iris.cats['species'].entropy);
+  /// ```
+  ///
+  /// ```text
+  /// 1.0986122886681096
+  /// ```
+  ///
   num get entropy => _statistic(CategoricStatistic.entropy, (data) {
         final proportions = data.proportions;
         return -proportions.values
@@ -190,12 +240,38 @@ class Categoric extends Column<String> {
             .fold(0, (a, b) => a + b);
       });
 
-  Map<String, Object> get summary => {
-        for (final statistic in CategoricStatistic.values)
+  /// A summary of the stistics associated with this data.
+  Map<String, num> get summary => {
+        for (final statistic in _categoricStatisticGenerator.keys)
           statistic.toString().split('.').last:
               _categoricStatisticGenerator[statistic](this)
       };
 
+  /// Returns a sample of measures for a specified statistic reaped
+  /// from bootstrapping on these elements.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// for (final entropy in iris.cats['species'].bootstrapSampled(
+  ///   CategoricStatistic.entropy, samples: 10)) {
+  ///     print(entropy.toStringAsFixed(4));
+  /// }
+  /// ```
+  ///
+  /// ```text
+  /// 1.0970
+  /// 1.0904
+  /// 1.0969
+  /// 1.0958
+  /// 1.0805
+  /// 1.0985
+  /// 1.0936
+  /// 1.0958
+  /// 1.0948
+  /// 1.0985
+  /// ```
+  ///
   Numeric bootstrapSampled(CategoricStatistic statistic,
           {int samples = 100, int seed}) =>
       Numeric([
@@ -289,7 +365,7 @@ class Categoric extends Column<String> {
   }
 
   @override
-  String toString() => 'Categoric ${elementsAtIndices(indices)}';
+  String toString() => 'Categoric ${[..._categoryIndices.map((i) => this[i])]}';
 
   /// A store for calculated statistics.
   Map<CategoricStatistic, num> _statsMemoization = {};

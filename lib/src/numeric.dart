@@ -494,7 +494,7 @@ class Numeric extends Column<num> {
   /// 4.0249999999999995
   /// ```
   ///
-  num get interQuartileRange => _statistic(NumericStatistic.interquartileRange,
+  num get interQuartileRange => _statistic(NumericStatistic.interQuartileRange,
       (_) => upperQuartile - lowerQuartile);
 
   /// The greatest value in these elements.
@@ -639,7 +639,7 @@ class Numeric extends Column<num> {
       throw Exception('Proportion should be in range [0, 1].');
     }
 
-    return _quantile(p, _nullsOmitted);
+    return _quantile(p, _nullsOmitted..sort());
   }
 
   /// Interpolated p-quantiles of the data.
@@ -667,7 +667,7 @@ class Numeric extends Column<num> {
       throw Exception('Proportion should be in range [0, 1].');
     }
 
-    final ordered = _nullsOmitted; // Only sort once...
+    final ordered = _nullsOmitted..sort(); // Only sort once...
 
     return Numeric(ps.map((p) => _quantile(p, ordered)));
   }
@@ -916,7 +916,7 @@ class Numeric extends Column<num> {
 
   /// A summary of the statistics.
   Map<String, num> get summary => {
-        for (final statistic in NumericStatistic.values)
+        for (final statistic in _numericStatisticGenerator.keys)
           statistic.toString().split('.').last:
               _numericStatisticGenerator[statistic](this)
       };

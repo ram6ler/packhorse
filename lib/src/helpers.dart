@@ -1,6 +1,6 @@
 part of packhorse;
 
-List<int> sequence(int n) => List<int>.generate(n, (index) => index);
+List<int> sequence(int n) => [for (var i = 0; i < n; i++) i];
 
 /// Checks that variable names are compatable with package FunctionTree.
 void _checkVariableName(String variable) {
@@ -23,10 +23,9 @@ void _checkVariableName(String variable) {
 
 /// Ensures that the category index values in [a] and [b] match.
 void matchCategories(Categoric a, Categoric b) {
-  final categories = (List<String>.from(a.categories)..addAll(b.categories))
-      .toSet()
-      .toList()
-        ..sort();
+  final categories = [
+    ...{...a.categories, ...b.categories}
+  ]..sort();
 
   void recategorize(Categoric x) {
     for (final index in x.indices) {
