@@ -1,8 +1,7 @@
 name: packhorse
-description: Support for small to medium data manipulation and analysis projects, including numeric and categoric data list-like structures and data frames.
+description: Support for small to medium data manipulation and analysis projects.
 version: 0.6.0
-homepage: https://bitbucket.org/ram6ler/packhorse
-author: Richard Ambler <rambler@ibwya.net>
+homepage: https://bitbucket.org/ram6ler/packhorse/wiki/Home
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
