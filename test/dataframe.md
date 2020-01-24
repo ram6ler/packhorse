@@ -1,32 +1,8 @@
 
 
-
 Creates a data frame with `cats` and `nums` specified.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 An empty data frame.
-
-
-
-
 
 Creates a data frame from a map of lists.
 
@@ -37,12 +13,12 @@ Example:
 
 ```dart
 final data = Dataframe.fromMapOfLists({
-'id': [3, 55, 114, 107, 122],
-'species': ['setosa', 'versicolor', 'virginica', 'virginica', 'virginica'],
-'sepal_length': [4.7, 6.5, 5.7, 4.9, 5.6],
-'sepal_width': [3.2, 2.8, 2.5, 2.5, 2.8],
-'petal_length': [1.3, 4.6, 5.0, 4.5, 4.9],
-'petal_width': [0.2, 1.5, 2.0, 1.7, 2.0]});
+   'id': [3, 55, 114, 107, 122],
+   'species': ['setosa', 'versicolor', 'virginica', 'virginica', 'virginica'],
+   'sepal_length': [4.7, 6.5, 5.7, 4.9, 5.6],
+   'sepal_width': [3.2, 2.8, 2.5, 2.5, 2.8],
+   'petal_length': [1.3, 4.6, 5.0, 4.5, 4.9],
+   'petal_width': [0.2, 1.5, 2.0, 1.7, 2.0]});
 
 print(data);
 ```
@@ -60,20 +36,6 @@ print(data);
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Creates a data frame from a json string.
 
 The keys of the map are interpreted as the column names;
@@ -83,11 +45,11 @@ Example:
 
 ```dart
 print(Dataframe.fromJsonAsMapOfLists('''
-{
-"id":["3","4","5","6","53","54","55","56","103","104","105","106"],
-"sepal_length":[4.7,4.6,5.0,5.4,6.9,5.5,6.5,5.7,7.1,6.3,6.5,7.6],
-"sepal_width":[3.2,3.1,3.6,3.9,3.1,2.3,2.8,2.8,3.0,2.9,3.0,3.0]
-}
+  {
+    "id":["3","4","5","6","53","54","55","56","103","104","105","106"],
+    "sepal_length":[4.7,4.6,5.0,5.4,6.9,5.5,6.5,5.7,7.1,6.3,6.5,7.6],
+    "sepal_width":[3.2,3.1,3.6,3.9,3.1,2.3,2.8,2.8,3.0,2.9,3.0,3.0]
+  }
 '''));
 ```
 
@@ -111,9 +73,6 @@ print(Dataframe.fromJsonAsMapOfLists('''
 
 ```
 
-
-
-
 Creates a data frame form a list of maps.
 
 Each map populates a row; the keys in each map determine
@@ -123,11 +82,11 @@ Example:
 
 ```dart
 final data = Dataframe.fromListOfMaps([
-{'id': 103, 'species': 'virginica', 'petal_length': 5.9, 'petal_width': 2.1},
-{'id': 53, 'species': 'versicolor', 'petal_length': 4.9, 'petal_width': 1.5},
-{'id': 52, 'species': 'versicolor', 'petal_length': 4.5, 'petal_width': 1.5},
-{'id': 101, 'species': 'virginica', 'petal_length': 6.0, 'petal_width': 2.5},
-{'id': 4, 'species': 'setosa', 'petal_length': 1.5, 'petal_width': 0.2}]);
+  {'id': 103, 'species': 'virginica', 'petal_length': 5.9, 'petal_width': 2.1},
+  {'id': 53, 'species': 'versicolor', 'petal_length': 4.9, 'petal_width': 1.5},
+  {'id': 52, 'species': 'versicolor', 'petal_length': 4.5, 'petal_width': 1.5},
+  {'id': 101, 'species': 'virginica', 'petal_length': 6.0, 'petal_width': 2.5},
+  {'id': 4, 'species': 'setosa', 'petal_length': 1.5, 'petal_width': 0.2}]);
 
 print(data);
 ```
@@ -145,23 +104,6 @@ print(data);
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Creates a data fram from a json string.
 
 Each map in the list is interpreted as an instance.
@@ -170,21 +112,21 @@ Example:
 
 ```dart
 print(Dataframe.fromJsonAsListOfMaps('''
-[
-{
-"id":"4",
-"sepal_length":4.6,
-"sepal_width":3.1
-},{
-"id":"53",
-"sepal_length":6.9,
-"sepal_width":3.1
-},{
-"id":"6",
-"sepal_length":5.4,
-"sepal_width":3.9
-}
-]
+  [
+      {
+          "id":"4",
+          "sepal_length":4.6,
+          "sepal_width":3.1
+      },{
+          "id":"53",
+          "sepal_length":6.9,
+          "sepal_width":3.1
+      },{
+          "id":"6",
+          "sepal_length":5.4,
+          "sepal_width":3.9
+      }
+  ]
 '''));
 ```
 
@@ -199,9 +141,6 @@ print(Dataframe.fromJsonAsListOfMaps('''
 
 ```
 
-
-
-
 Creates a data frame from a csv expression.
 
 Whether a column contains numeric or categorig is either
@@ -215,12 +154,12 @@ Example:
 
 ```dart
 final data = Dataframe.fromCsv('''
-id,sepal_length,sepal_width,petal_length,petal_width,species
-57,6.3,3.3,4.7,1.6,versicolor
-44,5.0,3.5,1.6,0.6,setosa
-58,4.9,2.4,3.3,1.0,versicolor
-68,5.8,2.7,4.1,1.0,versicolor
-94,5.0,2.3,3.3,1.0,versicolor
+    id,sepal_length,sepal_width,petal_length,petal_width,species
+    57,6.3,3.3,4.7,1.6,versicolor
+    44,5.0,3.5,1.6,0.6,setosa
+    58,4.9,2.4,3.3,1.0,versicolor
+    68,5.8,2.7,4.1,1.0,versicolor
+    94,5.0,2.3,3.3,1.0,versicolor
 ''');
 
 print(data);
@@ -239,141 +178,21 @@ print(data);
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 The categoric columns in this data frame.
-
 
 The numeric columns in this data frame.
 
-
 The order of the columns in displays.
-
 
 The names of the columns in this data frame.
 
-
-
-
-
-
 The number of rows in this data frame.
-
-
-
-
-
-
-
-
-
 
 The number of columns in this data frame.
 
-
 A sequence of integers that runs along the rows of this data frame.
 
-
 A summary of each column in this data frame.
-
-
-
-
 
 Returns a data frame with just the first, specified number of rows.
 
@@ -396,9 +215,6 @@ print(iris.withHead(5));
 
 ```
 
-
-
-
 Returns a data frame with just the last, specified number of rows.
 
 Example:
@@ -419,9 +235,6 @@ print(iris.withTail(5));
 '---'------------'-----------'------------'-----------'---------'
 
 ```
-
-
-
 
 Returns a data frame with the rows ordered by the values in the specified column.
 
@@ -451,36 +264,7 @@ print(petals.withRowsOrderedBy('petal_width'));
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Gets a list of sample row indices.
-
-
-
-
-
-
-
-
-
-
-
 
 Returns a data frame made up of rows randomly sampled from this data frame.
 
@@ -494,38 +278,18 @@ print(iris.withRowsSampled(5));
 .---.------------.-----------.------------.-----------.----------.
 | id|sepal_length|sepal_width|petal_length|petal_width|   species|
 :---+------------+-----------+------------+-----------+----------:
-|136|         7.7|        3.0|         6.1|        2.3| virginica|
+| 58|         4.9|        2.4|         3.3|        1.0|versicolor|
+| 88|         6.3|        2.3|         4.4|        1.3|versicolor|
+|117|         6.5|        3.0|         5.5|        1.8| virginica|
+| 83|         5.8|        2.7|         3.9|        1.2|versicolor|
 |137|         6.3|        3.4|         5.6|        2.4| virginica|
-| 22|         5.1|        3.7|         1.5|        0.4|    setosa|
-| 70|         5.6|        2.5|         3.9|        1.1|versicolor|
-|139|         6.0|        3.0|         4.8|        1.8| virginica|
 '---'------------'-----------'------------'-----------'----------'
 
 ```
 
-
-
-
-
 Returns a data frame with a row index column added.
 
-
-
-
-
-
-
-
-
-
 Ckecks whether all [columns] are actually columns.
-
-
-
-
-
-
-
 
 Returns a data frame with only the specified columns, in that order.
 
@@ -555,14 +319,6 @@ print(petals.withColumns(['species', 'petal_length']));
 
 ```
 
-
-
-
-
-
-
-
-
 Returns a data frame with the specified columns dropped.
 
 Example:
@@ -572,33 +328,24 @@ print(petals.withColumnsDropped(['id', 'petal_width']));
 ```
 
 ```text
-.------------.----------.
-|petal_length|   species|
-:------------+----------:
-|         1.4|    setosa|
-|         1.4|    setosa|
-|         1.3|    setosa|
-|         1.5|    setosa|
-|         4.7|versicolor|
-|         4.5|versicolor|
-|         4.9|versicolor|
-|         4.0|versicolor|
-|         6.0| virginica|
-|         5.1| virginica|
-|         5.9| virginica|
-|         5.6| virginica|
-'------------'----------'
+.----------.------------.
+|   species|petal_length|
+:----------+------------:
+|    setosa|         1.4|
+|    setosa|         1.4|
+|    setosa|         1.3|
+|    setosa|         1.5|
+|versicolor|         4.7|
+|versicolor|         4.5|
+|versicolor|         4.9|
+|versicolor|         4.0|
+| virginica|         6.0|
+| virginica|         5.1|
+| virginica|         5.9|
+| virginica|         5.6|
+'----------'------------'
 
 ```
-
-
-
-
-
-
-
-
-
 
 Returns a data frame with the specified columns renamed.
 
@@ -606,8 +353,8 @@ Example:
 
 ```dart
 print(petals.withColumnNamesChanged({
-'petal_length': 'length',
-'petal_width': 'width'}));
+    'petal_length': 'length',
+    'petal_width': 'width'}));
 ```
 
 ```text
@@ -629,29 +376,6 @@ print(petals.withColumnNamesChanged({
 '---'------'-----'----------'
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Returns a data frame with only the predicated columns.
 
@@ -681,14 +405,6 @@ print(petals.withColumnsWhere((column) => column.contains('petal')));
 
 ```
 
-
-
-
-
-
-
-
-
 Returns a data frame with only the rows at specified indices.
 
 Example:
@@ -708,58 +424,13 @@ print(iris.withRowsAtIndices([0, 20, 40]));
 
 ```
 
-
-
-
-
-
 A helper function that generates the values specified by a template.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 A helper function that generates values from a formula.
 
-
-
-
-
-
-
-
 Gives the indices that match a template predicate.
 
-
-
-
-
-
-
-
-
-
-
-
-
 Gives the indices of rows whose values match the defined predicate.
-
-
-
-
-
-
-
 
 Returns a data frame with only the rows that match a template predicate.
 
@@ -768,7 +439,7 @@ Example:
 ```dart
 final template = '{id}-{species}';
 print(petals.withRowsWhereTemplate(template,
-(result) => result.contains('3') || result.contains('setosa')));
+  (result) => result.contains('3') || result.contains('setosa')));
 ```
 
 ```text
@@ -785,17 +456,7 @@ print(petals.withRowsWhereTemplate(template,
 
 ```
 
-
-
-
-
-
-
 Gives the indices that match a formula predicate.
-
-
-
-
 
 Returns a data frame with only the rows that match a formula predicate.
 
@@ -818,22 +479,7 @@ print(petals.withRowsWhereFormula(formula, (result) => result < 0));
 
 ```
 
-
-
-
-
 Gives the indices that match a template and formula predicate.
-
-
-
-
-
-
-
-
-
-
-
 
 Returns a data frame with only the rows that match a template and formula predicate.
 
@@ -842,8 +488,8 @@ Example:
 ```dart
 final template = '{species}', formula = 'petal_length / petal_width';
 print(iris.withRowsWhereTemplateAndFormula(template, formula,
-(templateResult, formulaResult) =>
-templateResult == 'virginica' && formulaResult > 3));
+  (templateResult, formulaResult) =>
+    templateResult == 'virginica' && formulaResult > 3));
 ```
 
 ```text
@@ -870,20 +516,13 @@ templateResult == 'virginica' && formulaResult > 3));
 
 ```
 
-
-
-
-
-
-
-
 Returns the data frame with only rows matched by the defined predicate.
 
 Example:
 
 ```dart
 print(iris.withRowsWhereRowValues((cats, nums) =>
-cats['species'] == 'virginica' && nums['petal_length'] > 6));
+  cats['species'] == 'virginica' && nums['petal_length'] > 6));
 ```
 
 ```text
@@ -902,10 +541,6 @@ cats['species'] == 'virginica' && nums['petal_length'] > 6));
 '---'------------'-----------'------------'-----------'---------'
 
 ```
-
-
-
-
 
 Returns a data frame with a categoric column inserted.
 
@@ -935,16 +570,6 @@ print(sepals.withCategoric('species', petals.cats['species']));
 
 ```
 
-
-
-
-
-
-
-
-
-
-
 Returns a data frame with a numeric inserted.
 
 Example:
@@ -973,22 +598,13 @@ print(petals.withNumeric('sepal_length', sepals.nums['sepal_length']));
 
 ```
 
-
-
-
-
-
-
-
-
-
 Returns a data frame with a numeric based on an existing numeric.
 
 Example:
 
 ```dart
 print(petals.withNumericFromNumeric('petal_length_z', 'petal_length',
-(result) => result.zScores));
+  (result) => result.zScores));
 ```
 
 ```text
@@ -1011,10 +627,6 @@ print(petals.withNumericFromNumeric('petal_length_z', 'petal_length',
 
 ```
 
-
-
-
-
 Returns a data frame with a numeric based on an existing categoric.
 
 Example:
@@ -1022,7 +634,7 @@ Example:
 ```dart
 final sample = iris.withRowsSampled(10, seed: 0);
 print(sample.withNumericFromCategoric('proportion', 'species',
-(species) => Numeric(species.map((name) => species.proportions[name]))));
+  (species) => Numeric(species.map((name) => species.proportions[name]))));
 ```
 
 ```text
@@ -1043,10 +655,6 @@ print(sample.withNumericFromCategoric('proportion', 'species',
 
 ```
 
-
-
-
-
 Returns a data frame with a categoric based on an existing numeric.
 
 Example:
@@ -1054,7 +662,7 @@ Example:
 ```dart
 final sample = iris.withRowsSampled(10, seed: 0);
 print(sample.withCategoricFromNumeric('sepal_length_outlier', 'sepal_length',
-(width) => Categoric(width.map((w) => width.outliers.contains(w) ? 'yes': 'no'))));
+  (width) => Categoric(width.map((w) => width.outliers.contains(w) ? 'yes': 'no'))));
 ```
 
 ```text
@@ -1075,17 +683,13 @@ print(sample.withCategoricFromNumeric('sepal_length_outlier', 'sepal_length',
 
 ```
 
-
-
-
-
 Returns a data frame with a categoric based on an existing categoric.
 
 ```dart
 final sample = iris.withRowsSampled(10, seed: 0);
 print(sample.withCategoricFromCategoric('rarity', 'species',
-(species) => Categoric(
-species.map((s) => species.proportions[s] <= 0.3 ? 'rare': 'common'))));
+  (species) => Categoric(
+      species.map((s) => species.proportions[s] <= 0.3 ? 'rare': 'common'))));
 ```
 
 ```text
@@ -1105,12 +709,6 @@ species.map((s) => species.proportions[s] <= 0.3 ? 'rare': 'common'))));
 '---'------------'-----------'------------'-----------'----------'------'
 
 ```
-
-
-
-
-
-
 
 Returns a data frame with a new categoric column created from a template.
 
@@ -1141,17 +739,6 @@ print(petals.withCategoricFromTemplate('id_code', template));
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
 Returns a data frame with a new numeric column created from a template.
 
 Example:
@@ -1159,7 +746,7 @@ Example:
 ```dart
 final template = '{species}';
 print(petals.withNumericFromTemplate('species_letters', template,
-(result) => result.length));
+  (result) => result.length));
 ```
 
 ```text
@@ -1182,15 +769,6 @@ print(petals.withNumericFromTemplate('species_letters', template,
 
 ```
 
-
-
-
-
-
-
-
-
-
 Returns a data frame with a new categoric column created from a formula.
 
 Example:
@@ -1199,7 +777,7 @@ Example:
 final formula = 'petal_width / petal_length';
 
 print(petals.withCategoricFromFormula('description', formula,
-(result) => result < 0.3 ? 'narrow' : 'wide'));
+  (result) => result < 0.3 ? 'narrow' : 'wide'));
 ```
 
 ```text
@@ -1221,13 +799,6 @@ print(petals.withCategoricFromFormula('description', formula,
 '---'------------'-----------'----------'-----------'
 
 ```
-
-
-
-
-
-
-
 
 Returns a data frame with a new numeric column created from a formula.
 
@@ -1259,39 +830,9 @@ print(petals.withNumericFromFormula('log_petal_area', formula));
 
 ```
 
-
-
-
-
-
-
-
-
 Returns a data frame with a categoric column from a template and formula.
 
-
-
-
-
-
-
-
-
-
-
-
 Returns a data frame with a numeric column from a template and formula.
-
-
-
-
-
-
-
-
-
-
-
 
 Returns a data frame with a new categoric column created from the row values.
 
@@ -1299,12 +840,12 @@ Example:
 
 ```dart
 print(petals.withCategoricFromRowValues('code',
-(cats, nums) {
-final pre = cats['species'].substring(0, 3),
-area = (nums['petal_length'] * nums['petal_width'])
-.toStringAsFixed(2).padLeft(5, '0');
-return '$pre-$area';
-}));
+  (cats, nums) {
+      final pre = cats['species'].substring(0, 3),
+        area = (nums['petal_length'] * nums['petal_width'])
+          .toStringAsFixed(2).padLeft(5, '0');
+      return '$pre-$area';
+  }));
 ```
 
 ```text
@@ -1327,60 +868,9 @@ return '$pre-$area';
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
 Returns a data frame with a numeric column from the row values.
 
-
-
-
-
-
-
-
-
-
 Returns a data frame with a numeric column for each value in a categoric column.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Returns a left join on the data frame.
 
@@ -1454,13 +944,6 @@ Left-join:
 
 ```
 
-
-
-
-
-
-
-
 Returns a right join on the data frame.
 
 Example:
@@ -1533,14 +1016,6 @@ Right-join:
 
 ```
 
-
-
-
-
-
-
-
-
 Returns an inner join on the data frame.
 
 Example:
@@ -1606,16 +1081,6 @@ Inner-join:
 '---'----------'--------'------------'-----------'------------'-----------'
 
 ```
-
-
-
-
-
-
-
-
-
-
 
 Returns a full join on the data frame.
 
@@ -1695,16 +1160,6 @@ Full-join:
 
 ```
 
-
-
-
-
-
-
-
-
-
-
 Returns a left outer join on the data frame.
 
 Example:
@@ -1771,18 +1226,6 @@ Left-outer-join:
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
 Returns a right outer join on the data frame.
 
 Example:
@@ -1848,18 +1291,6 @@ Right-outer-join:
 '----'-------'--------'------------'-----------'------------'-----------'
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
 
 Returns an outer join on the data frame.
 
@@ -1933,17 +1364,6 @@ Outer-join:
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
 Returns a data frame with the rows of [other] added.
 
 Example:
@@ -1971,91 +1391,11 @@ print(headAndTail);
 
 ```
 
+Returns a data frame with all rows containing nulls dropped.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-TODO: document
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-TODO: document
 Gives a map of data frames grouped by category.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-TODO: document
 Gives a map of data frames grouped by value.
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Returns an object containing the data in the specified row
 
@@ -2071,16 +1411,13 @@ print(rowData);
 
 ```text
 cats:
-id: 1
-species: setosa
+  id: 1
+  species: setosa  
 nums:
-petal_length: 1.4
-petal_width: 0.2
-
+  petal_length: 1.4
+  petal_width: 0.2
+  
 ```
-
-
-
 
 Gives a markdown representation of this data frame.
 
@@ -2108,60 +1445,6 @@ print(petals.toMarkdown());
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Gives a csv representation of this data frame.
 
 Example:
@@ -2187,42 +1470,6 @@ id,petal_length,petal_width,species
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Returns a json representation of the data frame.
 
 The json represents a single list of maps representing instances.
@@ -2236,8 +1483,6 @@ print(sepals.withHead(2).toJsonAsListOfMaps());
 ```text
 [{"id":"3","sepal_length":4.7,"sepal_width":3.2},{"id":"4","sepal_length":4.6,"sepal_width":3.1}]
 ```
-
-
 
 Returns a json representation of the data frame.
 
@@ -2253,8 +1498,6 @@ print(sepals.withHead(2).toJsonAsMapOfLists());
 ```text
 {"id":["3","4"],"sepal_length":[4.7,4.6],"sepal_width":[3.2,3.1]}
 ```
-
-
 
 Gives an html table representation of this data frame.
 
@@ -2283,103 +1526,11 @@ print(petals.toHtml());
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Gives a map of lists, each column name as a key.
-
-
-
-
-
-
-
-
-
 
 Gives a list of maps, each map representing a row.
 
-
-
 Gives a list of strings generated from the row values.
 
-
-
-
-
-
-
-
-
-
 Gives a string representation of this data frame.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

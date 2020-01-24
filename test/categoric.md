@@ -1,43 +1,18 @@
 
 
-
-
-
-
-
-
-
-
-
 The internal list of categories in this categoric.
-
 
 The list of categories in this categoric.
 
-
 The internal data, as indices in [_categories].
 
-
 The internal data, as indices in [categories].
-
 
 Redefines the categories.
 
 (Values that do not lie in the new category definition will be lost.)
 
-
-
-
-
-
 Adds categories to the existing categories.
-
-
-
-
-
-
-
 
 Returns a random sample of `n` elements as a numeric.
 
@@ -48,37 +23,17 @@ Example:
 
 ```dart
 for (final species in iris.cats['species'].sample(5)) {
-print(species);
+    print(species);
 }
 ```
 
 ```text
-setosa
-setosa
-setosa
 virginica
-setosa
+versicolor
+versicolor
+virginica
+virginica
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 The counts, by category.
 
@@ -86,7 +41,7 @@ Example:
 
 ```dart
 iris.cats['species'].counts.forEach((species, count) {
-print('$species: $count');
+   print('$species: $count');
 });
 
 ```
@@ -97,9 +52,6 @@ versicolor: 50
 virginica: 50
 ```
 
-
-
-
 # `proportions`
 
 The proportions, by category.
@@ -108,7 +60,7 @@ Example:
 
 ```dart
 iris.cats['species'].proportions.forEach((species, proportion) {
-print('$species: $proportion');
+   print('$species: $proportion');
 });
 
 ```
@@ -119,10 +71,6 @@ versicolor: 0.3333333333333333
 virginica: 0.3333333333333333
 ```
 
-
-
-
-
 Returns the indices of elements that match a specified predicate.
 
 (Use `elementsWhere` to get elements that match a predicate.)
@@ -131,9 +79,9 @@ Example:
 
 ```dart
 for (final index in iris.cats['species'].indicesWhere(
-(species) => species.contains('color')).take(5)) {
-print(index);
-}
+    (species) => species.contains('color')).take(5)) {
+        print(index);
+    }
 ```
 
 ```text
@@ -144,16 +92,13 @@ print(index);
 54
 ```
 
-
-
-
 Returns the elements at the specified indices.
 
 Example:
 
 ```dart
 for (final species in iris.cats['species'].elementsAtIndices([0, 50, 100])) {
-print(species);
+    print(species);
 }
 ```
 
@@ -162,13 +107,6 @@ setosa
 versicolor
 virginica
 ```
-
-
-
-
-
-
-
 
 Returns the elements that match a predicate.
 
@@ -180,9 +118,9 @@ Example:
 
 ```dart
 for (final element in iris.cats['species'].elementsWhere(
-(species) => species.contains('color')).take(5)) {
-print(element);
-}
+    (species) => species.contains('color')).take(5)) {
+        print(element);
+    }
 ```
 
 ```text
@@ -192,9 +130,6 @@ versicolor
 versicolor
 versicolor
 ```
-
-
-
 
 The Gini impurity.
 
@@ -208,13 +143,6 @@ print(iris.cats['species'].impurity);
 0.6666666666666667
 ```
 
-
-
-
-
-
-
-
 The entropy (in nats).
 
 Example:
@@ -227,19 +155,7 @@ print(iris.cats['species'].entropy);
 1.0986122886681096
 ```
 
-
-
-
-
-
-
-
 A summary of the stistics associated with this data.
-
-
-
-
-
 
 Returns a sample of measures for a specified statistic reaped
 from bootstrapping on these elements.
@@ -248,125 +164,25 @@ Example:
 
 ```dart
 for (final entropy in iris.cats['species'].bootstrapSampled(
-CategoricStatistic.entropy, samples: 10)) {
-print(entropy.toStringAsFixed(4));
+  CategoricStatistic.entropy, samples: 10)) {
+    print(entropy.toStringAsFixed(4));
 }
 ```
 
 ```text
-1.0970
-1.0904
-1.0969
-1.0958
-1.0805
-1.0985
-1.0936
-1.0958
 1.0948
+1.0938
+1.0895
+1.0949
+1.0878
+1.0938
 1.0985
+1.0949
+1.0938
+1.0860
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 A store for calculated statistics.
 
-
 A helper method that looks up, calculates or stores statistics.
-
-
-
-
 

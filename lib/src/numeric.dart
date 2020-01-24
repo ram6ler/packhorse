@@ -1148,7 +1148,7 @@ class Numeric extends Column<num> {
   @override
   String toString() => 'Numeric $_elements';
 
-  /// A store for calculated staistics.
+  /// A store for calculated statistics.
   Map<NumericStatistic, num> _statsMemoization = {};
 
   /// A helper method that looks up, calculates or stores statistics.

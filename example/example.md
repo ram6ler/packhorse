@@ -14,6 +14,8 @@ print(categoric);
 ```text
 Numeric [1, 2, 3]
 Categoric [a, b, c]
+
+[2201 μs]
 ```
 
 Instances of `Dataframe` can be instantiated from strings (like csv or json),
@@ -57,6 +59,7 @@ print(dataframe);
 |104|         5.6|        1.8| virginica|
 '---'------------'-----------'----------'
 
+[5073 μs]
 ```
 
 In the following examples, dataframes `iris`, `petals` and `sepals` have
@@ -82,18 +85,19 @@ print(focus);
 .---.----------.-----------.-----------.--------------------.
 | id|   species|sepal_width|petal_width|sepal_width_z_scores|
 :---+----------+-----------+-----------+--------------------:
-|  2|    setosa|        3.0|        0.2| -0.1319794793216258|
-| 31|    setosa|        3.1|        0.2| 0.09821728693702086|
-| 15|    setosa|        4.0|        0.2|   2.169988183264839|
-| 85|versicolor|        3.0|        1.5| -0.1319794793216258|
-|106| virginica|        3.0|        2.1| -0.1319794793216258|
-| 33|    setosa|        4.1|        0.1|   2.400184949523484|
-|150| virginica|        3.0|        1.8| -0.1319794793216258|
-|146| virginica|        3.0|        2.3| -0.1319794793216258|
-| 77|versicolor|        2.8|        1.4| -0.5923730118389191|
-|145| virginica|        3.3|        2.5|  0.5586108194543131|
+| 91|versicolor|        2.6|        1.2| -1.0527665443562113|
+| 53|versicolor|        3.1|        1.5| 0.09821728693702086|
+|100|versicolor|        2.8|        1.3| -0.5923730118389191|
+| 92|versicolor|        3.0|        1.4| -0.1319794793216258|
+| 23|    setosa|        3.6|        0.2|  1.2492011182302531|
+| 26|    setosa|        3.0|        0.2| -0.1319794793216258|
+| 83|versicolor|        2.7|        1.2| -0.8225697780975647|
+|148| virginica|        3.0|        2.0| -0.1319794793216258|
+| 40|    setosa|        3.4|        0.2|  0.7888075857129598|
+| 69|versicolor|        2.2|        1.5|  -1.973553609390797|
 '---'----------'-----------'-----------'--------------------'
 
+[13417 μs]
 ```
 
 # Extensions
@@ -111,6 +115,8 @@ print(numeric.mean);
 ```text
 Numeric [1, 2, 3]
 2.0
+
+[4487 μs]
 ```
 
 Lists to Categorics:
@@ -124,9 +130,11 @@ categoric.proportions.forEach((value, p) {
 ```
 
 ```text
-Categoric [blue, red, red]
+Categoric [red, blue, blue]
   blue: 0.6666666666666666
   red: 0.3333333333333333
+
+[3004 μs]
 ```
 
 ## Map with variable keys
@@ -149,6 +157,7 @@ print(data);
 |blue|3|
 '----'-'
 
+[4761 μs]
 ```
 
 ## List of instances
@@ -172,6 +181,7 @@ print(data);
 |blue|3|
 '----'-'
 
+[5124 μs]
 ```
 
 ## Strings
@@ -198,6 +208,7 @@ print(data);
 |3|blue|
 '-'----'
 
+[4438 μs]
 ```
 
 ### Json / map of lists:
@@ -222,6 +233,7 @@ print(data);
 |blue|3|
 '----'-'
 
+[9375 μs]
 ```
 
 ### Json / list of maps:
@@ -247,6 +259,7 @@ print(data);
 |blue|3|
 '----'-'
 
+[9096 μs]
 ```
 
 # Mutating
@@ -286,6 +299,7 @@ print(petals.withCategoricFromTemplate('id_code', template));
 |104|         5.6|        1.8| virginica|virginica-104|
 '---'------------'-----------'----------'-------------'
 
+[7521 μs]
 ```
 
 We can also create numerical columns from templates:
@@ -314,6 +328,7 @@ print(petals.withNumericFromTemplate('species_letters', template,
 |104|         5.6|        1.8| virginica|              9|
 '---'------------'-----------'----------'---------------'
 
+[7734 μs]
 ```
 
 ## 2. Using formulas
@@ -345,6 +360,7 @@ print(petals.withNumericFromFormula('log_petal_area', formula));
 |104|         5.6|        1.8| virginica| 2.3105532626432224|
 '---'------------'-----------'----------'-------------------'
 
+[11514 μs]
 ```
 
 We can also create categorical columns using formulas:
@@ -374,6 +390,7 @@ print(petals.withCategoricFromFormula('description', formula,
 |104|         5.6|        1.8| virginica|       wide|
 '---'------------'-----------'----------'-----------'
 
+[10880 μs]
 ```
 
 ## 3. Using row variables
@@ -406,6 +423,7 @@ print(petals.withCategoricFromRowValues('code',
 |104|         5.6|        1.8| virginica|vir-10.08|
 '---'------------'-----------'----------'---------'
 
+[7584 μs]
 ```
 
 # Products
@@ -430,6 +448,7 @@ print(petals.toMarkdown());
 |103|5.9|2.1|virginica|
 |104|5.6|1.8|virginica|
 
+[3747 μs]
 ```
 
 ```dart
@@ -451,6 +470,7 @@ id,petal_length,petal_width,species
 103,5.9,2.1,virginica
 104,5.6,1.8,virginica
 
+[4394 μs]
 ```
 
 ```dart
@@ -474,6 +494,7 @@ print(petals.toHtml());
 <tr><td>104</td><td>5.6</td><td>1.8</td><td>virginica</td></tr>
 </table>
 
+[3488 μs]
 ```
 
 ```dart
@@ -482,6 +503,8 @@ print(sepals.withHead(2).toJsonAsMapOfLists());
 
 ```text
 {"id":["3","4"],"sepal_length":[4.7,4.6],"sepal_width":[3.2,3.1]}
+
+[8143 μs]
 ```
 
 # Restructuring
@@ -511,6 +534,7 @@ print(headAndTail);
 |146|         6.7|        3.0|         5.2|        2.3|virginica|
 '---'------------'-----------'------------'-----------'---------'
 
+[9893 μs]
 ```
 
 ## Performing joins
@@ -695,6 +719,7 @@ Outer-join:
 |null|      null|     106|        null|       null|         7.6|        3.0|
 '----'----------'--------'------------'-----------'------------'-----------'
 
+[16875 μs]
 ```
 
 ## Statistics
@@ -726,6 +751,8 @@ By species:
   setosa: 1.46
   versicolor: 4.26
   virginica: 5.55
+
+[9740 μs]
 ```
 
 We can get a summary of a numeric:
@@ -758,6 +785,8 @@ Sepal width:
   greatest: 4.4
   range: 2.4000000000000004
   interQuartileRange: 0.5
+
+[16972 μs]
 ```
 
 ... or of a categoric:
@@ -775,6 +804,8 @@ Species:
   numberOfInstances: 150
   impurity: 0.6666666666666667
   entropy: 1.0986122886681096
+
+[7959 μs]
 ```
 
 A summary of an entire data frame is in the form of a map with the
@@ -877,6 +908,8 @@ petal_width:
   greatest: 2.5
   range: 2.4
   interQuartileRange: 1.5
+
+[32612 μs]
 ```
 
 ## Quantizing a category
@@ -905,6 +938,7 @@ print(petals
 |104| virginica|             0|                 0|                1|
 '---'----------'--------------'------------------'-----------------'
 
+[7877 μs]
 ```
 
 ## Categorizing a quantity
@@ -933,5 +967,6 @@ print(petals
 | virginica|         5.6|           [5.3, 6.5)|
 '----------'------------'---------------------'
 
+[15978 μs]
 ```
 

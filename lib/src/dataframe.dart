@@ -1702,10 +1702,11 @@ class Dataframe {
   ///
   Dataframe withFullJoin(Dataframe other, String pivot, {String otherPivot}) {
     otherPivot = otherPivot ?? pivot;
-    final ids = (cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]})
-        .union(other.cats.containsKey(otherPivot)
+    final a = cats.containsKey(pivot) ? {...cats[pivot]} : {...nums[pivot]},
+        b = other.cats.containsKey(otherPivot)
             ? {...other.cats[otherPivot]}
-            : {...other.nums[otherPivot]});
+            : {...other.nums[otherPivot]},
+        ids = a.union(b);
 
     return _join(this, other, pivot, otherPivot, ids);
   }

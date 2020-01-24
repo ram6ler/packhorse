@@ -3,28 +3,9 @@
 A convenience wrapper class for [List<num>], with
 properties and methods commonly used in data analysis.
 
-
-
-
-
 The [List<num>] wrapped by this numeric.
 
-
 A helper method for defining operations.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Iteratively adds `that` to this numeric.
 
@@ -46,10 +27,6 @@ Numeric [11, 13, 15]
 Numeric [11, 12, 13]
 ```
 
-
-
-
-
 Iteratively subtracts `that` from this numeric.
 
 If `that` is a num, its value is subtracted from each element;
@@ -70,9 +47,6 @@ Numeric [-9, -9, -9]
 Numeric [-9, -8, -7]
 ```
 
-
-
-
 Returns an iterative negation of the data in this numeric.
 
 ```dart
@@ -83,8 +57,6 @@ print(-numeric);
 ```text
 Numeric [-1, -2, -3]
 ```
-
-
 
 Iteratively multiplies this numeric by `that`.
 
@@ -106,9 +78,6 @@ Numeric [10, 22, 36]
 Numeric [10, 20, 30]
 ```
 
-
-
-
 Iteratively divides this numeric by `that`.
 
 If `that` is a num, each element is divided by it;
@@ -128,9 +97,6 @@ Numeric [0.1, 0.18181818181818182, 0.25]
 Numeric [0.1, 0.18181818181818182, 0.25]
 Numeric [0.1, 0.2, 0.3]
 ```
-
-
-
 
 Iteratively performs modular division of this numeric by `that`.
 
@@ -152,9 +118,6 @@ Numeric [0, 1, 0]
 Numeric [1, 2, 0]
 ```
 
-
-
-
 Iteratively performs whole division of this numeric by `that`.
 
 If `that` is a num, each element is divided by it;
@@ -175,21 +138,6 @@ Numeric [10, 5, 4]
 Numeric [3, 3, 4]
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Returns the indices of the elements that meet a predicate.
 
 (Use `elementsWhere` to get the elements that meet a predicate.)
@@ -205,9 +153,6 @@ print(xs.indicesWhere(isOdd));
 ```text
 [0, 2, 4, 6]
 ```
-
-
-
 
 Returns the elements that meet a predicate.
 
@@ -229,9 +174,6 @@ Numeric [5, 3, 5, 11]
 (5, 3, 5, 11)
 ```
 
-
-
-
 Returns the elements at specified indices.
 
 Example:
@@ -245,10 +187,6 @@ print(xs.elementsAtIndices([0, 0, 0, 2, 2, 2]));
 Numeric [1, 1, 1, 3, 3, 3]
 ```
 
-
-
-
-
 Returns a random sample of `n` elements as a numeric.
 
 Optionally set the `seed` to reproduce the results. To draw a
@@ -258,7 +196,7 @@ Example:
 
 ```dart
 for (final length in iris.nums['petal_length'].sample(5, seed: 0)) {
-print(length);
+    print(length);
 }
 ```
 
@@ -270,27 +208,7 @@ print(length);
 1.4
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 The non null (and non [double.nan]) elements in this numeric.
-
-
 
 The sum of the elements.
 
@@ -300,8 +218,9 @@ Example:
 print(iris.nums['petal_length'].sum);
 ```
 
-
-
+```text
+563.7000000000004
+```
 
 The sum of the squares of the elements.
 
@@ -315,9 +234,6 @@ print(iris.nums['petal_length'].sumOfSquares);
 2582.7100000000005
 ```
 
-
-
-
 The mean of the elements.
 
 Example:
@@ -329,8 +245,6 @@ print(iris.nums['petal_length'].mean);
 ```text
 3.7580000000000027
 ```
-
-
 
 The variance of the elements, treating these elements as
 the population.
@@ -345,12 +259,6 @@ print(iris.nums['petal_length'].variance);
 3.0955026666666674
 ```
 
-
-
-
-
-
-
 The unbiased estimate of the variance of the population
 these elements represent a sample of.
 
@@ -363,9 +271,6 @@ print(iris.nums['petal_length'].inferredVariance);
 ```text
 3.1162778523489942
 ```
-
-
-
 
 The standard deviation of the elements, treating this
 data as the population.
@@ -380,9 +285,6 @@ print(iris.nums['petal_length'].standardDeviation);
 1.7594040657753032
 ```
 
-
-
-
 The unbiased estimate of the standard deviation
 of the population these elements represent a sample of.
 
@@ -395,10 +297,6 @@ print(iris.nums['petal_length'].inferredStandardDeviation);
 ```text
 1.7652982332594667
 ```
-
-
-
-
 
 The unbiased estimate of the skewness of the population
 these elements represent a sample of.
@@ -413,14 +311,6 @@ print(iris.nums['petal_length'].skewness);
 -0.27121905735433716
 ```
 
-
-
-
-
-
-
-
-
 The mean absolute deviation from the mean of these elements.
 
 Example:
@@ -433,11 +323,6 @@ print(iris.nums['petal_length'].meanAbsoluteDeviation);
 1.5627466666666645
 ```
 
-
-
-
-
-
 The lower quartile of these elements.
 
 Example:
@@ -447,11 +332,8 @@ print(iris.nums['petal_length'].lowerQuartile);
 ```
 
 ```text
-1.3250000000000002
+1.6
 ```
-
-
-
 
 The median of these elements.
 
@@ -465,8 +347,6 @@ print(iris.nums['petal_length'].median);
 4.35
 ```
 
-
-
 The upper quartile of these elements.
 
 Example:
@@ -476,11 +356,8 @@ print(iris.nums['petal_length'].upperQuartile);
 ```
 
 ```text
-5.35
+5.1
 ```
-
-
-
 
 The inter-quartile range of these elements.
 
@@ -491,11 +368,8 @@ print(iris.nums['petal_length'].interQuartileRange);
 ```
 
 ```text
-4.0249999999999995
+3.4999999999999996
 ```
-
-
-
 
 The greatest value in these elements.
 
@@ -509,9 +383,6 @@ print(iris.nums['petal_length'].greatest);
 6.9
 ```
 
-
-
-
 The index of the greatest value in these elements.
 
 Example:
@@ -523,8 +394,6 @@ print(iris.nums['petal_length'].indexOfGreatest);
 ```text
 118
 ```
-
-
 
 The greatest non outlier in these elements.
 
@@ -542,12 +411,6 @@ print(iris.nums['petal_length'].greatestNonOutlier);
 6.9
 ```
 
-
-
-
-
-
-
 The least value in these elements.
 
 Example:
@@ -560,9 +423,6 @@ print(iris.nums['petal_length'].least);
 1.0
 ```
 
-
-
-
 The index of the least value in these elements.
 
 Example:
@@ -574,8 +434,6 @@ print(iris.nums['petal_length'].indexOfLeast);
 ```text
 22
 ```
-
-
 
 The least non outlier in these elements.
 
@@ -593,12 +451,6 @@ print(iris.nums['petal_length'].leastNonOutlier);
 1.0
 ```
 
-
-
-
-
-
-
 The range of the values of elements in this numeric.
 
 Example:
@@ -611,16 +463,7 @@ print(iris.nums['petal_length'].range);
 5.9
 ```
 
-
-
 Helper to generate a quantile.
-
-
-
-
-
-
-
 
 The interpolated p-quantile of the data, with `p` in the range `[0, 1]`.
 
@@ -631,16 +474,8 @@ print(iris.nums['petal_length'].quantile(0.99));
 ```
 
 ```text
-5.298000000000002
+6.7
 ```
-
-
-
-
-
-
-
-
 
 Interpolated p-quantiles of the data.
 
@@ -648,29 +483,19 @@ Example:
 
 ```dart
 for (final quantile in iris.nums['petal_length'].quantiles(
-[0, 0.2, 0.4, 0.6, 0.8, 1])) {
-print(quantile.toStringAsFixed(3));
+    [0, 0.2, 0.4, 0.6, 0.8, 1])) {
+    print(quantile.toStringAsFixed(3));
 }
 ```
 
 ```text
-1.400
-1.600
-3.740
-4.240
-5.560
-5.100
+1.000
+1.500
+3.900
+4.660
+5.380
+6.900
 ```
-
-
-
-
-
-
-
-
-
-
 
 The pth percentile of the data, with `p` in the range `[0, 100]`.
 
@@ -681,15 +506,8 @@ print(iris.nums['petal_length'].percentile(99).toStringAsFixed(3));
 ```
 
 ```text
-5.298
+6.700
 ```
-
-
-
-
-
-
-
 
 The outliers in these elements.
 
@@ -701,20 +519,17 @@ Example:
 
 ```dart
 for (final outlier in iris.nums['sepal_width'].outliers.take(5)) {
-print(outlier);
+    print(outlier);
 }
 ```
 
 ```text
-3.5
-3.0
-3.2
-3.1
-3.6
+3.9
+4.0
+4.4
+3.9
+3.8
 ```
-
-
-
 
 The cumulative relative frequency associated with these elements.
 
@@ -722,7 +537,7 @@ Example:
 
 ```dart
 for (final pScore in sepals.nums['sepal_length'].pScores.take(5)) {
-print(pScore.toStringAsFixed(3));
+    print(pScore.toStringAsFixed(3));
 }
 ```
 
@@ -734,9 +549,6 @@ print(pScore.toStringAsFixed(3));
 0.792
 ```
 
-
-
-
 The theoretical cumulative relative frequency associated with
 these elements under the hypothesis of normal distribution.
 
@@ -744,7 +556,7 @@ Example:
 
 ```dart
 for (final pScore in sepals.nums['sepal_length'].pScoresIfNormal.take(5)) {
-print(pScore.toStringAsFixed(3));
+    print(pScore.toStringAsFixed(3));
 }
 ```
 
@@ -756,16 +568,13 @@ print(pScore.toStringAsFixed(3));
 0.826
 ```
 
-
-
-
 The z-scores, treating the data in this numeric as a population.
 
 Example:
 
 ```dart
 for (final z in sepals.nums['sepal_length'].zScores.take(5)) {
-print(z.toStringAsFixed(2));
+    print(z.toStringAsFixed(2));
 }
 ```
 
@@ -777,16 +586,13 @@ print(z.toStringAsFixed(2));
 0.98
 ```
 
-
-
-
 The z-scores, relative to the population this numeric is treated as a sample from.
 
 Example:
 
 ```dart
 for (final z in sepals.nums['sepal_length'].inferredZScores.take(5)) {
-print(z.toStringAsFixed(2));
+    print(z.toStringAsFixed(2));
 }
 ```
 
@@ -798,18 +604,14 @@ print(z.toStringAsFixed(2));
 0.94
 ```
 
-
-
-
-
 The z-scores, calculated from specified mean and standard deviation.
 
 Example:
 
 ```dart
 for (final z in sepals.nums['sepal_length']
-.standardizedZScores(5.0, 2.5).take(5)) {
-print(z.toStringAsFixed(2));
+  .standardizedZScores(5.0, 2.5).take(5)) {
+    print(z.toStringAsFixed(2));
 }
 ```
 
@@ -821,16 +623,13 @@ print(z.toStringAsFixed(2));
 0.76
 ```
 
-
-
-
 The residuals, or differences from the mean.
 
 Example:
 
 ```dart
 for (final r in sepals.nums['sepal_length'].residuals.take(5)) {
-print(r.toStringAsFixed(2));
+    print(r.toStringAsFixed(2));
 }
 ```
 
@@ -842,16 +641,13 @@ print(r.toStringAsFixed(2));
 0.92
 ```
 
-
-
-
 The squared residuals.
 
 Example:
 
 ```dart
 for (final r in sepals.nums['sepal_length'].squaredResiduals.take(5)) {
-print(r.toStringAsFixed(2));
+    print(r.toStringAsFixed(2));
 }
 ```
 
@@ -863,15 +659,13 @@ print(r.toStringAsFixed(2));
 0.84
 ```
 
-
-
 The counts, by value.
 
 Example:
 
 ```dart
 sepals.nums['sepal_width'].counts.forEach((value, count) {
-print('$value: $count');
+    print('$value: $count');
 });
 ```
 
@@ -886,16 +680,13 @@ print('$value: $count');
 2.9: 1
 ```
 
-
-
-
 The proportions, by value.
 
 Example:
 
 ```dart
 sepals.nums['sepal_width'].proportions.forEach((value, proportion) {
-print('$value: ${proportion.toStringAsFixed(3)}');
+    print('$value: ${proportion.toStringAsFixed(3)}');
 });
 ```
 
@@ -910,16 +701,7 @@ print('$value: ${proportion.toStringAsFixed(3)}');
 2.9: 0.083
 ```
 
-
-
-
-
 A summary of the statistics.
-
-
-
-
-
 
 The dot product with Numeric that.
 
@@ -934,26 +716,13 @@ print(lengths.dot(widths));
 869.25
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 The Pearson correlation between the data in this and that column.
 
 Example:
 
 ```dart
 final lengths = iris.nums['petal_length'],
-widths = iris.nums['petal_width'];
+  widths = iris.nums['petal_width'];
 
 print(lengths.correlation(widths));
 ```
@@ -962,11 +731,6 @@ print(lengths.correlation(widths));
 0.9627460246236469
 ```
 
-
-
-
-
-
 Returns a sample of measures for a specified statistic reaped
 from bootstrapping on these elements.
 
@@ -974,30 +738,23 @@ Example:
 
 ```dart
 for (final mean in iris.nums['petal_length'].bootstrapSampled(
-NumericStatistic.mean, samples: 10)) {
-print(mean.toStringAsFixed(2));
-}
+    NumericStatistic.mean, samples: 10)) {
+        print(mean.toStringAsFixed(2));
+    }
 ```
 
 ```text
-3.77
-3.81
-3.98
+3.72
+3.73
 3.58
+3.88
+3.64
+3.71
+3.78
 3.63
-3.56
-3.70
-3.70
-3.69
-3.77
+3.63
+3.57
 ```
-
-
-
-
-
-
-
 
 A list of histogram bars for this data.
 
@@ -1005,7 +762,7 @@ Example:
 
 ```dart
 for (final bar in iris.nums['petal_length'].histogram(bins: 6)) {
-print(bar);
+    print(bar);
 }
 ```
 
@@ -1018,142 +775,11 @@ Bar from 5.13 to 6.31: 29.0
 Bar from 6.31 to 7.49: 5.0
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 A range containing all the data.
-
 
 A rough probability density function.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-A store for calculated staistics.
-
+A store for calculated statistics.
 
 A helper method that looks up, calculates or stores statistics.
-
-
-
-
 
