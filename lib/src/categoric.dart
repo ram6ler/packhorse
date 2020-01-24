@@ -284,10 +284,9 @@ class Categoric extends Column<String> {
 
   @override
   String operator [](int index) {
-    final wrappedIndex = index % length;
-    return _categoryIndices[wrappedIndex] == -1
-        ? null
-        : _categories[_categoryIndices[wrappedIndex]];
+    final wrappedIndex = index % length,
+        categoryIndex = _categoryIndices[wrappedIndex];
+    return categoryIndex == -1 ? null : _categories[categoryIndex];
   }
 
   @override
@@ -365,7 +364,7 @@ class Categoric extends Column<String> {
   }
 
   @override
-  String toString() => 'Categoric ${[..._categoryIndices.map((i) => this[i])]}';
+  String toString() => 'Categoric ${[...sequence(length).map((i) => this[i])]}';
 
   /// A store for calculated statistics.
   Map<CategoricStatistic, num> _statsMemoization = {};
