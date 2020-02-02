@@ -916,7 +916,7 @@ class Dataframe {
   /// Example:
   ///
   /// ```dart
-  /// print(sepals.withCategoric('species', petals.cats['species']));
+  /// print(sepals.withCategoricAdded('species', petals.cats['species']));
   /// ```
   ///
   /// ```text
@@ -939,7 +939,7 @@ class Dataframe {
   ///
   /// ```
   ///
-  Dataframe withCategoric(String name, Categoric categoric) {
+  Dataframe withCategoricAdded(String name, Categoric categoric) {
     if (categoric.length != numberOfRows) {
       throw Exception(
           'Expecting $numberOfRows values; got ${categoric.length}.');
@@ -954,7 +954,7 @@ class Dataframe {
   /// Example:
   ///
   /// ```dart
-  /// print(petals.withNumeric('sepal_length', sepals.nums['sepal_length']));
+  /// print(petals.withNumericAdded('sepal_length', sepals.nums['sepal_length']));
   /// ```
   ///
   /// ```text
@@ -977,7 +977,7 @@ class Dataframe {
   ///
   /// ```
   ///
-  Dataframe withNumeric(String name, Numeric numeric) {
+  Dataframe withNumericAdded(String name, Numeric numeric) {
     if (numeric.length != numberOfRows) {
       throw Exception('Expecting $numberOfRows values; got ${numeric.length}.');
     }
@@ -1017,7 +1017,7 @@ class Dataframe {
   ///
   Dataframe withNumericFromNumeric(String name, String existingNumericName,
           Numeric Function(Numeric numeric) generator) =>
-      withNumeric(name, generator(nums[existingNumericName]));
+      withNumericAdded(name, generator(nums[existingNumericName]));
 
   /// Returns a data frame with a numeric based on an existing categoric.
   ///
@@ -1049,7 +1049,7 @@ class Dataframe {
   ///
   Dataframe withNumericFromCategoric(String name, String existingCategoricName,
           Numeric Function(Categoric categoric) generator) =>
-      withNumeric(name, generator(cats[existingCategoricName]));
+      withNumericAdded(name, generator(cats[existingCategoricName]));
 
   /// Returns a data frame with a categoric based on an existing numeric.
   ///
@@ -1081,7 +1081,7 @@ class Dataframe {
   ///
   Dataframe withCategoricFromNumeric(String name, String existingNumericName,
           Categoric Function(Numeric numeric) generator) =>
-      withCategoric(name, generator(nums[existingNumericName]));
+      withCategoricAdded(name, generator(nums[existingNumericName]));
 
   /// Returns a data frame with a categoric based on an existing categoric.
   ///
@@ -1114,7 +1114,7 @@ class Dataframe {
           String name,
           String existingCategoricName,
           Categoric Function(Categoric categoric) generator) =>
-      withCategoric(name, generator(cats[existingCategoricName]));
+      withCategoricAdded(name, generator(cats[existingCategoricName]));
 
   /// Returns a data frame with a new categoric column created from a template.
   ///
@@ -2071,7 +2071,7 @@ class Dataframe {
   /// Example:
   ///
   /// ```dart
-  /// final rowData = petals.valuesInRow(0);
+  /// final rowData = petals.getRowValues(0);
   /// print(rowData);
   /// ```
   ///
@@ -2084,9 +2084,43 @@ class Dataframe {
   ///   petal_width: 0.2
   ///
   /// ```
-  RowValues valuesInRow(int index) => RowValues(
+  RowValues getRowValues(int index) => RowValues(
       {for (final key in cats.keys) key: cats[key][index]},
       {for (final key in nums.keys) key: nums[key][index]});
+
+  void setRowValues(int index, RowValues rowValues) {
+    for (final key in rowValues.cats.keys) {
+      cats[key][index] = rowValues.cats[key];
+    }
+
+    for (final key in rowValues.nums.keys) {
+      nums[key][index] = rowValues.nums[key];
+    }
+  }
+
+  void performRowOperations(List<RowOperation> operations) {
+    final indexExtractor = RegExp(r'\[([0-9]+)\]'),
+        output = {
+      for (final operation in operations)
+        operation.destinationRowIndex: {
+          for (final key in nums.keys)
+            key: operation.expression
+                .replaceAllMapped(
+                    indexExtractor,
+                    (match) => '${() {
+                          final value = nums[key][int.tryParse(match.group(1))];
+                          return value < 0 ? '($value)' : '$value';
+                        }()}')
+                .interpret()
+        }
+    };
+
+    output.forEach((index, map) {
+      map.forEach((variable, value) {
+        nums[variable][index] = value;
+      });
+    });
+  }
 
   /// Gives a markdown representation of this data frame.
   ///

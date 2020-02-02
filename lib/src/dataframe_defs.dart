@@ -35,14 +35,12 @@ Dataframe _join(Dataframe left, Dataframe right, String leftPivot,
     throw Exception('Unrecognized pivot: "$rightPivot".');
   }
 
-  final leftCats = Map<String, List<String>>.fromIterable(left.cats.keys,
-          value: (_) => []),
-      rightCats = Map<String, List<String>>.fromIterable(right.cats.keys,
-          value: (_) => []),
-      leftNums =
-          Map<String, List<num>>.fromIterable(left.nums.keys, value: (_) => []),
-      rightNums = Map<String, List<num>>.fromIterable(right.nums.keys,
-          value: (_) => []);
+  final variablesMap =
+          <T>(Iterable<String> keys) => {for (final key in keys) key: <T>[]},
+      leftCats = variablesMap<String>(left.cats.keys),
+      rightCats = variablesMap<String>(right.cats.keys),
+      leftNums = variablesMap<num>(left.nums.keys),
+      rightNums = variablesMap<num>(right.nums.keys);
 
   for (final id in ids) {
     final
@@ -125,4 +123,11 @@ Dataframe _join(Dataframe left, Dataframe right, String leftPivot,
             value: (key) => Numeric(rightNums[key])));
 
   return Dataframe(cats, nums, []);
+}
+
+class RowOperation {
+  String expression;
+  int destinationRowIndex;
+
+  RowOperation(this.expression, this.destinationRowIndex) {}
 }

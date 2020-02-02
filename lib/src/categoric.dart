@@ -296,6 +296,7 @@ class Categoric extends Column<String> {
           'Unrecognized category: "$category". (Use addCategories to add a category.)');
     }
     _categoryIndices[index % length] = _categories.indexOf(category);
+    _statsMemoization.clear();
   }
 
   @override
