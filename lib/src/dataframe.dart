@@ -1156,6 +1156,56 @@ class Dataframe {
     return Dataframe(pipedCats, pipedNums, columnsInOrder);
   }
 
+  /// Returns a data frame with a new categoric column created
+  /// from a template and regular expression.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// final
+  ///   template = '{species} {petal_length}',
+  ///   re = RegExp(r'([a-z]+) ([0-9]+)\.([0-9]+)'),
+  ///   output = r'$2-$1-$3';
+  ///
+  /// print(petals.withCategoricFromRegExp('mixed', template, re, output: output));
+  /// ```
+  ///
+  /// ```text
+  /// .---.------------.-----------.----------.--------------.
+  /// | id|petal_length|petal_width|   species|         mixed|
+  /// :---+------------+-----------+----------+--------------:
+  /// |  1|         1.4|        0.2|    setosa|    1-setosa-4|
+  /// |  2|         1.4|        0.2|    setosa|    1-setosa-4|
+  /// |  3|         1.3|        0.2|    setosa|    1-setosa-3|
+  /// |  4|         1.5|        0.2|    setosa|    1-setosa-5|
+  /// | 51|         4.7|        1.4|versicolor|4-versicolor-7|
+  /// | 52|         4.5|        1.5|versicolor|4-versicolor-5|
+  /// | 53|         4.9|        1.5|versicolor|4-versicolor-9|
+  /// | 54|         4.0|        1.3|versicolor|4-versicolor-0|
+  /// |101|         6.0|        2.5| virginica| 6-virginica-0|
+  /// |102|         5.1|        1.9| virginica| 5-virginica-1|
+  /// |103|         5.9|        2.1| virginica| 5-virginica-9|
+  /// |104|         5.6|        1.8| virginica| 5-virginica-6|
+  /// '---'------------'-----------'----------'--------------'
+  ///
+  /// ```
+
+  Dataframe withCategoricFromRegExp(String name, String template, RegExp re,
+      {String output = r'$0', String startQuote = '{', String endQuote = '}'}) {
+    final pipedCats = {...cats},
+        pipedNums = {...nums},
+        filler = RegExp(r'\$([0-9]+)');
+    String processed(String filled) {
+      final match = re.firstMatch(filled);
+      return output.replaceAllMapped(filler, (m) => match[int.parse(m[1])]);
+    }
+
+    pipedCats[name] = Categoric(
+        _templateValues(template, startQuote, endQuote).map(processed));
+
+    return Dataframe(pipedCats, pipedNums, columnsInOrder);
+  }
+
   /// Returns a data frame with a new numeric column created from a template.
   ///
   /// Example:

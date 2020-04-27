@@ -278,11 +278,11 @@ print(iris.withRowsSampled(5));
 .---.------------.-----------.------------.-----------.----------.
 | id|sepal_length|sepal_width|petal_length|petal_width|   species|
 :---+------------+-----------+------------+-----------+----------:
-| 58|         4.9|        2.4|         3.3|        1.0|versicolor|
-| 88|         6.3|        2.3|         4.4|        1.3|versicolor|
-|117|         6.5|        3.0|         5.5|        1.8| virginica|
-| 83|         5.8|        2.7|         3.9|        1.2|versicolor|
-|137|         6.3|        3.4|         5.6|        2.4| virginica|
+| 11|         5.4|        3.7|         1.5|        0.2|    setosa|
+| 43|         4.4|        3.2|         1.3|        0.2|    setosa|
+| 48|         4.6|        3.2|         1.4|        0.2|    setosa|
+|122|         5.6|        2.8|         4.9|        2.0| virginica|
+| 90|         5.5|        2.5|         4.0|        1.3|versicolor|
 '---'------------'-----------'------------'-----------'----------'
 
 ```
@@ -551,23 +551,11 @@ print(sepals.withCategoric('species', petals.cats['species']));
 ```
 
 ```text
-.---.------------.-----------.----------.
-| id|sepal_length|sepal_width|   species|
-:---+------------+-----------+----------:
-|  3|         4.7|        3.2|    setosa|
-|  4|         4.6|        3.1|    setosa|
-|  5|         5.0|        3.6|    setosa|
-|  6|         5.4|        3.9|    setosa|
-| 53|         6.9|        3.1|versicolor|
-| 54|         5.5|        2.3|versicolor|
-| 55|         6.5|        2.8|versicolor|
-| 56|         5.7|        2.8|versicolor|
-|103|         7.1|        3.0| virginica|
-|104|         6.3|        2.9| virginica|
-|105|         6.5|        3.0| virginica|
-|106|         7.6|        3.0| virginica|
-'---'------------'-----------'----------'
-
+.popmark/_temp_popmark18.dart:10:16: Error: The method 'withCategoric' isn't defined for the class 'Dataframe'.
+ - 'Dataframe' is from 'package:packhorse/packhorse.dart' ('lib/packhorse.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'withCategoric'.
+  print(sepals.withCategoric('species', petals.cats['species']));
+               ^^^^^^^^^^^^^
 ```
 
 Returns a data frame with a numeric inserted.
@@ -579,23 +567,11 @@ print(petals.withNumeric('sepal_length', sepals.nums['sepal_length']));
 ```
 
 ```text
-.---.------------.-----------.----------.------------.
-| id|petal_length|petal_width|   species|sepal_length|
-:---+------------+-----------+----------+------------:
-|  1|         1.4|        0.2|    setosa|         4.7|
-|  2|         1.4|        0.2|    setosa|         4.6|
-|  3|         1.3|        0.2|    setosa|         5.0|
-|  4|         1.5|        0.2|    setosa|         5.4|
-| 51|         4.7|        1.4|versicolor|         6.9|
-| 52|         4.5|        1.5|versicolor|         5.5|
-| 53|         4.9|        1.5|versicolor|         6.5|
-| 54|         4.0|        1.3|versicolor|         5.7|
-|101|         6.0|        2.5| virginica|         7.1|
-|102|         5.1|        1.9| virginica|         6.3|
-|103|         5.9|        2.1| virginica|         6.5|
-|104|         5.6|        1.8| virginica|         7.6|
-'---'------------'-----------'----------'------------'
-
+.popmark/_temp_popmark19.dart:10:16: Error: The method 'withNumeric' isn't defined for the class 'Dataframe'.
+ - 'Dataframe' is from 'package:packhorse/packhorse.dart' ('lib/packhorse.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'withNumeric'.
+  print(petals.withNumeric('sepal_length', sepals.nums['sepal_length']));
+               ^^^^^^^^^^^
 ```
 
 Returns a data frame with a numeric based on an existing numeric.
@@ -736,6 +712,40 @@ print(petals.withCategoricFromTemplate('id_code', template));
 |103|         5.9|        2.1| virginica|virginica-103|
 |104|         5.6|        1.8| virginica|virginica-104|
 '---'------------'-----------'----------'-------------'
+
+```
+
+Returns a data frame with a new categoric column created
+from a template and regular expression.
+
+Example:
+
+```dart
+final 
+  template = '{species} {petal_length}', 
+  re = RegExp(r'([a-z]+) ([0-9]+)\.([0-9]+)'), 
+  output = r'$2-$1-$3';
+
+print(petals.withCategoricFromRegExp('mixed', template, re, output: output));
+```
+
+```text
+.---.------------.-----------.----------.--------------.
+| id|petal_length|petal_width|   species|         mixed|
+:---+------------+-----------+----------+--------------:
+|  1|         1.4|        0.2|    setosa|    1-setosa-4|
+|  2|         1.4|        0.2|    setosa|    1-setosa-4|
+|  3|         1.3|        0.2|    setosa|    1-setosa-3|
+|  4|         1.5|        0.2|    setosa|    1-setosa-5|
+| 51|         4.7|        1.4|versicolor|4-versicolor-7|
+| 52|         4.5|        1.5|versicolor|4-versicolor-5|
+| 53|         4.9|        1.5|versicolor|4-versicolor-9|
+| 54|         4.0|        1.3|versicolor|4-versicolor-0|
+|101|         6.0|        2.5| virginica| 6-virginica-0|
+|102|         5.1|        1.9| virginica| 5-virginica-1|
+|103|         5.9|        2.1| virginica| 5-virginica-9|
+|104|         5.6|        1.8| virginica| 5-virginica-6|
+'---'------------'-----------'----------'--------------'
 
 ```
 
@@ -1410,13 +1420,11 @@ print(rowData);
 ```
 
 ```text
-cats:
-  id: 1
-  species: setosa  
-nums:
-  petal_length: 1.4
-  petal_width: 0.2
-  
+.popmark/_temp_popmark38.dart:10:26: Error: The method 'valuesInRow' isn't defined for the class 'Dataframe'.
+ - 'Dataframe' is from 'package:packhorse/packhorse.dart' ('lib/packhorse.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'valuesInRow'.
+  final rowData = petals.valuesInRow(0);
+                         ^^^^^^^^^^^
 ```
 
 Gives a markdown representation of this data frame.
