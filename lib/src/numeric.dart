@@ -2,7 +2,7 @@ part of packhorse;
 
 /// A convenience wrapper class for [List<num>], with
 /// properties and methods commonly used in data analysis.
-class Numeric extends Column<num> {
+class Numeric extends _Column<num> {
   Numeric(Iterable<num> data) {
     _elements = [...data];
   }

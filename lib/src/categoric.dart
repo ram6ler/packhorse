@@ -1,6 +1,7 @@
 part of packhorse;
 
-class Categoric extends Column<String> {
+/// A set of categoric data.
+class Categoric extends _Column<String> {
   Categoric(Iterable<String> data, {List<String> withCategories}) {
     _categories = withCategories == null
         ? ([

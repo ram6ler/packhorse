@@ -1,13 +1,13 @@
 name: packhorse
 description: Support for small to medium data manipulation and analysis projects.
-version: 0.6.0
+version: 0.6.1
 homepage: https://github.com/ram6ler/packhorse
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
-  function_tree: ^0.5.0
+  function_tree: ^0.6.0
   normal: ^0.5.1
 
 dev_dependencies:

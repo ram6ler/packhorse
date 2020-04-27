@@ -1,6 +1,6 @@
 part of packhorse;
 
-abstract class Column<T extends Comparable> extends ListBase<T> {
+abstract class _Column<T extends Comparable> extends ListBase<T> {
   List<int> get indices => sequence(length);
 
   /// The indices that order the data.
@@ -26,5 +26,5 @@ abstract class Column<T extends Comparable> extends ListBase<T> {
   List<int> get nonNullIndices =>
       [...indices.where((index) => this[index] != null)];
 
-  Column elementsAtIndices(Iterable<int> indices);
+  _Column elementsAtIndices(Iterable<int> indices);
 }

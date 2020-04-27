@@ -2364,7 +2364,7 @@ ${rows.join('\n')}
   }
 
   /// Gives a map of lists, each column name as a key.
-  Map<String, Column> toMapOfLists() => {
+  Map<String, _Column> toMapOfLists() => {
         for (final key in columnNames)
           key: cats.containsKey(key) ? cats[key] : nums[key]
       };
