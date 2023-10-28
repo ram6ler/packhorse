@@ -1,6 +1,7 @@
 # Files and directories created by pub
 .dart_tool/
 .packages
+pubspec.lock
 
 # vscode
 .vscode/
@@ -16,3 +17,5 @@ doc/api/
 
 # Popmark cache
 .popmark/
+
+play*

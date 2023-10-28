@@ -1,0 +1,14 @@
+import "dart:io";
+import "package:packhorse/packhorse.dart";
+
+main() async {
+  final iris =
+      DataFrame.fromCsv(await File('data/iris_data.csv').readAsString()),
+      petals = DataFrame.fromCsv(await File('data/iris_petals_sample.csv').readAsString()),
+      sepals = DataFrame.fromCsv(await File('data/iris_sepals_sample.csv').readAsString());
+  
+  {TIMER_START}
+  {BODY}
+  {TIMER_END}
+  
+}

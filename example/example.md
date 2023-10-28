@@ -1,440 +1,422 @@
-# Instantiation
+# Examples
 
-Instances if `Numeric` and `Categoric` (which can be interpreted as table
-columns or variables) are generally instantiated directly from iterables:
+## Instantiation
+
+### Columns
+
+Instances of `NumericColumn` and `CategoricColumn` are generally instantiated directly from iterables:
 
 ```dart
-final numeric = Numeric([1, 2, 3]),
-  categoric = Categoric(['a', 'b', 'c']);
+final numeric = NumericColumn([1, 2, 3]),
+  categoric = CategoricColumn(["a", "b", "c"]);
 
 print(numeric);
 print(categoric);
 ```
 
 ```text
-Numeric [1, 2, 3]
-Categoric [a, b, c]
+NumericColumn [1, 2, 3]
+CategoricColumn [a, b, c]
 
-[2201 μs]
+[618 μs]
 ```
 
-Instances of `Dataframe` can be instantiated from strings (like csv or json),
-maps or lists.
+Alternatively, we can instantiate these instances directly from lists:
 
 ```dart
-final dataframe = Dataframe.fromCsv('''
-    id*,petal_length,petal_width,species
-    1,1.4,0.2,setosa
-    2,1.4,0.2,setosa
-    3,1.3,0.2,setosa
-    4,1.5,0.2,setosa
-    51,4.7,1.4,versicolor
-    52,4.5,1.5,versicolor
-    53,4.9,1.5,versicolor
-    54,4.0,1.3,versicolor
-    101,6.0,2.5,virginica
-    102,5.1,1.9,virginica
-    103,5.9,2.1,virginica
-    104,5.6,1.8,virginica
-''');
+final numeric = [1, 2, 3].toNumericColumn(),
+    categoric = ["a", "b", "c"].toCategoricColumn();
 
-print(dataframe);
-```
-
-```text
-.---.------------.-----------.----------.
-| id|petal_length|petal_width|   species|
-:---+------------+-----------+----------:
-|  1|         1.4|        0.2|    setosa|
-|  2|         1.4|        0.2|    setosa|
-|  3|         1.3|        0.2|    setosa|
-|  4|         1.5|        0.2|    setosa|
-| 51|         4.7|        1.4|versicolor|
-| 52|         4.5|        1.5|versicolor|
-| 53|         4.9|        1.5|versicolor|
-| 54|         4.0|        1.3|versicolor|
-|101|         6.0|        2.5| virginica|
-|102|         5.1|        1.9| virginica|
-|103|         5.9|        2.1| virginica|
-|104|         5.6|        1.8| virginica|
-'---'------------'-----------'----------'
-
-[5073 μs]
-```
-
-In the following examples, dataframes `iris`, `petals` and `sepals` have
-been created from the famous [iris data set](https://en.wikipedia.org/wiki/Iris_flower_data_set).
-
-# Chaining
-
-Methods that start with `with` - `withDataAdded`, `withColumns`,
-`withLeftJoin`, `withNumericFromFormula`, etc. - return a new
-data frame, and thus can be conveniently chained:
-
-```dart
-final focus = iris
-  .withColumnsDropped(['sepal_length', 'petal_length'])
-  .withNumericFromNumeric('sepal_width_z_scores', 
-    'sepal_width', (result) => result.zScores)
-  .withRowsSampled(10, replacement: true);
-
-print(focus);
-```
-
-```text
-.---.----------.-----------.-----------.--------------------.
-| id|   species|sepal_width|petal_width|sepal_width_z_scores|
-:---+----------+-----------+-----------+--------------------:
-| 91|versicolor|        2.6|        1.2| -1.0527665443562113|
-| 53|versicolor|        3.1|        1.5| 0.09821728693702086|
-|100|versicolor|        2.8|        1.3| -0.5923730118389191|
-| 92|versicolor|        3.0|        1.4| -0.1319794793216258|
-| 23|    setosa|        3.6|        0.2|  1.2492011182302531|
-| 26|    setosa|        3.0|        0.2| -0.1319794793216258|
-| 83|versicolor|        2.7|        1.2| -0.8225697780975647|
-|148| virginica|        3.0|        2.0| -0.1319794793216258|
-| 40|    setosa|        3.4|        0.2|  0.7888075857129598|
-| 69|versicolor|        2.2|        1.5|  -1.973553609390797|
-'---'----------'-----------'-----------'--------------------'
-
-[13417 μs]
-```
-
-# Extensions
-
-## Lists
-
-Lists to Numerics:
-
-```dart
-final numeric = [1, 2, 3].toNumeric();
 print(numeric);
-print(numeric.mean);
-```
-
-```text
-Numeric [1, 2, 3]
-2.0
-
-[4487 μs]
-```
-
-Lists to Categorics:
-
-```dart
-final categoric = ['red', 'blue', 'blue'].toCategoric();
 print(categoric);
-categoric.proportions.forEach((value, p) {
-  print('  $value: $p');
-});
 ```
 
 ```text
-Categoric [red, blue, blue]
-  blue: 0.6666666666666666
-  red: 0.3333333333333333
+NumericColumn [1, 2, 3]
+CategoricColumn [a, b, c]
 
-[3004 μs]
+[610 μs]
 ```
 
-## Map with variable keys
+### Data frames
+
+Instances of `DataFrame` can be instantiated from strings (csv or json representations), maps or lists. For example:
 
 ```dart
-final data = {
-    'a': [1, 2, 3], 
-    'b': ['red', 'blue', 'blue']
-  }.toDataframe();
+final df = """
+  id,petal_length,petal_width,species
+  1,1.4,0.2,setosa
+  2,1.4,0.2,setosa
+  3,1.3,0.2,setosa
+  4,1.5,0.2,setosa
+  51,4.7,1.4,versicolor
+  52,4.5,1.5,versicolor
+  53,4.9,1.5,versicolor
+  54,4.0,1.3,versicolor
+  101,6.0,2.5,virginica
+  102,5.1,1.9,virginica
+  103,5.9,2.1,virginica
+  104,5.6,1.8,virginica
+""".parseAsCsv();
 
-print(data);
+print(df);
 ```
 
 ```text
-.----.-.
-|   b|a|
-:----+-:
-| red|1|
-|blue|2|
-|blue|3|
-'----'-'
 
-[4761 μs]
+.---.------------.-----------.------------.
+|id |petal_length|petal_width|species     |
+:---+------------+-----------+------------:
+|1  |1.4         |0.2        |setosa      |
+|2  |1.4         |0.2        |setosa      |
+|3  |1.3         |0.2        |setosa      |
+|4  |1.5         |0.2        |setosa      |
+|51 |4.7         |1.4        |versicolor  |
+|52 |4.5         |1.5        |versicolor  |
+|53 |4.9         |1.5        |versicolor  |
+|54 |4.0         |1.3        |versicolor  |
+|101|6.0         |2.5        |virginica   |
+|102|5.1         |1.9        |virginica   |
+|103|5.9         |2.1        |virginica   |
+|104|5.6         |1.8        |virginica   |
+'---'------------'-----------'------------'
+
+[3729 μs]
 ```
-
-## List of instances
 
 ```dart
-final data = [
-    {'a': 1, 'b': 'red'},
-    {'a': 2, 'b': 'blue'},
-    {'a': 3, 'b': 'blue'}
-  ].toDataframe();
-
-print(data);
-```
-
-```text
-.----.-.
-|   b|a|
-:----+-:
-| red|1|
-|blue|2|
-|blue|3|
-'----'-'
-
-[5124 μs]
-```
-
-## Strings
-
-### csv content:
-
-```dart
-final data = '''
-  a,b
-  1,red
-  2,blue
-  3,blue
-'''.parseAsCsv();
-
-print(data);
-```
-
-```text
-.-.----.
-|a|   b|
-:-+----:
-|1| red|
-|2|blue|
-|3|blue|
-'-'----'
-
-[4438 μs]
-```
-
-### Json / map of lists:
-
-```dart
-final data = '''
+final data = """
   {
     "a": [1, 2, 3],
     "b": ["red", "blue", "blue"]
   }
-'''.parseAsMapOfLists();
+""".parseAsMapOfLists();
 
 print(data);
 ```
 
 ```text
-.----.-.
-|   b|a|
-:----+-:
-| red|1|
-|blue|2|
-|blue|3|
-'----'-'
 
-[9375 μs]
+.-.------.
+|a|b     |
+:-+------:
+|1|red   |
+|2|blue  |
+|3|blue  |
+'-'------'
+
+[5097 μs]
 ```
 
-### Json / list of maps:
-
 ```dart
-final data = '''
+final data = """
   [
     {"a": 1, "b": "red"},
     {"a": 2, "b": "blue"},
     {"a": 3, "b": "blue"}
   ]
-'''.parseAsListOfMaps();
+""".parseAsListOfMaps();
 
 print(data);
 ```
 
 ```text
-.----.-.
-|   b|a|
-:----+-:
-| red|1|
-|blue|2|
-|blue|3|
-'----'-'
 
-[9096 μs]
+.-.------.
+|a|b     |
+:-+------:
+|1|red   |
+|2|blue  |
+|3|blue  |
+'-'------'
+
+[4695 μs]
 ```
 
-# Mutating
+```dart
+final data = {
+  "a": [1, 2, 3],
+  "b": ["red", "blue", "blue"]
+}.toDataFrame();
 
-Mutating variables, or creating new variables from existing variables,
-is performed via
+print(data);
+```
+
+```text
+
+.-.------.
+|a|b     |
+:-+------:
+|1|red   |
+|2|blue  |
+|3|blue  |
+'-'------'
+
+[3297 μs]
+```
+
+```dart
+final data = [
+  {"a": 1, "b": "red"},
+  {"a": 2, "b": "blue"},
+  {"a": 3, "b": "blue"},
+].toDataFrame();
+
+print(data);
+```
+
+```text
+
+.-.------.
+|a|b     |
+:-+------:
+|1|red   |
+|2|blue  |
+|3|blue  |
+'-'------'
+
+[3067 μs]
+```
+
+## Manipulation
+
+(In the following examples, the data frames `iris`, `petals` and `sepals` have been created from the famous [iris data set](https://en.wikipedia.org/wiki/Iris_flower_data_set).)
+
+### `with...`
+
+Methods that start with `with`, such as `withDataAdded`, `withColumns`, `withLeftJoin` and `withNumericFromFormula`, return new data frames, and thus can be conveniently chained:
+
+```dart
+final focus = iris
+    .withColumnsDropped([
+      "sepal_length",
+      "petal_length",
+    ])
+    .withNumeric(
+        name: "sepal_width_z_scores",
+        column: NumericColumn(
+            iris.numericColumns["sepal_width"]!.zScores,
+        ),
+    )
+    .withRowsSampled(
+      10,
+      withReplacement: true,
+      seed: 0,
+    );
+
+print(focus);
+```
+
+```text
+
+.---.-----------.-----------.--------------------.------------.
+|id |sepal_width|petal_width|sepal_width_z_scores|species     |
+:---+-----------+-----------+--------------------+------------:
+|106|3.0        |2.1        |-0.1319794793216258 |virginica   |
+|60 |2.7        |1.4        |-0.8225697780975647 |versicolor  |
+|65 |2.9        |1.3        |-0.36217624558027245|versicolor  |
+|50 |3.3        |0.2        |0.5586108194543131  |setosa      |
+|7  |3.4        |0.3        |0.7888075857129598  |setosa      |
+|142|3.1        |2.3        |0.09821728693702086 |virginica   |
+|45 |3.8        |0.4        |1.7095946507475455  |setosa      |
+|32 |3.4        |0.4        |0.7888075857129598  |setosa      |
+|92 |3.0        |1.4        |-0.1319794793216258 |versicolor  |
+|120|2.2        |1.5        |-1.973553609390797  |virginica   |
+'---'-----------'-----------'--------------------'------------'
+
+[5571 μs]
+```
+
+## Mutating
+
+Creating new columns from existing variables, is performed via
 
 1. templates
 2. formulas
 3. row variable access
 
-## 1. Using templates
+### 1. Using templates
 
 A *template* is a string with placeholders marked with column names.
 For example:
 
 ```dart
-final template = '{species}-{id}';
-print(petals.withCategoricFromTemplate('id_code', template));
+print(petals.withCategoricColumnFromTemplate(
+  name: "id_code",
+  template: "{species}-{id}"));
 ```
 
 ```text
-.---.------------.-----------.----------.-------------.
-| id|petal_length|petal_width|   species|      id_code|
-:---+------------+-----------+----------+-------------:
-|  1|         1.4|        0.2|    setosa|     setosa-1|
-|  2|         1.4|        0.2|    setosa|     setosa-2|
-|  3|         1.3|        0.2|    setosa|     setosa-3|
-|  4|         1.5|        0.2|    setosa|     setosa-4|
-| 51|         4.7|        1.4|versicolor|versicolor-51|
-| 52|         4.5|        1.5|versicolor|versicolor-52|
-| 53|         4.9|        1.5|versicolor|versicolor-53|
-| 54|         4.0|        1.3|versicolor|versicolor-54|
-|101|         6.0|        2.5| virginica|virginica-101|
-|102|         5.1|        1.9| virginica|virginica-102|
-|103|         5.9|        2.1| virginica|virginica-103|
-|104|         5.6|        1.8| virginica|virginica-104|
-'---'------------'-----------'----------'-------------'
 
-[7521 μs]
+.---.------------.-----------.------------.---------------.
+|id |petal_length|petal_width|species     |id_code        |
+:---+------------+-----------+------------+---------------:
+|1  |1.4         |0.2        |setosa      |setosa-1       |
+|2  |1.4         |0.2        |setosa      |setosa-2       |
+|3  |1.3         |0.2        |setosa      |setosa-3       |
+|4  |1.5         |0.2        |setosa      |setosa-4       |
+|51 |4.7         |1.4        |versicolor  |versicolor-51  |
+|52 |4.5         |1.5        |versicolor  |versicolor-52  |
+|53 |4.9         |1.5        |versicolor  |versicolor-53  |
+|54 |4.0         |1.3        |versicolor  |versicolor-54  |
+|101|6.0         |2.5        |virginica   |virginica-101  |
+|102|5.1         |1.9        |virginica   |virginica-102  |
+|103|5.9         |2.1        |virginica   |virginica-103  |
+|104|5.6         |1.8        |virginica   |virginica-104  |
+'---'------------'-----------'------------'---------------'
+
+[4609 μs]
 ```
 
 We can also create numerical columns from templates:
 
 ```dart
-final template = '{species}';
-print(petals.withNumericFromTemplate('species_letters', template,
-  (result) => result.length));
+print(petals.withNumericColumnFromTemplate(
+  name: "species_letters",
+  template: "{species}",
+  generator: (result) => result.length,
+));
 ```
 
 ```text
-.---.------------.-----------.----------.---------------.
-| id|petal_length|petal_width|   species|species_letters|
-:---+------------+-----------+----------+---------------:
-|  1|         1.4|        0.2|    setosa|              6|
-|  2|         1.4|        0.2|    setosa|              6|
-|  3|         1.3|        0.2|    setosa|              6|
-|  4|         1.5|        0.2|    setosa|              6|
-| 51|         4.7|        1.4|versicolor|             10|
-| 52|         4.5|        1.5|versicolor|             10|
-| 53|         4.9|        1.5|versicolor|             10|
-| 54|         4.0|        1.3|versicolor|             10|
-|101|         6.0|        2.5| virginica|              9|
-|102|         5.1|        1.9| virginica|              9|
-|103|         5.9|        2.1| virginica|              9|
-|104|         5.6|        1.8| virginica|              9|
-'---'------------'-----------'----------'---------------'
 
-[7734 μs]
+.---.------------.-----------.---------------.------------.
+|id |petal_length|petal_width|species_letters|species     |
+:---+------------+-----------+---------------+------------:
+|1  |1.4         |0.2        |6              |setosa      |
+|2  |1.4         |0.2        |6              |setosa      |
+|3  |1.3         |0.2        |6              |setosa      |
+|4  |1.5         |0.2        |6              |setosa      |
+|51 |4.7         |1.4        |10             |versicolor  |
+|52 |4.5         |1.5        |10             |versicolor  |
+|53 |4.9         |1.5        |10             |versicolor  |
+|54 |4.0         |1.3        |10             |versicolor  |
+|101|6.0         |2.5        |9              |virginica   |
+|102|5.1         |1.9        |9              |virginica   |
+|103|5.9         |2.1        |9              |virginica   |
+|104|5.6         |1.8        |9              |virginica   |
+'---'------------'-----------'---------------'------------'
+
+[4542 μs]
 ```
 
-## 2. Using formulas
+### 2. Using formulas
 
 A *formula* is a mathematical expression using the numeric column
-names as variables. For example:
+names as variables. (For more about the mathematical expressions supported, see the [function tree library](https://github.com/ram6ler/function-tree).)
+
+For example:
 
 ```dart
-final formula = 'log(petal_length * petal_width)';
-
-print(petals.withNumericFromFormula('log_petal_area', formula));
+print(petals.withNumericColumnFromFormula(
+  name: "log_petal_area",
+  formula: "log(petal_length * petal_width)",
+));
 ```
 
 ```text
-.---.------------.-----------.----------.-------------------.
-| id|petal_length|petal_width|   species|     log_petal_area|
-:---+------------+-----------+----------+-------------------:
-|  1|         1.4|        0.2|    setosa|-1.2729656758128876|
-|  2|         1.4|        0.2|    setosa|-1.2729656758128876|
-|  3|         1.3|        0.2|    setosa|-1.3470736479666092|
-|  4|         1.5|        0.2|    setosa| -1.203972804325936|
-| 51|         4.7|        1.4|versicolor|  1.884034745337226|
-| 52|         4.5|        1.5|versicolor| 1.9095425048844386|
-| 53|         4.9|        1.5|versicolor| 1.9947003132247454|
-| 54|         4.0|        1.3|versicolor| 1.6486586255873816|
-|101|         6.0|        2.5| virginica|   2.70805020110221|
-|102|         5.1|        1.9| virginica| 2.2710944259026746|
-|103|         5.9|        2.1| virginica|  2.516889695641051|
-|104|         5.6|        1.8| virginica| 2.3105532626432224|
-'---'------------'-----------'----------'-------------------'
 
-[11514 μs]
+.---.------------.-----------.-------------------.------------.
+|id |petal_length|petal_width|log_petal_area     |species     |
+:---+------------+-----------+-------------------+------------:
+|1  |1.4         |0.2        |-1.2729656758128876|setosa      |
+|2  |1.4         |0.2        |-1.2729656758128876|setosa      |
+|3  |1.3         |0.2        |-1.3470736479666092|setosa      |
+|4  |1.5         |0.2        |-1.203972804325936 |setosa      |
+|51 |4.7         |1.4        |1.884034745337226  |versicolor  |
+|52 |4.5         |1.5        |1.9095425048844386 |versicolor  |
+|53 |4.9         |1.5        |1.9947003132247454 |versicolor  |
+|54 |4.0         |1.3        |1.6486586255873816 |versicolor  |
+|101|6.0         |2.5        |2.70805020110221   |virginica   |
+|102|5.1         |1.9        |2.2710944259026746 |virginica   |
+|103|5.9         |2.1        |2.516889695641051  |virginica   |
+|104|5.6         |1.8        |2.3105532626432224 |virginica   |
+'---'------------'-----------'-------------------'------------'
+
+[10118 μs]
 ```
 
 We can also create categorical columns using formulas:
 
 ```dart
-final formula = 'petal_width / petal_length';
-
-print(petals.withCategoricFromFormula('description', formula,
-  (result) => result < 0.3 ? 'narrow' : 'wide'));
+print(petals.withCategoricColumnFromFormula(
+  name: "description",
+  formula: "petal_width / petal_length",
+  generator: (result) => result < 0.3 ? "narrow" : "wide",
+));
 ```
 
 ```text
-.---.------------.-----------.----------.-----------.
-| id|petal_length|petal_width|   species|description|
-:---+------------+-----------+----------+-----------:
-|  1|         1.4|        0.2|    setosa|     narrow|
-|  2|         1.4|        0.2|    setosa|     narrow|
-|  3|         1.3|        0.2|    setosa|     narrow|
-|  4|         1.5|        0.2|    setosa|     narrow|
-| 51|         4.7|        1.4|versicolor|     narrow|
-| 52|         4.5|        1.5|versicolor|       wide|
-| 53|         4.9|        1.5|versicolor|       wide|
-| 54|         4.0|        1.3|versicolor|       wide|
-|101|         6.0|        2.5| virginica|       wide|
-|102|         5.1|        1.9| virginica|       wide|
-|103|         5.9|        2.1| virginica|       wide|
-|104|         5.6|        1.8| virginica|       wide|
-'---'------------'-----------'----------'-----------'
 
-[10880 μs]
+.---.------------.-----------.------------.-----------.
+|id |petal_length|petal_width|species     |description|
+:---+------------+-----------+------------+-----------:
+|1  |1.4         |0.2        |setosa      |narrow     |
+|2  |1.4         |0.2        |setosa      |narrow     |
+|3  |1.3         |0.2        |setosa      |narrow     |
+|4  |1.5         |0.2        |setosa      |narrow     |
+|51 |4.7         |1.4        |versicolor  |narrow     |
+|52 |4.5         |1.5        |versicolor  |wide       |
+|53 |4.9         |1.5        |versicolor  |wide       |
+|54 |4.0         |1.3        |versicolor  |wide       |
+|101|6.0         |2.5        |virginica   |wide       |
+|102|5.1         |1.9        |virginica   |wide       |
+|103|5.9         |2.1        |virginica   |wide       |
+|104|5.6         |1.8        |virginica   |wide       |
+'---'------------'-----------'------------'-----------'
+
+[5802 μs]
 ```
 
-## 3. Using row variables
+### 3. Using row variables
 
 ```dart
-print(petals.withCategoricFromRowValues('code',
-  (cats, nums) {
-      final pre = cats['species'].substring(0, 3),
-        area = (nums['petal_length'] * nums['petal_width'])
-          .toStringAsFixed(2).padLeft(5, '0');
-      return '$pre-$area';
-  }));
+print(petals.withCategoricColumnFromRowValues(
+  name: "code",
+  generator: (numeric, categoric) {
+    final pre = categoric["species"]!.substring(0, 3),
+        area = (numeric["petal_length"]! * numeric["petal_width"]!)
+            .toStringAsFixed(2)
+            .padLeft(5, "0");
+    return "$pre-$area";
+  },
+));
 ```
 
 ```text
-.---.------------.-----------.----------.---------.
-| id|petal_length|petal_width|   species|     code|
-:---+------------+-----------+----------+---------:
-|  1|         1.4|        0.2|    setosa|set-00.28|
-|  2|         1.4|        0.2|    setosa|set-00.28|
-|  3|         1.3|        0.2|    setosa|set-00.26|
-|  4|         1.5|        0.2|    setosa|set-00.30|
-| 51|         4.7|        1.4|versicolor|ver-06.58|
-| 52|         4.5|        1.5|versicolor|ver-06.75|
-| 53|         4.9|        1.5|versicolor|ver-07.35|
-| 54|         4.0|        1.3|versicolor|ver-05.20|
-|101|         6.0|        2.5| virginica|vir-15.00|
-|102|         5.1|        1.9| virginica|vir-09.69|
-|103|         5.9|        2.1| virginica|vir-12.39|
-|104|         5.6|        1.8| virginica|vir-10.08|
-'---'------------'-----------'----------'---------'
 
-[7584 μs]
+.---.------------.-----------.------------.-----------.
+|id |petal_length|petal_width|species     |code       |
+:---+------------+-----------+------------+-----------:
+|1  |1.4         |0.2        |setosa      |set-00.28  |
+|2  |1.4         |0.2        |setosa      |set-00.28  |
+|3  |1.3         |0.2        |setosa      |set-00.26  |
+|4  |1.5         |0.2        |setosa      |set-00.30  |
+|51 |4.7         |1.4        |versicolor  |ver-06.58  |
+|52 |4.5         |1.5        |versicolor  |ver-06.75  |
+|53 |4.9         |1.5        |versicolor  |ver-07.35  |
+|54 |4.0         |1.3        |versicolor  |ver-05.20  |
+|101|6.0         |2.5        |virginica   |vir-15.00  |
+|102|5.1         |1.9        |virginica   |vir-09.69  |
+|103|5.9         |2.1        |virginica   |vir-12.39  |
+|104|5.6         |1.8        |virginica   |vir-10.08  |
+'---'------------'-----------'------------'-----------'
+
+[3781 μs]
 ```
 
-# Products
+## Products
+
+We can output data frames to several text representations, such as markdown, csv and html:
 
 ```dart
 print(petals.toMarkdown());
 ```
 
 ```text
+
 |id|petal_length|petal_width|species|
-|:--:|:--:|:--:|:--:|
+|:--|:--|:--|:--|
 |1|1.4|0.2|setosa|
 |2|1.4|0.2|setosa|
 |3|1.3|0.2|setosa|
@@ -448,7 +430,7 @@ print(petals.toMarkdown());
 |103|5.9|2.1|virginica|
 |104|5.6|1.8|virginica|
 
-[3747 μs]
+[2850 μs]
 ```
 
 ```dart
@@ -457,20 +439,20 @@ print(petals.toCsv());
 
 ```text
 id,petal_length,petal_width,species
-1,1.4,0.2,setosa
-2,1.4,0.2,setosa
-3,1.3,0.2,setosa
-4,1.5,0.2,setosa
-51,4.7,1.4,versicolor
-52,4.5,1.5,versicolor
-53,4.9,1.5,versicolor
-54,4.0,1.3,versicolor
-101,6.0,2.5,virginica
-102,5.1,1.9,virginica
-103,5.9,2.1,virginica
-104,5.6,1.8,virginica
+1,1.4,0.2,"setosa"
+2,1.4,0.2,"setosa"
+3,1.3,0.2,"setosa"
+4,1.5,0.2,"setosa"
+51,4.7,1.4,"versicolor"
+52,4.5,1.5,"versicolor"
+53,4.9,1.5,"versicolor"
+54,4.0,1.3,"versicolor"
+101,6.0,2.5,"virginica"
+102,5.1,1.9,"virginica"
+103,5.9,2.1,"virginica"
+104,5.6,1.8,"virginica"
 
-[4394 μs]
+[2052 μs]
 ```
 
 ```dart
@@ -478,23 +460,30 @@ print(petals.toHtml());
 ```
 
 ```text
-<table>
-<tr><th>id</th><th>petal_length</th><th>petal_width</th><th>species</th></tr>
-<tr><td>1</td><td>1.4</td><td>0.2</td><td>setosa</td></tr>
-<tr><td>2</td><td>1.4</td><td>0.2</td><td>setosa</td></tr>
-<tr><td>3</td><td>1.3</td><td>0.2</td><td>setosa</td></tr>
-<tr><td>4</td><td>1.5</td><td>0.2</td><td>setosa</td></tr>
-<tr><td>51</td><td>4.7</td><td>1.4</td><td>versicolor</td></tr>
-<tr><td>52</td><td>4.5</td><td>1.5</td><td>versicolor</td></tr>
-<tr><td>53</td><td>4.9</td><td>1.5</td><td>versicolor</td></tr>
-<tr><td>54</td><td>4.0</td><td>1.3</td><td>versicolor</td></tr>
-<tr><td>101</td><td>6.0</td><td>2.5</td><td>virginica</td></tr>
-<tr><td>102</td><td>5.1</td><td>1.9</td><td>virginica</td></tr>
-<tr><td>103</td><td>5.9</td><td>2.1</td><td>virginica</td></tr>
-<tr><td>104</td><td>5.6</td><td>1.8</td><td>virginica</td></tr>
-</table>
 
-[3488 μs]
+<div class="packhorse">
+<table>
+  <thead>
+    <tr><th>id</th><th>petal_length</th><th>petal_width</th><th>species</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>1.4</td><td>0.2</td><td>setosa</td></tr>
+    <tr><td>2</td><td>1.4</td><td>0.2</td><td>setosa</td></tr>
+    <tr><td>3</td><td>1.3</td><td>0.2</td><td>setosa</td></tr>
+    <tr><td>4</td><td>1.5</td><td>0.2</td><td>setosa</td></tr>
+    <tr><td>51</td><td>4.7</td><td>1.4</td><td>versicolor</td></tr>
+    <tr><td>52</td><td>4.5</td><td>1.5</td><td>versicolor</td></tr>
+    <tr><td>53</td><td>4.9</td><td>1.5</td><td>versicolor</td></tr>
+    <tr><td>54</td><td>4.0</td><td>1.3</td><td>versicolor</td></tr>
+    <tr><td>101</td><td>6.0</td><td>2.5</td><td>virginica</td></tr>
+    <tr><td>102</td><td>5.1</td><td>1.9</td><td>virginica</td></tr>
+    <tr><td>103</td><td>5.9</td><td>2.1</td><td>virginica</td></tr>
+    <tr><td>104</td><td>5.6</td><td>1.8</td><td>virginica</td></tr>
+  </tbody>
+</table>
+</div>
+
+[2702 μs]
 ```
 
 ```dart
@@ -502,224 +491,234 @@ print(sepals.withHead(2).toJsonAsMapOfLists());
 ```
 
 ```text
-{"id":["3","4"],"sepal_length":[4.7,4.6],"sepal_width":[3.2,3.1]}
+{"id":["3","4"],"sepal_length":["4.7","4.6"],"sepal_width":["3.2","3.1"]}
 
-[8143 μs]
+[2779 μs]
 ```
 
-# Restructuring
+## Adding data
 
-## Adding data to a data frame
-
-We can vertically combine two data frames with the same column names.
+We can vertically combine two data frames that have the same columns.
 
 ```dart
-final headAndTail = iris.withHead(5).withDataAdded(iris.withTail(5));
+final headAndTail = iris.withHead(5).withRowsAdded(iris.withTail(5));
 print(headAndTail);
 ```
 
 ```text
-.---.------------.-----------.------------.-----------.---------.
-| id|sepal_length|sepal_width|petal_length|petal_width|  species|
-:---+------------+-----------+------------+-----------+---------:
-|  1|         5.1|        3.5|         1.4|        0.2|   setosa|
-|  2|         4.9|        3.0|         1.4|        0.2|   setosa|
-|  3|         4.7|        3.2|         1.3|        0.2|   setosa|
-|  4|         4.6|        3.1|         1.5|        0.2|   setosa|
-|  5|         5.0|        3.6|         1.4|        0.3|   setosa|
-|150|         5.9|        3.0|         5.1|        1.8|virginica|
-|149|         6.2|        3.4|         5.4|        2.3|virginica|
-|148|         6.5|        3.0|         5.2|        2.0|virginica|
-|147|         6.3|        2.5|         5.0|        1.9|virginica|
-|146|         6.7|        3.0|         5.2|        2.3|virginica|
-'---'------------'-----------'------------'-----------'---------'
 
-[9893 μs]
+.---.------------.-----------.------------.-----------.-----------.
+|id |sepal_length|sepal_width|petal_length|petal_width|species    |
+:---+------------+-----------+------------+-----------+-----------:
+|1  |5.1         |3.5        |1.4         |0.2        |setosa     |
+|2  |4.9         |3.0        |1.4         |0.2        |setosa     |
+|3  |4.7         |3.2        |1.3         |0.2        |setosa     |
+|4  |4.6         |3.1        |1.5         |0.2        |setosa     |
+|5  |5.0         |3.6        |1.4         |0.3        |setosa     |
+|146|6.7         |3.0        |5.2         |2.3        |virginica  |
+|147|6.3         |2.5        |5.0         |1.9        |virginica  |
+|148|6.5         |3.0        |5.2         |2.0        |virginica  |
+|149|6.2         |3.4        |5.4         |2.3        |virginica  |
+|150|5.9         |3.0        |5.1         |1.8        |virginica  |
+'---'------------'-----------'------------'-----------'-----------'
+
+[4059 μs]
 ```
 
-## Performing joins
+## Joins
+
+Data frames support joins:
 
 ```dart
-print('Left: petals sample:');
+print("Left (petals sample):");
 print(petals);
 
-print('\nRight: sepals sample:');
+print("\nRight (sepals sample):");
 print(sepals);
 
-print('\nLeft-join:');
-print(petals.withLeftJoin(sepals, 'id'));
+print("\nLeft-join:");
+print(petals.withLeftJoinOn(sepals, pivot: "id"));
 
-print('\nLeft-outer-join:');
-print(petals.withLeftOuterJoin(sepals, 'id'));
+print("\nLeft-outer-join:");
+print(petals.withLeftOuterJoinOn(sepals, pivot: "id"));
 
-print('\nRight-join:');
-print(petals.withRightJoin(sepals, 'id'));
+print("\nRight-join:");
+print(petals.withRightJoinOn(sepals, pivot: "id"));
 
-print('\nRight-outer-join:');
-print(petals.withRightOuterJoin(sepals, 'id'));
+print("\nRight-outer-join:");
+print(petals.withRightOuterJoinOn(sepals, pivot: "id"));
 
-print('\nFull-join:');
-print(petals.withFullJoin(sepals, 'id'));
+print("\nFull-join:");
+print(petals.withFullJoinOn(sepals, pivot: "id"));
 
-print('\nInner-join:');
-print(petals.withInnerJoin(sepals, 'id'));
+print("\nInner-join:");
+print(petals.withInnerJoinOn(sepals, pivot: "id"));
 
-print('\nOuter-join:');
-print(petals.withOuterJoin(sepals, 'id'));
+print("\nOuter-join:");
+print(petals.withOuterJoinOn(sepals, pivot: "id"));
 ```
 
 ```text
-Left: petals sample:
-.---.------------.-----------.----------.
-| id|petal_length|petal_width|   species|
-:---+------------+-----------+----------:
-|  1|         1.4|        0.2|    setosa|
-|  2|         1.4|        0.2|    setosa|
-|  3|         1.3|        0.2|    setosa|
-|  4|         1.5|        0.2|    setosa|
-| 51|         4.7|        1.4|versicolor|
-| 52|         4.5|        1.5|versicolor|
-| 53|         4.9|        1.5|versicolor|
-| 54|         4.0|        1.3|versicolor|
-|101|         6.0|        2.5| virginica|
-|102|         5.1|        1.9| virginica|
-|103|         5.9|        2.1| virginica|
-|104|         5.6|        1.8| virginica|
-'---'------------'-----------'----------'
+Left (petals sample):
 
-Right: sepals sample:
+.---.------------.-----------.------------.
+|id |petal_length|petal_width|species     |
+:---+------------+-----------+------------:
+|1  |1.4         |0.2        |setosa      |
+|2  |1.4         |0.2        |setosa      |
+|3  |1.3         |0.2        |setosa      |
+|4  |1.5         |0.2        |setosa      |
+|51 |4.7         |1.4        |versicolor  |
+|52 |4.5         |1.5        |versicolor  |
+|53 |4.9         |1.5        |versicolor  |
+|54 |4.0         |1.3        |versicolor  |
+|101|6.0         |2.5        |virginica   |
+|102|5.1         |1.9        |virginica   |
+|103|5.9         |2.1        |virginica   |
+|104|5.6         |1.8        |virginica   |
+'---'------------'-----------'------------'
+
+Right (sepals sample):
+
 .---.------------.-----------.
-| id|sepal_length|sepal_width|
+|id |sepal_length|sepal_width|
 :---+------------+-----------:
-|  3|         4.7|        3.2|
-|  4|         4.6|        3.1|
-|  5|         5.0|        3.6|
-|  6|         5.4|        3.9|
-| 53|         6.9|        3.1|
-| 54|         5.5|        2.3|
-| 55|         6.5|        2.8|
-| 56|         5.7|        2.8|
-|103|         7.1|        3.0|
-|104|         6.3|        2.9|
-|105|         6.5|        3.0|
-|106|         7.6|        3.0|
+|3  |4.7         |3.2        |
+|4  |4.6         |3.1        |
+|5  |5.0         |3.6        |
+|6  |5.4         |3.9        |
+|53 |6.9         |3.1        |
+|54 |5.5         |2.3        |
+|55 |6.5         |2.8        |
+|56 |5.7         |2.8        |
+|103|7.1         |3.0        |
+|104|6.3         |2.9        |
+|105|6.5         |3.0        |
+|106|7.6         |3.0        |
 '---'------------'-----------'
 
 Left-join:
-.---.----------.--------.------------.-----------.------------.-----------.
-| id|   species|other_id|petal_length|petal_width|sepal_length|sepal_width|
-:---+----------+--------+------------+-----------+------------+-----------:
-|  1|    setosa|    null|         1.4|        0.2|        null|       null|
-|  2|    setosa|    null|         1.4|        0.2|        null|       null|
-|  3|    setosa|       3|         1.3|        0.2|         4.7|        3.2|
-|  4|    setosa|       4|         1.5|        0.2|         4.6|        3.1|
-| 51|versicolor|    null|         4.7|        1.4|        null|       null|
-| 52|versicolor|    null|         4.5|        1.5|        null|       null|
-| 53|versicolor|      53|         4.9|        1.5|         6.9|        3.1|
-| 54|versicolor|      54|         4.0|        1.3|         5.5|        2.3|
-|101| virginica|    null|         6.0|        2.5|        null|       null|
-|102| virginica|    null|         5.1|        1.9|        null|       null|
-|103| virginica|     103|         5.9|        2.1|         7.1|        3.0|
-|104| virginica|     104|         5.6|        1.8|         6.3|        2.9|
-'---'----------'--------'------------'-----------'------------'-----------'
+
+.---.------------.-----------.--------.------------.-----------.------------.
+|id |petal_length|petal_width|right_id|sepal_length|sepal_width|species     |
+:---+------------+-----------+--------+------------+-----------+------------:
+|1  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|2  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|3  |1.3         |0.2        |3       |4.7         |3.2        |setosa      |
+|4  |1.5         |0.2        |4       |4.6         |3.1        |setosa      |
+|51 |4.7         |1.4        |NaN     |NaN         |NaN        |versicolor  |
+|52 |4.5         |1.5        |NaN     |NaN         |NaN        |versicolor  |
+|53 |4.9         |1.5        |53      |6.9         |3.1        |versicolor  |
+|54 |4.0         |1.3        |54      |5.5         |2.3        |versicolor  |
+|101|6.0         |2.5        |NaN     |NaN         |NaN        |virginica   |
+|102|5.1         |1.9        |NaN     |NaN         |NaN        |virginica   |
+|103|5.9         |2.1        |103     |7.1         |3.0        |virginica   |
+|104|5.6         |1.8        |104     |6.3         |2.9        |virginica   |
+'---'------------'-----------'--------'------------'-----------'------------'
 
 Left-outer-join:
-.---.----------.--------.------------.-----------.------------.-----------.
-| id|   species|other_id|petal_length|petal_width|sepal_length|sepal_width|
-:---+----------+--------+------------+-----------+------------+-----------:
-|  1|    setosa|    null|         1.4|        0.2|        null|       null|
-|  2|    setosa|    null|         1.4|        0.2|        null|       null|
-| 51|versicolor|    null|         4.7|        1.4|        null|       null|
-| 52|versicolor|    null|         4.5|        1.5|        null|       null|
-|101| virginica|    null|         6.0|        2.5|        null|       null|
-|102| virginica|    null|         5.1|        1.9|        null|       null|
-'---'----------'--------'------------'-----------'------------'-----------'
+
+.---.------------.-----------.--------.------------.-----------.------------.
+|id |petal_length|petal_width|right_id|sepal_length|sepal_width|species     |
+:---+------------+-----------+--------+------------+-----------+------------:
+|1  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|2  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|51 |4.7         |1.4        |NaN     |NaN         |NaN        |versicolor  |
+|52 |4.5         |1.5        |NaN     |NaN         |NaN        |versicolor  |
+|101|6.0         |2.5        |NaN     |NaN         |NaN        |virginica   |
+|102|5.1         |1.9        |NaN     |NaN         |NaN        |virginica   |
+'---'------------'-----------'--------'------------'-----------'------------'
 
 Right-join:
-.----.----------.--------.------------.-----------.------------.-----------.
-|  id|   species|other_id|petal_length|petal_width|sepal_length|sepal_width|
-:----+----------+--------+------------+-----------+------------+-----------:
-|   3|    setosa|       3|         1.3|        0.2|         4.7|        3.2|
-|   4|    setosa|       4|         1.5|        0.2|         4.6|        3.1|
-|null|      null|       5|        null|       null|         5.0|        3.6|
-|null|      null|       6|        null|       null|         5.4|        3.9|
-|  53|versicolor|      53|         4.9|        1.5|         6.9|        3.1|
-|  54|versicolor|      54|         4.0|        1.3|         5.5|        2.3|
-|null|      null|      55|        null|       null|         6.5|        2.8|
-|null|      null|      56|        null|       null|         5.7|        2.8|
-| 103| virginica|     103|         5.9|        2.1|         7.1|        3.0|
-| 104| virginica|     104|         5.6|        1.8|         6.3|        2.9|
-|null|      null|     105|        null|       null|         6.5|        3.0|
-|null|      null|     106|        null|       null|         7.6|        3.0|
-'----'----------'--------'------------'-----------'------------'-----------'
+
+.---.------------.-----------.--------.------------.-----------.------------.
+|id |petal_length|petal_width|right_id|sepal_length|sepal_width|species     |
+:---+------------+-----------+--------+------------+-----------+------------:
+|3  |1.3         |0.2        |3       |4.7         |3.2        |setosa      |
+|4  |1.5         |0.2        |4       |4.6         |3.1        |setosa      |
+|NaN|NaN         |NaN        |5       |5.0         |3.6        |<NA>        |
+|NaN|NaN         |NaN        |6       |5.4         |3.9        |<NA>        |
+|53 |4.9         |1.5        |53      |6.9         |3.1        |versicolor  |
+|54 |4.0         |1.3        |54      |5.5         |2.3        |versicolor  |
+|NaN|NaN         |NaN        |55      |6.5         |2.8        |<NA>        |
+|NaN|NaN         |NaN        |56      |5.7         |2.8        |<NA>        |
+|103|5.9         |2.1        |103     |7.1         |3.0        |virginica   |
+|104|5.6         |1.8        |104     |6.3         |2.9        |virginica   |
+|NaN|NaN         |NaN        |105     |6.5         |3.0        |<NA>        |
+|NaN|NaN         |NaN        |106     |7.6         |3.0        |<NA>        |
+'---'------------'-----------'--------'------------'-----------'------------'
 
 Right-outer-join:
-.----.-------.--------.------------.-----------.------------.-----------.
-|  id|species|other_id|petal_length|petal_width|sepal_length|sepal_width|
-:----+-------+--------+------------+-----------+------------+-----------:
-|null|   null|       5|        null|       null|         5.0|        3.6|
-|null|   null|       6|        null|       null|         5.4|        3.9|
-|null|   null|      55|        null|       null|         6.5|        2.8|
-|null|   null|      56|        null|       null|         5.7|        2.8|
-|null|   null|     105|        null|       null|         6.5|        3.0|
-|null|   null|     106|        null|       null|         7.6|        3.0|
-'----'-------'--------'------------'-----------'------------'-----------'
+
+.---.------------.-----------.--------.------------.-----------.-------.
+|id |petal_length|petal_width|right_id|sepal_length|sepal_width|species|
+:---+------------+-----------+--------+------------+-----------+-------:
+|NaN|NaN         |NaN        |5       |5.0         |3.6        |<NA>   |
+|NaN|NaN         |NaN        |6       |5.4         |3.9        |<NA>   |
+|NaN|NaN         |NaN        |55      |6.5         |2.8        |<NA>   |
+|NaN|NaN         |NaN        |56      |5.7         |2.8        |<NA>   |
+|NaN|NaN         |NaN        |105     |6.5         |3.0        |<NA>   |
+|NaN|NaN         |NaN        |106     |7.6         |3.0        |<NA>   |
+'---'------------'-----------'--------'------------'-----------'-------'
 
 Full-join:
-.----.----------.--------.------------.-----------.------------.-----------.
-|  id|   species|other_id|petal_length|petal_width|sepal_length|sepal_width|
-:----+----------+--------+------------+-----------+------------+-----------:
-|   1|    setosa|    null|         1.4|        0.2|        null|       null|
-|   2|    setosa|    null|         1.4|        0.2|        null|       null|
-|   3|    setosa|       3|         1.3|        0.2|         4.7|        3.2|
-|   4|    setosa|       4|         1.5|        0.2|         4.6|        3.1|
-|  51|versicolor|    null|         4.7|        1.4|        null|       null|
-|  52|versicolor|    null|         4.5|        1.5|        null|       null|
-|  53|versicolor|      53|         4.9|        1.5|         6.9|        3.1|
-|  54|versicolor|      54|         4.0|        1.3|         5.5|        2.3|
-| 101| virginica|    null|         6.0|        2.5|        null|       null|
-| 102| virginica|    null|         5.1|        1.9|        null|       null|
-| 103| virginica|     103|         5.9|        2.1|         7.1|        3.0|
-| 104| virginica|     104|         5.6|        1.8|         6.3|        2.9|
-|null|      null|       5|        null|       null|         5.0|        3.6|
-|null|      null|       6|        null|       null|         5.4|        3.9|
-|null|      null|      55|        null|       null|         6.5|        2.8|
-|null|      null|      56|        null|       null|         5.7|        2.8|
-|null|      null|     105|        null|       null|         6.5|        3.0|
-|null|      null|     106|        null|       null|         7.6|        3.0|
-'----'----------'--------'------------'-----------'------------'-----------'
+
+.---.------------.-----------.--------.------------.-----------.------------.
+|id |petal_length|petal_width|right_id|sepal_length|sepal_width|species     |
+:---+------------+-----------+--------+------------+-----------+------------:
+|1  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|2  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|3  |1.3         |0.2        |3       |4.7         |3.2        |setosa      |
+|4  |1.5         |0.2        |4       |4.6         |3.1        |setosa      |
+|51 |4.7         |1.4        |NaN     |NaN         |NaN        |versicolor  |
+|52 |4.5         |1.5        |NaN     |NaN         |NaN        |versicolor  |
+|53 |4.9         |1.5        |53      |6.9         |3.1        |versicolor  |
+|54 |4.0         |1.3        |54      |5.5         |2.3        |versicolor  |
+|101|6.0         |2.5        |NaN     |NaN         |NaN        |virginica   |
+|102|5.1         |1.9        |NaN     |NaN         |NaN        |virginica   |
+|103|5.9         |2.1        |103     |7.1         |3.0        |virginica   |
+|104|5.6         |1.8        |104     |6.3         |2.9        |virginica   |
+|NaN|NaN         |NaN        |5       |5.0         |3.6        |<NA>        |
+|NaN|NaN         |NaN        |6       |5.4         |3.9        |<NA>        |
+|NaN|NaN         |NaN        |55      |6.5         |2.8        |<NA>        |
+|NaN|NaN         |NaN        |56      |5.7         |2.8        |<NA>        |
+|NaN|NaN         |NaN        |105     |6.5         |3.0        |<NA>        |
+|NaN|NaN         |NaN        |106     |7.6         |3.0        |<NA>        |
+'---'------------'-----------'--------'------------'-----------'------------'
 
 Inner-join:
-.---.----------.--------.------------.-----------.------------.-----------.
-| id|   species|other_id|petal_length|petal_width|sepal_length|sepal_width|
-:---+----------+--------+------------+-----------+------------+-----------:
-|  3|    setosa|       3|         1.3|        0.2|         4.7|        3.2|
-|  4|    setosa|       4|         1.5|        0.2|         4.6|        3.1|
-| 53|versicolor|      53|         4.9|        1.5|         6.9|        3.1|
-| 54|versicolor|      54|         4.0|        1.3|         5.5|        2.3|
-|103| virginica|     103|         5.9|        2.1|         7.1|        3.0|
-|104| virginica|     104|         5.6|        1.8|         6.3|        2.9|
-'---'----------'--------'------------'-----------'------------'-----------'
+
+.---.------------.-----------.--------.------------.-----------.------------.
+|id |petal_length|petal_width|right_id|sepal_length|sepal_width|species     |
+:---+------------+-----------+--------+------------+-----------+------------:
+|3  |1.3         |0.2        |3       |4.7         |3.2        |setosa      |
+|4  |1.5         |0.2        |4       |4.6         |3.1        |setosa      |
+|53 |4.9         |1.5        |53      |6.9         |3.1        |versicolor  |
+|54 |4.0         |1.3        |54      |5.5         |2.3        |versicolor  |
+|103|5.9         |2.1        |103     |7.1         |3.0        |virginica   |
+|104|5.6         |1.8        |104     |6.3         |2.9        |virginica   |
+'---'------------'-----------'--------'------------'-----------'------------'
 
 Outer-join:
-.----.----------.--------.------------.-----------.------------.-----------.
-|  id|   species|other_id|petal_length|petal_width|sepal_length|sepal_width|
-:----+----------+--------+------------+-----------+------------+-----------:
-|   1|    setosa|    null|         1.4|        0.2|        null|       null|
-|   2|    setosa|    null|         1.4|        0.2|        null|       null|
-|  51|versicolor|    null|         4.7|        1.4|        null|       null|
-|  52|versicolor|    null|         4.5|        1.5|        null|       null|
-| 101| virginica|    null|         6.0|        2.5|        null|       null|
-| 102| virginica|    null|         5.1|        1.9|        null|       null|
-|null|      null|       5|        null|       null|         5.0|        3.6|
-|null|      null|       6|        null|       null|         5.4|        3.9|
-|null|      null|      55|        null|       null|         6.5|        2.8|
-|null|      null|      56|        null|       null|         5.7|        2.8|
-|null|      null|     105|        null|       null|         6.5|        3.0|
-|null|      null|     106|        null|       null|         7.6|        3.0|
-'----'----------'--------'------------'-----------'------------'-----------'
 
-[16875 μs]
+.---.------------.-----------.--------.------------.-----------.------------.
+|id |petal_length|petal_width|right_id|sepal_length|sepal_width|species     |
+:---+------------+-----------+--------+------------+-----------+------------:
+|NaN|NaN         |NaN        |5       |5.0         |3.6        |<NA>        |
+|NaN|NaN         |NaN        |6       |5.4         |3.9        |<NA>        |
+|NaN|NaN         |NaN        |55      |6.5         |2.8        |<NA>        |
+|NaN|NaN         |NaN        |56      |5.7         |2.8        |<NA>        |
+|NaN|NaN         |NaN        |105     |6.5         |3.0        |<NA>        |
+|NaN|NaN         |NaN        |106     |7.6         |3.0        |<NA>        |
+|1  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|2  |1.4         |0.2        |NaN     |NaN         |NaN        |setosa      |
+|51 |4.7         |1.4        |NaN     |NaN         |NaN        |versicolor  |
+|52 |4.5         |1.5        |NaN     |NaN         |NaN        |versicolor  |
+|101|6.0         |2.5        |NaN     |NaN         |NaN        |virginica   |
+|102|5.1         |1.9        |NaN     |NaN         |NaN        |virginica   |
+'---'------------'-----------'--------'------------'-----------'------------'
+
+[8591 μs]
 ```
 
 ## Statistics
@@ -728,95 +727,88 @@ Several commonly used statistics are built into the `Numeric` and
 `Categoric` classes.
 
 ```dart
-print('Petal length:\n');
-final variable = 'petal_length';
+final variable = "petal_length", petalLength = iris.numericColumns[variable]!;
 
-print('Whole-sample-mean: ${
-    iris.nums[variable].mean.toStringAsFixed(2)
-}');
+print("Column: $variable");
+print("Whole-sample-mean: ${petalLength.mean.toStringAsFixed(2)}");
+print("By species:");
 
-print('By species:');
-iris.groupedByCategoric('species').forEach((species, data) {
-    print('  $species: ${
-        data.nums[variable].mean.toStringAsFixed(2)
-    }');
+iris.groupedByCategory("species").forEach((species, data) {
+  final petalLength = data.numericColumns[variable]!;
+  print("  $species: ${petalLength.mean.toStringAsFixed(2)}");
 });
 ```
 
 ```text
-Petal length:
-
+Column: petal_length
 Whole-sample-mean: 3.76
 By species:
   setosa: 1.46
   versicolor: 4.26
   virginica: 5.55
 
-[9740 μs]
+[2225 μs]
 ```
 
-We can get a summary of a numeric:
+We can get statistical summaries of a columns:
 
 ```dart
-print('Sepal width:\n');
-iris.nums['sepal_width'].summary.forEach((statistic, value) {
-  print('  $statistic: $value');
+print("Sepal width:\n");
+iris.numericColumns["sepal_width"]!.summary.forEach((statistic, value) {
+  print("  $statistic: ${value.toStringAsFixed(2)}");
 });
 ```
 
 ```text
 Sepal width:
 
-  numberOfInstances: 150
-  sum: 458.60000000000014
-  sumOfSquares: 1430.399999999999
-  mean: 3.057333333333334
-  variance: 0.1887128888888887
-  inferredVariance: 0.1899794183445188
-  standardDeviation: 0.43441096773549437
-  inferredStandardDeviation: 0.435866284936698
-  meanAbsoluteDeviation: 0.33678222222222215
-  least: 2.0
-  leastNonOutlier: 2.3
-  lowerQuartile: 2.8
-  median: 3.0
-  upperQuartile: 3.3
-  greatestNonOutlier: 3.7
-  greatest: 4.4
-  range: 2.4000000000000004
-  interQuartileRange: 0.5
+  sum: 458.60
+  sumOfSquares: 1430.40
+  mean: 3.06
+  variance: 0.19
+  inferredVariance: 0.19
+  standardDeviation: 0.43
+  inferredStandardDeviation: 0.44
+  skewness: 0.03
+  meanAbsoluteDeviation: 0.34
+  lowerQuartile: 2.80
+  median: 3.00
+  upperQuartile: 3.30
+  interQuartileRange: 0.50
+  maximum: 4.40
+  maximumNonOutlier: 4.00
+  minimum: 2.00
+  minimumNonOutlier: 2.20
+  range: 2.40
 
-[16972 μs]
+[4797 μs]
 ```
 
-... or of a categoric:
-
 ```dart
-print('Species:\n');
-iris.cats['species'].summary.forEach((statistic, value) {
-  print('  $statistic: $value');
+print("Species:\n");
+iris.categoricColumns["species"]!.summary.forEach((statistic, value) {
+  print("  $statistic: ${value.toStringAsFixed(3)}");
 });
 ```
 
 ```text
 Species:
 
-  numberOfInstances: 150
-  impurity: 0.6666666666666667
-  entropy: 1.0986122886681096
+  impurity: 0.667
+  entropy: 1.099
 
-[7959 μs]
+[1959 μs]
 ```
 
 A summary of an entire data frame is in the form of a map with the
 column names as the keys and the individual summaries as the values:
 
 ```dart
-print('Summary of iris data frame columns:');
-(iris.summary..remove('id')).forEach((column, summary) {
-  print('\n$column:');
+print("Summary of iris data frame columns:");
+iris.withColumnsDropped(["id"]).summary.forEach((column, summary) {
+  print("\n$column:");
   summary.forEach((statistic, value) {
-      print('  $statistic: $value');
+      print("  $statistic: ${value.toStringAsFixed(2)}");
   });
 });
 ```
@@ -824,149 +816,192 @@ print('Summary of iris data frame columns:');
 ```text
 Summary of iris data frame columns:
 
-species:
-  numberOfInstances: 150
-  impurity: 0.6666666666666667
-  entropy: 1.0986122886681096
-
 sepal_length:
-  numberOfInstances: 150
-  sum: 876.5000000000002
-  sumOfSquares: 5223.849999999998
-  mean: 5.843333333333335
-  variance: 0.6811222222222222
-  inferredVariance: 0.6856935123042505
-  standardDeviation: 0.8253012917851409
-  inferredStandardDeviation: 0.8280661279778629
-  meanAbsoluteDeviation: 0.6875555555555561
-  least: 4.3
-  leastNonOutlier: 4.3
-  lowerQuartile: 5.1
-  median: 5.8
-  upperQuartile: 6.4
-  greatestNonOutlier: 7.7
-  greatest: 7.9
-  range: 3.6000000000000005
-  interQuartileRange: 1.3000000000000007
+  sum: 876.50
+  sumOfSquares: 5223.85
+  mean: 5.84
+  variance: 0.68
+  inferredVariance: 0.69
+  standardDeviation: 0.83
+  inferredStandardDeviation: 0.83
+  skewness: 0.03
+  meanAbsoluteDeviation: 0.69
+  lowerQuartile: 5.10
+  median: 5.80
+  upperQuartile: 6.40
+  interQuartileRange: 1.30
+  maximum: 7.90
+  maximumNonOutlier: 7.90
+  minimum: 4.30
+  minimumNonOutlier: 4.30
+  range: 3.60
 
 sepal_width:
-  numberOfInstances: 150
-  sum: 458.60000000000014
-  sumOfSquares: 1430.399999999999
-  mean: 3.057333333333334
-  variance: 0.1887128888888887
-  inferredVariance: 0.1899794183445188
-  standardDeviation: 0.43441096773549437
-  inferredStandardDeviation: 0.435866284936698
-  meanAbsoluteDeviation: 0.33678222222222215
-  least: 2.0
-  leastNonOutlier: 2.3
-  lowerQuartile: 2.8
-  median: 3.0
-  upperQuartile: 3.3
-  greatestNonOutlier: 3.7
-  greatest: 4.4
-  range: 2.4000000000000004
-  interQuartileRange: 0.5
+  sum: 458.60
+  sumOfSquares: 1430.40
+  mean: 3.06
+  variance: 0.19
+  inferredVariance: 0.19
+  standardDeviation: 0.43
+  inferredStandardDeviation: 0.44
+  skewness: 0.03
+  meanAbsoluteDeviation: 0.34
+  lowerQuartile: 2.80
+  median: 3.00
+  upperQuartile: 3.30
+  interQuartileRange: 0.50
+  maximum: 4.40
+  maximumNonOutlier: 4.00
+  minimum: 2.00
+  minimumNonOutlier: 2.20
+  range: 2.40
 
 petal_length:
-  numberOfInstances: 150
-  sum: 563.7000000000004
-  sumOfSquares: 2582.7100000000005
-  mean: 3.7580000000000027
-  variance: 3.0955026666666674
-  inferredVariance: 3.1162778523489942
-  standardDeviation: 1.7594040657753032
-  inferredStandardDeviation: 1.7652982332594667
-  meanAbsoluteDeviation: 1.5627466666666645
-  least: 1.0
-  leastNonOutlier: 1.0
-  lowerQuartile: 1.6
+  sum: 563.70
+  sumOfSquares: 2582.71
+  mean: 3.76
+  variance: 3.10
+  inferredVariance: 3.12
+  standardDeviation: 1.76
+  inferredStandardDeviation: 1.77
+  skewness: -0.02
+  meanAbsoluteDeviation: 1.56
+  lowerQuartile: 1.60
   median: 4.35
-  upperQuartile: 5.1
-  greatestNonOutlier: 6.9
-  greatest: 6.9
-  range: 5.9
-  interQuartileRange: 3.4999999999999996
+  upperQuartile: 5.10
+  interQuartileRange: 3.50
+  maximum: 6.90
+  maximumNonOutlier: 6.90
+  minimum: 1.00
+  minimumNonOutlier: 1.00
+  range: 5.90
 
 petal_width:
-  numberOfInstances: 150
-  sum: 180.0000000000001
-  sumOfSquares: 302.3800000000001
-  mean: 1.2000000000000008
-  variance: 0.575866666666666
-  inferredVariance: 0.5797315436241604
-  standardDeviation: 0.7588587923103125
-  inferredStandardDeviation: 0.7614010399416068
-  meanAbsoluteDeviation: 0.6573333333333329
-  least: 0.1
-  leastNonOutlier: 0.1
-  lowerQuartile: 0.3
-  median: 1.3
-  upperQuartile: 1.8
-  greatestNonOutlier: 2.5
-  greatest: 2.5
-  range: 2.4
-  interQuartileRange: 1.5
+  sum: 180.00
+  sumOfSquares: 302.38
+  mean: 1.20
+  variance: 0.58
+  inferredVariance: 0.58
+  standardDeviation: 0.76
+  inferredStandardDeviation: 0.76
+  skewness: -0.01
+  meanAbsoluteDeviation: 0.66
+  lowerQuartile: 0.30
+  median: 1.30
+  upperQuartile: 1.80
+  interQuartileRange: 1.50
+  maximum: 2.50
+  maximumNonOutlier: 2.50
+  minimum: 0.10
+  minimumNonOutlier: 0.10
+  range: 2.40
 
-[32612 μs]
+species:
+  impurity: 0.67
+  entropy: 1.10
+
+[9099 μs]
+```
+
+## Bootstraps
+
+We can use `bootstrapConfidenceIntervals` to generate bootstrapped confidence intervals for each of the statistics associated with the column type:
+
+```dart
+final intervals = await iris["petal_length"].bootstrapConfidenceIntervals();
+
+for (final MapEntry(:key, :value) in intervals.entries) {
+  final (lower, upper) = value;
+  print("$key: [${lower.toStringAsFixed(2)}, ${upper.toStringAsFixed(2)}]");
+}
+```
+
+```text
+sum: [524.88, 610.80]
+sumOfSquares: [2307.62, 2909.78]
+mean: [3.50, 4.07]
+variance: [2.67, 3.45]
+inferredVariance: [2.69, 3.48]
+standardDeviation: [1.63, 1.86]
+inferredStandardDeviation: [1.64, 1.86]
+skewness: [-0.05, -0.00]
+meanAbsoluteDeviation: [1.37, 1.71]
+lowerQuartile: [1.50, 2.17]
+median: [4.00, 4.60]
+upperQuartile: [4.90, 5.47]
+interQuartileRange: [3.10, 3.83]
+maximum: [6.60, 6.90]
+maximumNonOutlier: [6.60, 6.90]
+minimum: [1.00, 1.20]
+minimumNonOutlier: [1.00, 1.20]
+range: [5.50, 5.90]
+
+[127466 μs]
 ```
 
 ## Quantizing a category
 
+Sometimes it's helpful to generate category indicators:
+
 ```dart
 print(petals
-  .withColumns(['id', 'species'])
-  .withCategoricEnumerated('species'));
+    .withColumns(["id", "species"])
+    .withCategoricColumnEnumerated("species"));
 ```
 
 ```text
-.---.----------.--------------.------------------.-----------------.
-| id|   species|species_setosa|species_versicolor|species_virginica|
-:---+----------+--------------+------------------+-----------------:
-|  1|    setosa|             1|                 0|                0|
-|  2|    setosa|             1|                 0|                0|
-|  3|    setosa|             1|                 0|                0|
-|  4|    setosa|             1|                 0|                0|
-| 51|versicolor|             0|                 1|                0|
-| 52|versicolor|             0|                 1|                0|
-| 53|versicolor|             0|                 1|                0|
-| 54|versicolor|             0|                 1|                0|
-|101| virginica|             0|                 0|                1|
-|102| virginica|             0|                 0|                1|
-|103| virginica|             0|                 0|                1|
-|104| virginica|             0|                 0|                1|
-'---'----------'--------------'------------------'-----------------'
 
-[7877 μs]
+.---.--------------.------------------.-----------------.------------.
+|id |species_setosa|species_versicolor|species_virginica|species     |
+:---+--------------+------------------+-----------------+------------:
+|1  |1             |0                 |0                |setosa      |
+|2  |1             |0                 |0                |setosa      |
+|3  |1             |0                 |0                |setosa      |
+|4  |1             |0                 |0                |setosa      |
+|51 |0             |1                 |0                |versicolor  |
+|52 |0             |1                 |0                |versicolor  |
+|53 |0             |1                 |0                |versicolor  |
+|54 |0             |1                 |0                |versicolor  |
+|101|0             |0                 |1                |virginica   |
+|102|0             |0                 |1                |virginica   |
+|103|0             |0                 |1                |virginica   |
+|104|0             |0                 |1                |virginica   |
+'---'--------------'------------------'-----------------'------------'
+
+[3683 μs]
 ```
 
 ## Categorizing a quantity
 
+We can generate categories for a numeric column by binning:
+
 ```dart
-print(petals
-  .withColumns(['species', 'petal_length'])
-  .withNumericCategorized('petal_length', bins: 5, decimalPlaces: 1));
+print(petals.withColumns(["species", "petal_length"]).withNumericColumnBinned(
+  "petal_length",
+  decimalPlaces: 1,
+));
 ```
 
 ```text
-.----------.------------.---------------------.
-|   species|petal_length|petal_length_category|
-:----------+------------+---------------------:
-|    setosa|         1.4|           [0.8, 2.0)|
-|    setosa|         1.4|           [0.8, 2.0)|
-|    setosa|         1.3|           [0.8, 2.0)|
-|    setosa|         1.5|           [0.8, 2.0)|
-|versicolor|         4.7|           [4.2, 5.3)|
-|versicolor|         4.5|           [4.2, 5.3)|
-|versicolor|         4.9|           [4.2, 5.3)|
-|versicolor|         4.0|           [3.1, 4.2)|
-| virginica|         6.0|           [5.3, 6.5)|
-| virginica|         5.1|           [4.2, 5.3)|
-| virginica|         5.9|           [5.3, 6.5)|
-| virginica|         5.6|           [5.3, 6.5)|
-'----------'------------'---------------------'
 
-[15978 μs]
+.------------.------------.----------------.
+|petal_length|species     |petal_length_bin|
+:------------+------------+----------------:
+|1.4         |setosa      |[0.8, 2.2)      |
+|1.4         |setosa      |[0.8, 2.2)      |
+|1.3         |setosa      |[0.8, 2.2)      |
+|1.5         |setosa      |[0.8, 2.2)      |
+|4.7         |versicolor  |[3.6, 5.1)      |
+|4.5         |versicolor  |[3.6, 5.1)      |
+|4.9         |versicolor  |[3.6, 5.1)      |
+|4.0         |versicolor  |[3.6, 5.1)      |
+|6.0         |virginica   |[5.1, 6.5)      |
+|5.1         |virginica   |[5.1, 6.5)      |
+|5.9         |virginica   |[5.1, 6.5)      |
+|5.6         |virginica   |[5.1, 6.5)      |
+'------------'------------'----------------'
+
+[3978 μs]
 ```
 
+Thanks for your interest in this library. Please [file bugs, issues and requests here](https://github.com/ram6ler/packhorse/issues).
